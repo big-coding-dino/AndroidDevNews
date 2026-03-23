@@ -9,4 +9,5 @@ dependencies = [
     "python-dotenv",
     "beautifulsoup4",
     "trafilatura>=2.0.0",
+    "sentence-transformers",
 ]
