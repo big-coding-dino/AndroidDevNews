@@ -17,13 +17,19 @@ Somnox's team shows how to navigate between multiplatform Compose screens and fr
 
 ### [Mark Your Models as Stable with the Compose Runtime Annotation Library](https://dev.to/marktony/compose-stability-annotations)
 
-Even immutable model classes from external packages are treated as unstable by the Compose compiler, causing unnecessary recompositions. The `compose-runtime:compose-runtime` annotation library provides `@Immutable` and `@Stable` to override this. The key gotcha: a class is only stable if all its properties are stable types; adding a single `List<T>` makes it unstable again unless you use `@Immutable` explicitly. The Compose Compiler Metrics Gradle task is the authoritative way to verify stability before and after annotating.
+Even immutable model classes from external packages are treated as unstable by the Compose compiler, causing unnecessary recompositions. The `compose-runtime` annotation library provides `@Immutable` and `@Stable` to override this. The key gotcha: a class is only stable if all its properties are stable types; adding a single `List<T>` makes it unstable again unless you use `@Immutable` explicitly. The Compose Compiler Metrics Gradle task is the authoritative way to verify stability before and after annotating.
+
+---
+
+### [Kotlin 1.6.20 Released](https://blog.jetbrains.com/kotlin/2022/04/kotlin-1-6-20-released/)
+
+Kotlin 1.6.20 makes hierarchical project structure the default for multiplatform projects — eliminating the opt-in flag that was previously required for shared `commonMain`/`iosMain` source sets. This change directly affects Compose Multiplatform projects sharing UI logic across targets. The JVM IR backend gains parallel compilation within a module for faster builds. *(Note: article dated 2022 but surfaced via Android Weekly in September 2025.)*
 
 ---
 
 ### [Navigate Back with Results in Jetpack Compose Navigation](https://proandroiddev.com/navigate-back-with-results-compose)
 
-A clean pattern for returning results from a destination screen without shared ViewModels or singletons: navigate forward with a destination, use `savedStateHandle` on the calling screen to observe the result, and navigate back with the result set in the destination's `savedStateHandle`. The post provides a small helper that encapsulates this pattern for reuse. Works with Nav2 (`NavController`) today and maps well to Nav3's back-stack-as-state model.
+A clean pattern for returning results from a destination screen: use `savedStateHandle` in the calling screen to observe the result, and set the result in the destination's `savedStateHandle` before navigating back. The post provides a small reusable helper encapsulating this pattern. Works with Nav2 today and avoids shared ViewModels or singletons — the data travels through the navigation back stack.
 
 ---
 
@@ -35,19 +41,13 @@ CMP desktop apps run on the JVM, so macOS-native APIs like iCloud/CloudKit aren'
 
 ### [Building a Cross-Platform Invoice App with Compose Multiplatform](https://www.paleblueapps.com/rockandnull/billin-building-a-cross-platform-invoice-app-with-kotlin-multiplatform/)
 
-Billin chose CMP to share the full UI layer across Android and iOS — shared PDF preview, payment management, and navigation graph. The post is candid about CMP rough edges: platform-specific file sharing and some iOS-only UI adjustments required extra work. Conclusion for teams already using Kotlin and Compose: CMP delivers iOS coverage faster than a parallel SwiftUI app, especially when the iOS UI is close to the Android design.
+Billin chose CMP to share the full UI layer across Android and iOS — including shared PDF preview, payment management state, and a single navigation graph. The post is candid about CMP rough edges: platform-specific file sharing and some iOS-only UI adjustments required extra work. Conclusion for teams already using Kotlin and Compose: CMP delivers iOS coverage faster than a parallel SwiftUI app, especially when the iOS UI closely mirrors Android.
 
 ---
 
 ### [Mozart: Compose Live Wallpapers](https://github.com/creativedrewy/mozartwallpapers)
 
-Mozart (`io.github.creativedrewy:mozartwallpapers`) lets you build Android Live Wallpapers using Jetpack Compose — the entire wallpaper is a composable tree. Extend `MozartWallpaperService`, return a composable from `wallpaperContent`, and the library bridges the gap between the `WallpaperService` lifecycle and the Compose runtime. A creative use of Compose outside the standard Activity/Fragment host.
-
----
-
-### [Accessing Native macOS APIs in Compose Multiplatform — A Second Look](https://marcogomiero.com/posts/2025/compose-desktop-macos-api-jni/)
-
-*(See entry above — same article surfaced in Android Weekly twice this month.)*
+Mozart (`io.github.creativedrewy:mozartwallpapers`) lets you build Android Live Wallpapers using Jetpack Compose — the entire wallpaper surface is a composable tree. Extend `MozartWallpaperService` and return a composable from `wallpaperContent`; the library bridges the `WallpaperService` lifecycle and the Compose runtime. A creative use of Compose outside the standard Activity/Fragment host, with animation and drawing APIs available as normal.
 
 ---
 
