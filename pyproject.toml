@@ -11,4 +11,6 @@ dependencies = [
     "trafilatura>=2.0.0",
     "sentence-transformers",
     "openai-whisper>=20250625",
+    "whisperx>=3.8.2",
+    "pyannote-audio>=4.0.4",
 ]
