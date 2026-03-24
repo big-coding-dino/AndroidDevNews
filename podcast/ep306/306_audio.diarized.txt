@@ -1,0 +1,193 @@
+# 306 audio
+Podcast: Fragmented Podcast
+
+---
+
+[SPEAKER_01]
+Welcome to Fragmented, an AI developer podcast that helps vibe coders become software engineers one episode at a time. I'm your host, Kaushik.
+
+[SPEAKER_00]
+And I'm Yuri, the other host of Fragmented, where I'd love to talk about using AI to make you a better developer.
+
+[SPEAKER_01]
+Yuri, when we made the shift from talking about Android development to AI development, some folks asked me, are you still planning to keep the name fragmented? And my answer was a resounding yes, because the state of AI development is not really very different from Android development. It's super fragmented. If anything, the topic we're discussing today couldn't be a better example of why that name fits really well for AI development. The topic is keeping your agent instructions in sync.
+
+[SPEAKER_00]
+Yeah, absolutely. So many tools out there. There's so much things happening at the same time.
+
+[SPEAKER_01]
+One day I feel I need to jump into Cloud Code, the other day into Codex, the other day into Gemini CLI. Keeping all of these together is still such a big problem.
+
+[SPEAKER_00]
+It is. It is. And you still want to do it.
+
+[SPEAKER_01]
+But Yuri, what are we going to cover this episode?
+
+[SPEAKER_00]
+Right. So I think first thing we're going to talk about is the sync problem, right? Essentially, how do we keep these things, these different instructions and configurations for your agents in sync, like you were saying? Then we'll talk about solutions for providing this single source of truth. And there's, of course, many solutions out there and what we use personally.
+
+[SPEAKER_01]
+Oh, yeah. I'm actually super curious to find out how you manage this. I'm always on the lookout to see how other people are managing this. So can't wait to hear that.
+
+[SPEAKER_00]
+Right. And what is the benefit? And if there is any benefit at all in these instructions, right? Especially because recently there was this paper showing some mixed results. Yeah, so we can cover that.
+
+[SPEAKER_01]
+Yeah, some people are calling into question if it's even worth having these agents instructions at all, right? Which is, I feel it's a little late. Right. to do that, but hey, maybe let's find out. Controversial takes.
+
+[SPEAKER_00]
+Yeah, and finally, some tips on how to tame and control and manage these files and our takeaways from all that. So, ready. Let's do it.
+
+[SPEAKER_01]
+Maybe one thing we should do is start, like you said, with the sync problem. What is the sync problem? What is the issue we are trying to tackle today?
+
+[SPEAKER_00]
+So, the sync problem. Well, this is... It was especially pretty bad in the early days when all these harnesses started coming out there. But now most tools have some kind of agreement.
+
+[SPEAKER_01]
+Yeah. And I don't know if people remember in the early days, like you're saying, right? There was agent.md, not plural. Yeah. which is what we have agreed on today. But agent.md, there was clod.md, there was gemini.md, so many of these files. And there were different ones too, right? I can't remember. Some of them had like a .hidden directory where you could put in more instructions and it would pick it up. It was a mess.
+
+[SPEAKER_00]
+Yeah. Everyone's scrambling, trying to figure out how to do the things. No standards. So yeah, the industry is more or less starting to converge on that. So now there's the agents MD, like you were saying.
+
+[SPEAKER_01]
+Yeah. And if people have listened to a previous episode, you'll remember that this agents MD standardization that we talked about is actually part of the open standard. You know, the AAIF foundation that we've talked about in a few episodes now. This was one of the early donations, which is agents.md is the standard that everyone is pulling towards. And I think it was OpenAI that, you know, eventually decided to rally people together. And then it was donated as part of the AAIF foundation. But Yuri, there's one holdout.
+
+[SPEAKER_00]
+Yeah.
+
+[SPEAKER_01]
+And unfortunately, they happen to be a pretty big holdout.
+
+[SPEAKER_00]
+Yeah, it feels like the Apple of the agents, right?
+
+[SPEAKER_01]
+Coming from two Android developers, we can say this. Yeah.
+
+[SPEAKER_00]
+They like to do things slightly different. And to be fair, they have a very good harness and a very good model. So I think that's why they can pull this much weight around. And they're definitely doing it. So cloud.md is still out there.
+
+[SPEAKER_01]
+It's funny, Yuri. Just recently, there was a tweet where there's this popular web developer who publicly was a little, how do I put this? Baiting. That's right. They openly called out Anthropic saying, oh my God, I can't believe I'm not using Cloud Code anymore. I'm going to go and use Codex. It's so much better. And they specifically called out how Anthropic may not necessarily be the best development partner. And Tariq, one of these developers from Cloud Code, super nice person, and he really puts out great tips about Cloud Code. He's active on social media. he responded saying, hey, what are some of the things that we could help improve? And that's where the baiting comes in. I feel like he almost got baited because this other web developer straight up told him, why is this so hard? Why can't you consolidate around agents.md? And obviously, Tariq gave a non-response response. But he also mentioned, interestingly, he mentioned a technique which... I think a lot of us have followed, but I think we can take that as a good instruction on how to keep Cloud in sync with the agents.md. Nice. We'll come to that in a subsequent point. But one thing I wanted to call out also that's subtly different that many don't talk about here, Yuri, is there is a global level instructions and then there is a project level instructions. A lot of this agents.md standardization that we talk about usually refer to the project level standardization. I don't know about you, but there are certain times where I want a systems level instruction that applies based on my taste and my style. I want the agent to talk to me in a very specific way. And I don't necessarily always want to enforce that across the board. So anyone who works in the same repo as me, they may not want the same thing. Those I put in the global users instructions. And even that is subtly different from how it's managed. So there's a lot of these inconsistencies. Speaking of which, Yuri, maybe what we should do now is talk about how we do keep these things in sync. I'd love to hear your approach. What have you been doing? to manage all of these different instructions and keep them in sync? Because I know for a fact you use open code, you use cloud code, you use codex, you use all of these tools, right? I don't think you're going there manually editing and making sure that these instructions are in sync in all places. So tell me, how do you manage all of this?
+
+[SPEAKER_00]
+Yes, I do not do that. I do not keep copies, multiple copies of that. But what I like to do, like I think I was doing this. Yeah, I've been doing this for some time now. The idea of having like a .files repo. So this for people who are not initiated in this, what can I call this?
+
+[SPEAKER_01]
+This movement. It's a big thing online. You know, I think there's even a website.
+
+[SPEAKER_00]
+Yeah, absolutely. People get, you know, very into these kind of things, you know, like these rabbit holes.
+
+[SPEAKER_01]
+I feel you're calling me out a little.
+
+[SPEAKER_00]
+If I'm calling you out, then I'm calling me out too. That's fair.
+
+[SPEAKER_01]
+That's fair.
+
+[SPEAKER_00]
+In any case, so the .files. First, I should clarify what .files is, but it's just the idea of having a repo where you keep all your configurations, right?
+
+[SPEAKER_01]
+Yeah. And this is not just for AI. This is in general, right? If you have a tmux configuration, a terminal configuration, zsh, phish, whatever, all of those, you keep that in a .files repo.
+
+[SPEAKER_00]
+Yeah, your aliases, everything like the things that the way you like to work on a computer, like you generally just carry this around. So the idea was like I was doing that for my .files in general, but I started doing it just for the agents and basically the configurations related to the harness. So not only agents now, the agents MD, but also like skills and all sorts of stuff. I'm trying to have this repo where I carry my agents configuration around. And so this is the first idea. And now to keep them in sync, there are a few ways. I think we're going to talk about some. But what I've been just playing with and using is a tool called RuleSync. It's an open source project. I think we're going to leave the... But the idea is that the guy built this tool that tries to manage all this confusion. And you basically can import and export configurations from each harness into another. So basically you can import all the configurations from Claude and export it to Cursor. So it will just regenerate the configurations.
+
+[SPEAKER_01]
+And this takes care of both the global level instructions and the project level instructions.
+
+[SPEAKER_00]
+Yeah, you can run it on multiple scopes, basically.
+
+[SPEAKER_01]
+Ah, that's pretty cool. And just to clarify on what you meant about .files, so do you keep a separate repo for .files just with all this agent stuff, or is it in your existing .files repo? You have a separate folder now just for your agents.
+
+[SPEAKER_00]
+I actually created a repo just for the agent stuff. which, yeah, so it's actually outside of my original .files. So I use this tool to keep things in sync. I think it kind of solves it for me, but there are other ways as well, right? So I think you wrote something about this a long time ago, actually. I think before I even tried to fix this problem, I think you were already writing this blog post.
+
+[SPEAKER_01]
+What I did previously, I just manually managed it myself. I will make sure to link the blog post in the show notes. But I also keep this blog post up to date because every time I make a change, I just add. So if you go to the blog post now, it'll show you the latest instructions. You don't have to worry about it being outdated. And I adopt a very similar approach to what you mentioned. So to cut a long story short, I have a shell script that basically sets up all the symbolic links and creates the necessary folders in the right way. So all I do is I maintain that .agents folder in my .files. And then when I need to set things up, I just run that shell script and it automatically just takes care of setting things up. So it's effectively the same as this tool that you're mentioning. But I'm actually curious about the tool because I would ideally not like to manually maintain this. If someone else is doing it, you know, it's better to just use that. Yeah. I'm going to take a look at that as well.
+
+[SPEAKER_00]
+So people are probably listening to this and thinking to themselves, like, why are you going to so much of this pain? Is there any benefit? Is there any benefit at all in this? And I think recently this paper was published and it's a bit controversial, like some of its conclusions. It was basically trying to evaluate the agent's MD. I think you shared this one, Kaoshi. Can you tell what are the claims from this paper?
+
+[SPEAKER_01]
+In a gist, what these folks did is they tested specifically if these agents.md system instruction files are even useful at a repository level. So people can go ahead and read it, but what we're going to do now in the interest of time is just summarize some of the claims and come back with our thoughts on it. So the first claim that they say is, auto-generated agents.md files make the agents actually worse, not better. They actually make the results worse. And here's the double whammy here. It also costs more in terms of tokens. Oh my God. It consumes 20% more tokens when you have agents.md files that are generated automatically by agents. So lower success and costs more. Yeah. Back it up. The very first point is not encouraging. So that's one. We'll come back to it in a second. The second, because you might have a good follow-up, which is like, well, okay, what if I wrote it? What if a human wrote it and not an agent? What they found is human written files help marginally. And they say it's a 4% average. Honestly, 4%, if you think about it, is a lot. This paper doesn't claim it to be that big. But they say there's a 4% average improvement. but not consistently. So for example, when they used CLOD, the Sonnet 4.5 model specifically, it actually performed worse even with human instructions. Again, this complicates things, right? Because which model did you specifically use? And, you know, what were the instructions? So take everything with a grain of salt. But in general, they ran this study and found that, you know, human written files in general are better. But not always. So that was the second claim. The third is in the early days, people were like... My model is not even following these instructions. I have these agents.md, but nobody's listening. What these folks who published the paper found out is that the agents actually do follow the instructions. The problem is like when you have unnecessary instructions, that's when it adds, they call it cognitive overhead, which I think is interesting because they're not talking about human cognition. They're talking about like the AI's cognitive overhead here. And the way they pointed out is the reasoning tokens take up to, again, 10 to 22 percent, if that makes sense. So if you think about what is the cognitive overhead for an agent, the way they quantify that is like a 10 to 22 percent consumption in reasoning tokens.
+
+[SPEAKER_00]
+And that can happen really easily if you have a global agents MD and you have a contradicting local agents MD, right? So there are contradictions between both and the model gets even more confused.
+
+[SPEAKER_01]
+You pinned that exact point. This is generally the issue that lands up with all of these agents.md files, right? Because the other thing we didn't talk about earlier on is... You know, the official standard for agents.md allows you to nest agents.md in every part of your folder. And the agent harnesses usually do a good job of like tree traversing through all of that and picking up all of those agents.md. So very quickly, you're right. You can bloat that thing pretty high if you just start at a certain folder in your hierarchy. The second last one was context files are like largely redundant with existing docs. So what this means is these agent.md files, when you have agents.md and you had developer documentation, like your general readme files and other documentation around the project that you have written for the human, you know, in the past when we used to write these documentation as good developers and engineers ourselves. Basically, they're saying it's completely redundant. But there's mild follow-ups here because say you started with a repository that didn't have any, like, you know, you were not a good developer, bad developer, no documentation. In those cases, the system instructions does 2.7% better. Yeah. So it really does throw into question, well, so what if I didn't have the context files and I just had regular developer-read documentation? Well, in that case, it's a question to be considered.
+
+[SPEAKER_00]
+Interesting.
+
+[SPEAKER_01]
+Does that make sense so far, like these claims? It's tricky, but hopefully the paper's claims are making sense so far.
+
+[SPEAKER_00]
+Yeah, very interesting to hear those, actually.
+
+[SPEAKER_01]
+Eventually, what the paper recommends is, hey, just keep your agents.md files very lean and just have the things that are different. If things are inferable, like, you know, there's style guides, it's all inferred. But then again, you know, you pointed me to an OpenAI blog post recently around harness engineering and where they talk about, no, maybe just give the overview, but don't go into all of the details. So again, we are here giving you the information that we see, you know, and talking about our experience, but don't read anything and treat it as gospel because, you know, everyone is trying to figure this out as we go along.
+
+[SPEAKER_00]
+Yeah. But this final recommendation, I think sounds very reasonable. What I've seen also people do is to have like a huge agents MD and or having like that, like you were mentioning, like this nesting of agents MD with contradiction between them. And it's actually really hard to keep... these things up to date as well as the project evolves. So you might have an instruction on one that says that this part of the code works like this, but then that's not true anymore. So the longer this documentation drifts, it impacts performance. So I think just the general recommendation of having minimal stuff in there, I think it makes a lot of sense to be honest.
+
+[SPEAKER_01]
+I think that's the crux of it, which is keep it lean and keep it relevant. Don't add incorrect instructions because then don't expect anything different. And so those were the general claims. People say, hey, you should still take these findings with a grain of salt because there are some things about this test that we should talk about. a lot of the things that we care about and we put into our agents.md files are not always measured by some of these benchmarks, right? Like they had the SWE bench. These are common tests that people use to check our models work. They don't capture some of these things that we ourselves put like stylistic preferences, those kinds of things. So that's one piece that the paper doesn't necessarily cover. The other two big points that were brought up about the paper, one is they ran these tests on Python. And a lot of these frameworks like Django, scikit, flask, as we know, those are the best languages for these models because these models are like trained the hell out of those specific frameworks and languages. So it would follow that in those cases, the models don't need as much help through the agent's instruction file.
+
+[SPEAKER_00]
+Yeah, that makes a lot of sense. They already know.
+
+[SPEAKER_01]
+Exactly. But you and me are like Android developers. And as we know, in the early days, a lot of these models don't follow Kotlin or Swift and these specific languages. So I would bet if you had more of those instructions in your agents.md file, it would work better for us compared to someone who's working on, say, a Python project. But that's one caveat about how you should read through these. findings from the paper. And last one is honestly the data set. They did it with 138 instances and 12 repos. So, I mean, it's very commendable, but it's not what you would call statistically significant when you look at data. So that is like my summary from all of this, Yuri.
+
+[SPEAKER_00]
+Yeah, that's very good to know, like this kind of pushback and to see like both sides, right?
+
+[SPEAKER_01]
+Given all of this, Yuri, maybe what we should do is wind this episode down by talking about what did we learn from this?
+
+[SPEAKER_00]
+I think both of us still lean more on, like, we should probably do this.
+
+[SPEAKER_01]
+But can you help listeners sort of consolidate and put all of this information together? What should I start doing now?
+
+[SPEAKER_00]
+Yeah, I think a very good starting point is not to just run the slash init command. So do not auto-generate and just walk away. Because like we were saying, the documentation drift, you know, like you generated some instructions in the beginning. And like, especially if you use the command, it's like just auto-generated stuff. So it's also not actually what you want to be doing. I think you actually want to have like your instructions there, like your vision of what... that should be about and not just have the model generate some statistical average of what should be in there.
+
+[SPEAKER_01]
+Yeah, because it follows, right? If the model is already generating that, it kind of already understands that. So what's the point of giving the agents.md the same thing?
+
+[SPEAKER_00]
+Yeah.
+
+[SPEAKER_01]
+I will say it's okay to maybe generate the init, but... That's more for the human to get a basic sense and then throw it away. Yeah, exactly. Scaffolding.
+
+[SPEAKER_00]
+The biggest takeaway from that is what we were just talking now, which is keeping it lean. Do not over-engineer. Do not over-engineer the agents. You know, you were just saying that. I was thinking something. Is it the idea to have like the agents MD become something like the constitution of the code base? So like very broad, like high level rules, you know, that's just guidance. Like, I don't know.
+
+[SPEAKER_01]
+I love this idea. Maybe we can coin this term here, which is like your agents.md should be the constitution of your project that the agents can follow. That's the law that they need to adhere to, if you think of it that way.
+
+[SPEAKER_00]
+I think that makes sense. Interesting.
+
+[SPEAKER_01]
+All right, Yuri. So I think we've covered ground pretty well on the paper relevance, how to keep some of these tools in sync. Any closing thoughts?
+
+[SPEAKER_00]
+Okay, so I think my closing thought would be to not limit yourself on the tools. Because in the end, we're engineers, right? And we've been hearing about the old tale of being locked into a database. Ever heard that? You have to abstract away. the implementation details I think we're in this very fast moving environment and I know that a lot of things are popping up every day and it's really hard to keep up but once you kind of understand what's going on They're not that different. There is some work you have to put into to be able to move from one to another. But they're not that different from each other. And in the end, they're tools that I think in this time and age we should be able to master. And it's very important to have in our tool belt right now. So I would really encourage you to first to try and to learn with them and not to limit yourself because you also get some freedom to be able to move because you know the prices and how these models are and how these companies are. And I think it just gives you a lot of power to be able to jump between them. Yeah.
+
+[SPEAKER_01]
+Very well said. Thank you all for listening. And we will catch you in the next episode. See you in the next one.
