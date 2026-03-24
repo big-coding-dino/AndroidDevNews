@@ -1,0 +1,244 @@
+# 308 audio
+Podcast: Fragmented Podcast
+
+---
+
+[SPEAKER_00]
+Welcome to Fragmented, an AI developer podcast that helps vibe coders become software engineers one episode at a time. I'm your host, Kaushik.
+
+[SPEAKER_01]
+And I'm Yuri, the other host of Fragmented, where I'd love to talk about using AI to make you a better developer.
+
+[SPEAKER_00]
+Right, Yuri. In episode 303, we talked about how LLMs work, and we actually got great feedback on that episode. And a lot of folks came back to us saying, hey, we should extend that and do more of those type of episodes. So I figured this week we should dive into some theory around how these models work.
+
+[SPEAKER_01]
+Right, absolutely. It's super interesting to deep dive into how these things work. So what do you think we should tackle today? Well... Besides the traditional tax generating models, the next thing would probably be image models. How does that actually work?
+
+[SPEAKER_00]
+Especially if you see the image models we have today, and obviously the one that everyone's thinking about is... Gemini's Nano Banana. Incredible model. Right. Like how it even works is a marvel. In fact, like you and I initially, I think we had some knowledge about how text models work. But I think we ourselves were curious how it works for images. And so I'm happy to... share the learnings in this episode.
+
+[SPEAKER_01]
+It's fascinating to jump into a different model, right? It's image. How do you get that?
+
+[SPEAKER_00]
+Maybe what we should do first is recap how LLMs work. Folks want to really understand this. You should go back and listen to the episode 303. I think in 20 minutes, we capture pretty well how it works in the form of text. But let's do a quick recap to talk about how text models work, and then we can jump into the changes from there for images.
+
+[SPEAKER_01]
+Yeah, very high level, right? So we go from words to tokens. to embeddings, then we do the next token predictions and updating the weights, right? And then you understand like inference, how inference works, basically the autocomplete part and that whole loop of predicting, you get some output, you append that to the output and then you keep repeating. And that's how the text keeps streaming, goes left to right.
+
+[SPEAKER_00]
+Eventually you want computers to treat language, in this case, like math. You have words and there's this vocabulary that they use as a reference, which you convert into tokens. And then as you mentioned... Moving into embeddings is adding the meaning to those tokens, right? And that happens with the training process they talked about, the billions of mathematical nudges. I always remember that phrase because it gives you a sense of how large that pre-training is for those models, right? Take the English language or any language, convert that into words and take that words and convert it into math, right? And then once you convert it into math, then it's game on. Computers can start to use that math to do prediction.
+
+[SPEAKER_01]
+Right. It goes over that small analogy that we used last time, like how you can do even math with words, right? You can like have that basic intuition of how we do that.
+
+[SPEAKER_00]
+This is the king, queen, boy, girl, prince. Exactly.
+
+[SPEAKER_01]
+Yeah. I love that one.
+
+[SPEAKER_00]
+Yeah. Yeah. You pointed last time too, that's the paper, the famous paper where they talk about this, right?
+
+[SPEAKER_01]
+Yeah, it's that word to VAC, I guess. Very classic one. But now, if we're going to think about how images work, I think it's fair to say that images, like the way we represent images in computers, it's already math, right? The pixels and the images, that's already math values.
+
+[SPEAKER_00]
+That's fair. Today, images are represented by pixels, which can be represented as RGB values. Yeah, basically images are math already because of the RGB pixels.
+
+[SPEAKER_01]
+Yeah. It's just that they don't directly represent meaning, right? There is a gap there between that. When we do the math part for words, we already... talking about this representation of the words having meaning and being able to do math with words, then you actually, you can already work in that space. But for pixels, it's not exactly that. They were just representing color, basically.
+
+[SPEAKER_00]
+Yeah, that's already a big difference between images and text. You're right. In the text, the vocabulary is almost like a dictionary of words that you can reference to. And so you can have a map... Yeah. And how do you draw meaning out of color? You can do it. And in fact, I think early models, which were not obviously very successful, tried to do this. You know, can you use just little pixels and association of colors to derive that meaning? But just as a simple example as why this won't work, if you take the typical selfie from your camera, what is it? Like 12 megapixels, right? You know, 12 megapixel camera. That's already, what, 12 million pixels for just one selfie? Yeah. Training that is even bigger than what we were thinking of with text models, right? So that's not practical. It is impractical to use RGB pixels as a training mechanism to build these image models.
+
+[SPEAKER_01]
+Yeah, like running attention of millions of pixels. Like we're going to run out of memory.
+
+[SPEAKER_00]
+The process of that attention is where you bring in meaning through the embedding. And that's just not possible with millions and millions. I mean, literally millions of pixels, right? That's just not practical for just one simple image.
+
+[SPEAKER_01]
+So we need some kind of intermediate step there, I guess.
+
+[SPEAKER_00]
+Yeah, you're coming to the right point. So what if instead of literally taking the pixel values, we could do some kind of filter or compression to reach an intermediate form? That is basically where we begin the story for image models. And I think your question came up to the right point. Instead of... say, taking like a million pixels, what if you could take a reduced compressed form of that image and then use that as a training mechanism? A good analogy is typically when you have to apply for visas or passports, you need to upload a passport photo. But that passport photo has to be, you know, X by X number of pixels and less than one MB. And, you know, there's all these crazy constraints. A passport photo of you, Yuri, will look the same even after you compress and upload it to your government website.
+
+[SPEAKER_01]
+Right, right.
+
+[SPEAKER_00]
+And I think that's the key mechanism.
+
+[SPEAKER_01]
+So we need to compress this image, this dense mathematical representation we have with pixels into something that still has the meaning, but the representation is taking a space without work.
+
+[SPEAKER_00]
+And the key piece here is what they called a VAE, a Variational Auto Encoder. Yeah, this VAE basically is able to do that process that we just talked about.
+
+[SPEAKER_01]
+So that's going to compress the imaging to what? What's the thing that they compress it to?
+
+[SPEAKER_00]
+The latent. Latent. A latent space. A compact semantic version of the image. Oh. And this is a highly specific term, right? It's a highly specific term to how this VAE algorithm is able to sort of encode it. So you take your image, that beautiful selfie that Yuri took on Instagram today, and then you basically compress that using VAE into a compact semantic version of that image.
+
+[SPEAKER_01]
+Yeah, so this is very interesting, like this word latent. I'm super interested in linguistics and whatnot. Sometimes I do some Googling. So latent apparently has something to do with like hidden. When I use this word in this context, it's similar to having like some hidden representation of something, for example, in the space. So in this case, it would be like this hidden representation of the image in the space. in this mapping that we are generating from the pixels.
+
+[SPEAKER_00]
+So it's like there's a latent meaning hidden behind the numbers, essentially.
+
+[SPEAKER_01]
+Exactly, exactly. It's like this representation has the image, it's there, it's just not directly visible. But if you go through a different process on top of it, then you can review its content. back again. So sort of like just, you know, like when you have like a film and you take a picture and there's a latent image in the film and then you process the film and then you get the actual picture out of it.
+
+[SPEAKER_00]
+Oh, that's so cool. The thing that I like to do is connect it back to the LLM world and try to understand how it all fits, right? So this latent that we're talking about... It's actually not bitmap data or anything. It isn't visual. It's still numbers, right? That's the thing. I think it pretty much is like a small grid of numbers that this neural network learns to produce the full image from. So we have gone back to being able to do math again. And if people remember in the LLM world, we would take text and convert those into tokens. From tokens, we would go into embeddings. And in the image world, we basically take image data, run it through this VAE process, and what comes out on the other side is this latent. Yeah, that makes sense.
+
+[SPEAKER_01]
+It's a good parallel.
+
+[SPEAKER_00]
+The other interesting thing about latents specifically is you can take two latents and average them and you basically get a latent that decodes to something that's visually between those two images. So if I have like golden dog, say, and I have like those latents, if I average those two latents, I get like a golden dog. Oh, oh.
+
+[SPEAKER_01]
+Okay, so this is like you're doing, you're literally doing math with them.
+
+[SPEAKER_00]
+Aha, there we go. That's the important piece, you know. So this is the connection back to LLMs, right? We were able to do math with embeddings, you know, the king-queen thing that you love citing. Right. That's basically what latents allow you to do.
+
+[SPEAKER_01]
+Okay. So we're converging on the solution. Okay. Pretty cool. Yeah.
+
+[SPEAKER_00]
+And Yuri, at this point, I keep saying image models. I should use the official term. So it's not obviously called image models. What they're referred to, and people probably have heard this, this kind of model that we use for images using this technique is called stable diffusion. Stable diffusion. I think I heard that before. Yeah. Yeah, it's a common term that people use. And the stable part is what is the level of compression I can do to get it to represent in a stable form this concept or this image, basically. Okay, that makes sense. But we have not even gone into the training game, right? Because this is obviously where the magic is, is how do you take these things and train on them? Right. Say you have a fully formed sentence and you've broken 90% of that sentence into tokens. Now for training, what you can do is you can take those first tokens, smoosh them together, and then ask the model, hey, predict the next token. And it will come up with an answer. But then because you have training data, you can go back and say, nope, you didn't get it right. You need to tune or tweak your weights. And this is the phrase that I keep saying, mathematical nudge. in order to form that final vector or token to get the right embedding. But for images, what can you do? There isn't a next token or a next word to form the sentence.
+
+[SPEAKER_01]
+With images, how do you go from one place to the other? How do you keep moving? How do you add more in each round, in each run, right? This is the tricky part.
+
+[SPEAKER_00]
+Yeah, if you get this bridge, then you understand immediately how image models work. We don't do the left to right thing. Instead, with images, there is this concept of noise that you can add.
+
+[SPEAKER_01]
+Oh, so you mean noise in the sense of like, just like photography, like, you know, like those pixels, like those.
+
+[SPEAKER_00]
+And blurring is a good way to think about it, right? So, you know, one way of adding noise is like these Gaussian blurs. You take an image and then you add Gaussian blurs. As you keep blurring your images, I don't know if you've seen some of those, what is it, like the obfuscation tools? Like you can keep blurring until you take an image. And at one point, an image, you can't see anything. It's basically just blank or noise.
+
+[SPEAKER_01]
+Right. Just like if you go in Photoshop and you start blurring, you blur, you blur it. And then it's like you cannot see, you cannot tell what the image was before. Yeah.
+
+[SPEAKER_00]
+This is basically the concept that they use. What if you could reverse that? So if you start with a blank or a noisy image where it's like nothing is visible, it's all just like noise or like a plain color, can you selectively remove noise to go back and retrace your path to the original image?
+
+[SPEAKER_01]
+I can see how, yeah, you're basically training the neural network to undo the blurriness.
+
+[SPEAKER_00]
+Exactly. Assume you start off with a noisy image because that's easy to generate. Like, you know, you can always come up with a fully blurred image. You can start there, but then you start telling the model to remove the right kind of noise so that what lands up happening is you go back in time to like a fully formed image.
+
+[SPEAKER_01]
+What noise do you need to remove from the image to move it, to nudge it back into a direction that will generate something that you expect?
+
+[SPEAKER_00]
+Precisely. You hit the point. So the nudges here are not like the prediction like we talked about for words. The nudge here is basically you're dealing with noise. So can I keep removing a little noise from this image that I have and repeat that process? So it's very similar to LLMs when you think about it.
+
+[SPEAKER_01]
+Mm-hmm.
+
+[SPEAKER_00]
+All we're doing is like we remove noise. Now pass that back and say... What else do we need to remove? Yeah. Exactly. The best analogy I can think of is maybe this was like Michelangelo or someone who said like everyone starts with a block of white marble. The key in the art of sculpture is like knowing... what to chip away from that model, right? So we all start with the same block of marble. To be a sculptor, you need to know which parts of the marble to chip away to come up with this beautiful sort of sculptor of like- Wow.
+
+[SPEAKER_01]
+That matches directly. My God. Yeah, pretty good. Pretty good. Yeah, essentially that. You just keep removing noise and nudging into a direction that will generate what you want, right?
+
+[SPEAKER_00]
+Exactly, exactly. And with the training game, you know, you mentioned this casually. You talked about how do we do the bridge and at what point of time, like every time, what do I do? You know how with words, it's a sequence of words. So I can say one word, move to the next word. One word, move to the next word. You don't need a concept of time, but with images at this point of time, this level of noise is where your image is. So if I go to this training loop, when you're training the model, you need to say at point of time X, when you remove the noise, that's where you are. So then, okay, let's move back in time. If you want a better image, this is the level of noise you need to remove. And so at time zero, you have full noise, and at time whatever, you know, 100, you have an image that's fully formed. And so the training process for the model is that at that timestamp X, this level of noise is what gets you to this point of the image.
+
+[SPEAKER_01]
+Right. Because with noise, I assume that multiple images can be generated from the same starting point, right?
+
+[SPEAKER_00]
+It's hard to think about this, but you can generate literally any image, like thousands of images from the same starting point, but it's about what noise you remove at which point of time.
+
+[SPEAKER_01]
+Yeah, like at time zero, it's basically like, it's almost like it's the marble, right? Yes. It's the full marble.
+
+[SPEAKER_00]
+So that timestamp embedding is also an equal part of the training mechanism that we use.
+
+[SPEAKER_01]
+So let me see if I got this training loop correctly. If I have a real image and I just start adding noise to it for different time steps that we have, I add enough noise to represent the time step. I can do this on a real image just by adding noise myself. Like this is on the ground truth. And then I will use the model now. I will take the real image again and then I will encode it to this latent using the VA. Right. Now I will pick a random time step and ask the model to add the noise that represents that time step again. And now the model will do that. And now I will finally compare what the model added of noise, like the output of the model. with the one that I have, the truth, right? Training data, exactly. With the training data. And then I will check if it's like the difference. And if it needs changes, then I will update the weights. So the model learns how to actually get to the ground truth that I have.
+
+[SPEAKER_00]
+Exactly. That's the mathematical nudge, right? Because you have training data. You know you have this real image with... the appropriate level of noise to introduce at different timestamps. So when the model comes up with a noise prediction, you basically correct it or you train it to say, nope, that's not the right noise. This is how you should tune your weights to come up with the right noise. And so that's basically the process.
+
+[SPEAKER_01]
+And this is, yeah, so this is the training part, right? The model is learning how to actually get the proper...
+
+[SPEAKER_00]
+how to get the right level of noise to remove in order to form the image of your choice.
+
+[SPEAKER_01]
+Okay, that makes sense. And then there's this timestamp embedding.
+
+[SPEAKER_00]
+And the timestamp is important because with words, right, there is a logical progression. You know how to move forward, which is like, I've gotten... five words out of my sentence, which has 10 words, I can move to the sixth word. I can move to the seventh word. So it's easy with text. With images, there is no word. Like you can't go pixel by pixel, right? So what is that y-axis marker? That's what we're using time for. So the time basically says I'm able to move forward and backward in some logical sequence. And the x-axis is the noise value I introduce. Right.
+
+[SPEAKER_01]
+Yeah, the noise is such an interesting concept that it's being used here. It gives the whole time dimension to the image generation part. Super interesting. I think I got the intuition, which is probably what we want to do in this episode, right? So I think I got the intuition for the training loop, but how does that connect to when I actually have the prompt open, you know, like in the chat and I'm going to ask to generate an image? So I do that with text. There's no image involved in that point. So how does that connect to the image at all?
+
+[SPEAKER_00]
+That's a great question. I very conveniently left off that important piece, right? Because I was trying to build how we can think of images in the space of math. But you're 100% right. When you and I open up Gemini Nano Banana, we're adding text. We're not giving any image nothing. We're not starting with any images. It's all just text.
+
+[SPEAKER_01]
+Right.
+
+[SPEAKER_00]
+I left out a very important piece of the training data intentionally because we're trying to introduce these concepts. How image models are different in the training data is along with all of this image data and latent and noise information that we're talking about, you also have text descriptions of the image that you are converting into embeddings and you're pairing. So this whole training process is actually not just with images. you know how you have time and noise, you're also pairing it with this text embedding. So, you know, a lot of the same concepts that we had with LLMs apply here too. The only difference is like you're coupling it with like an entire new dimension.
+
+[SPEAKER_01]
+Okay. So that training data is incredibly valuable.
+
+[SPEAKER_00]
+Okay. So it's a specific set of training data, yeah. I forget the precise term, but yeah, they have these training data sets that are crucial for these image models.
+
+[SPEAKER_01]
+Okay, so all those captures that I solved throughout the last 15 years, that's where they end up.
+
+[SPEAKER_00]
+Thank you kindly, sir, because Yuri has been like, you know, trying to pick just that part of the bicycle that's correct for those catch-up models and like, you know, making sure your traffic signals are like in the right box. Oh my God. You helped us build image generation models. Thank you, sir. Okay.
+
+[SPEAKER_01]
+That's where the data went.
+
+[SPEAKER_00]
+I hope listeners at least feel a little validated that all that work now has came to some use.
+
+[SPEAKER_01]
+Nice. Okay. That's the training data. That's the billions of image caption pairs that we source from the web, that they source from the web.
+
+[SPEAKER_00]
+Yeah. And that's how it all comes together because you asked this question when you type in text, how is that transforming into an image? You take the text, you convert that into an embedding. Now that I have that embedding, my model understands how I pair embedding with this completely noisy image. So, you know, I have your text embedding. I start from a point like, you know, the block of marble, I'm full noise. Now my model is able to remove the right kind of noise from this block of marble at every timestamp in order to reach an image that matches the my text embedding.
+
+[SPEAKER_01]
+So now on every loop, both pieces go in. It's both my text embedding and how much noise should I be removing?
+
+[SPEAKER_00]
+Yeah, yeah. All right, Yuri, I think it's time to close this episode down, but hopefully this sets up future episodes too, because we have talked about how text models work. Today we talked about how image models work. It'll be cool to see how video would work because video is interesting as well. And as time progresses, we'll try to cover how each of these work in different episodes. Yeah, that would be very interesting to learn. One thing I'd love to ask listeners to do is please send us your questions. Like if you have specific questions around how these models work, again, like Yuri said, we're not able to cover the entirety of this technology in the course of 20 minutes. So we try to... distill down the simplest pieces so that intuition is built. But if you have follow-up questions around maybe gaps or spaces that didn't make sense, please ask those questions. And you know, it's easy to brush this off and say, well, I can just ask the LLM, you know, why do I need to ask you? But you know, the process of coming up with those questions in this world is how we do learning today, right?
+
+[SPEAKER_01]
+Yeah, like your professor used to say, right? You don't keep the questions for yourself. You share with the class. Yeah, yeah, yeah. Because other people might have the same question. And literally that, I think we can just be the platform to share these questions. And yeah, I think everyone can get something out of that.
+
+[SPEAKER_00]
+Yeah, and more often than not, I find the learning is in seeing the other kinds of questions that people come up with, right? Because you can then identify those gaps and then plug them for yourself.
+
+[SPEAKER_01]
+Yeah, totally. This is what humans are good at, right? Because maybe now it's easier to get answers from AI, but getting the interesting questions is still super valuable. That it is. That it is.
+
+[SPEAKER_00]
+Thank you all for listening. And we will catch you in the next episode. Thank you for joining, folks.
+
+[SPEAKER_01]
+Have a good one.
