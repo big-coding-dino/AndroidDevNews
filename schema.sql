@@ -16,14 +16,15 @@ CREATE TABLE IF NOT EXISTS tags (
 
 INSERT INTO tags (slug, name) VALUES
     ('ai',           'AI & Machine Learning'),
-    ('gradle',       'Gradle & Build'),
+    ('performance',  'Performance'),
+    ('compose',      'Jetpack Compose'),
     ('kotlin',       'Kotlin'),
+    ('testing',      'Testing'),
+    ('gradle',       'Gradle & Build'),
     ('kmp',          'Kotlin Multiplatform'),
     ('architecture', 'Architecture'),
-    ('compose',      'Jetpack Compose'),
-    ('accessibility','Accessibility'),
-    ('career',       'Career'),
-    ('testing',      'Testing')
+    ('security',     'Security'),
+    ('xr',           'Android XR')
 ON CONFLICT (slug) DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS resources (
