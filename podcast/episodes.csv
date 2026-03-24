@@ -1,0 +1,41 @@
+episode,title,url,published,transcribed
+308,308 - How Image Diffusion Models Work - the 20 minute explainer,https://fragmentedpodcast.com/episodes/308/,"Tue, 24 Mar 2026 04:00:00 UTC",no
+307,307 - Harness Engineering - the hard part of AI coding,https://fragmentedpodcast.com/episodes/307/,"Tue, 17 Mar 2026 04:00:00 UTC",yes
+306,306 - Keeping your agent instructions in sync and effective,https://fragmentedpodcast.com/episodes/306/,"Mon, 09 Mar 2026 04:00:00 UTC",no
+305,"305 - Subagents explained: What they are, when (not) to spawn them",https://fragmentedpodcast.com/episodes/305/,"Mon, 16 Feb 2026 04:00:00 UTC",no
+304,304 - Agent Skills - when to use them and why they matter,https://fragmentedpodcast.com/episodes/304/,"Mon, 09 Feb 2026 05:00:00 UTC",no
+303,303 - How LLMs Work - the 20 minute explainer,https://fragmentedpodcast.com/episodes/303/,"Mon, 02 Feb 2026 08:00:00 UTC",no
+302,302 - MCPs Explained - what they are and when to use them,https://fragmentedpodcast.com/episodes/302/,"Mon, 26 Jan 2026 00:00:00 UTC",no
+301,301 - The AI coding ladder,https://fragmentedpodcast.com/episodes/301/,"Mon, 19 Jan 2026 09:00:00 UTC",no
+300,300 - From Vibe coding to Software engineering,https://fragmentedpodcast.com/episodes/300/,"Mon, 12 Jan 2026 09:00:00 UTC",no
+257,257 - Future of AndroidDev in an AI world with Vinay Gaba,https://fragmentedpodcast.com/episodes/257/,"Tue, 04 Mar 2025 06:00:00 UTC",no
+256,256 - Rapid prototyping with Kotlin,https://fragmentedpodcast.com/episodes/256/,"Mon, 24 Feb 2025 20:03:49 -0800",no
+255,255 - Data Oriented Programming,https://fragmentedpodcast.com/episodes/255/,"Tue, 18 Feb 2025 05:36:00 UTC",no
+254,254 - 8× faster 5× memory savings with Dan Rusu’s Immutable Arrays,https://fragmentedpodcast.com/episodes/254/,"Tue, 24 Dec 2024 09:00:00 UTC",no
+253,253 - logcat - a new look at logging with Piwai from Square,https://fragmentedpodcast.com/episodes/253/,"Tue, 10 Dec 2024 09:00:00 UTC",no
+252,252 - Everyone needs a starter template,https://fragmentedpodcast.com/episodes/252/,"Tue, 26 Nov 2024 09:00:00 UTC",no
+251,251 - There's a new king in DI town,https://fragmentedpodcast.com/episodes/251/,"Tue, 12 Nov 2024 09:00:00 UTC",no
+250,250 - Bittersweet beginnings,https://fragmentedpodcast.com/episodes/250/,"Tue, 29 Oct 2024 09:00:00 UTC",no
+249,249 – Java and the JDK: Powering the Android Landscape with Michael Bailey,https://fragmentedpodcast.com/episodes/249-java-and-the-jdk-powering-the-android-landscape-with-michael-bailey/,"Mon, 10 Jul 2023 10:45:00 UTC",no
+248,248 – Feature Flags & A/B Testing: A Deep Dive with Ishan Khanna,https://fragmentedpodcast.com/episodes/248-feature-flags-a-b-testing-a-deep-dive-with-ishan-khanna/,"Mon, 26 Jun 2023 05:00:00 UTC",no
+247,247: The Art of App Modularization with Siggi Jonsson,https://fragmentedpodcast.com/episodes/247-the-art-of-app-modularization-with-siggi-jonsson/,"Mon, 12 Jun 2023 05:00:00 UTC",no
+246,246 – Dependency Injection: Kotlin Inject with Fred Porciúncula,https://fragmentedpodcast.com/episodes/246-dependency-injection-kotlin-inject-with-fred-porciuncula/,"Mon, 29 May 2023 05:00:00 UTC",no
+245,"245: Treehouse, Redwood and Zipline with Colin White",https://fragmentedpodcast.com/episodes/245-treehouse-redwood-and-zipline-with-colin-white/,"Mon, 15 May 2023 05:00:00 UTC",no
+244,244: Reviving Our Passion for Android Development,https://fragmentedpodcast.com/episodes/244/,"Wed, 10 May 2023 18:36:09 UTC",no
+243,243: Mastering the Art of Switching Careers in Tech with Dan Lew,https://fragmentedpodcast.com/episodes/243/,"Mon, 10 Apr 2023 01:00:00 UTC",no
+242,242 – Kotlin Code Formatting with ktfmt and spotless,https://fragmentedpodcast.com/episodes/242/,"Mon, 20 Mar 2023 01:00:00 UTC",no
+241,"241: The Pressure to Ship. Fear, Uncertainty and Doubt",https://fragmentedpodcast.com/episodes/241/,"Tue, 10 Jan 2023 08:30:00 UTC",no
+240,240: Important Kotlin Constructs,https://fragmentedpodcast.com/episodes/240/,"Thu, 15 Dec 2022 00:00:00 UTC",no
+239,239: Require PR Reviews with CODEOWNERS,https://fragmentedpodcast.com/episodes/239/,"Mon, 28 Nov 2022 11:00:00 UTC",no
+238,238: How to Land a Job (if you got laid off or if you’re just starting out),https://fragmentedpodcast.com/episodes/238/,"Mon, 21 Nov 2022 00:00:00 UTC",no
+237,237: Compose vs XML – Which one should you learn as an Android Dev?,https://fragmentedpodcast.com/episodes/237/,"Mon, 14 Nov 2022 12:00:00 UTC",no
+236,236: A Terminal for Android?,https://fragmentedpodcast.com/episodes/236/,"Tue, 25 Oct 2022 09:00:00 UTC",no
+235,235: Pair programming with Ben Orenstein & Tuple,https://fragmentedpodcast.com/episodes/235/,"Tue, 20 Sep 2022 20:00:00 UTC",no
+234,234: More Product. Less Architecture?,https://fragmentedpodcast.com/episodes/234/,"Mon, 08 Aug 2022 01:00:00 UTC",no
+233,233: UI Screenshot Testing with Paparazzi and John Rodriguez,https://fragmentedpodcast.com/episodes/233/,"Wed, 29 Jun 2022 08:00:00 UTC",no
+232,"232: Frustration, Flow State and “The Madness”",https://fragmentedpodcast.com/episodes/232/,"Mon, 13 Jun 2022 01:00:00 UTC",no
+231,231: Learning Jetpack Compose with Vinay Gaba,https://fragmentedpodcast.com/episodes/231/,"Mon, 06 Jun 2022 01:00:00 UTC",no
+230,230: Feeling Like an Idiot,https://fragmentedpodcast.com/episodes/230-2/,"Mon, 30 May 2022 01:00:00 UTC",no
+229,229: Native Where You Need It with Turbo (Launch Your Side Projects Faster),https://fragmentedpodcast.com/episodes/230/,"Mon, 23 May 2022 08:15:00 UTC",no
+228,228: Expo Development with Konstantin Liakhovskii,https://fragmentedpodcast.com/episodes/228/,"Mon, 18 Apr 2022 01:00:00 UTC",no
+227,227: Exotic Car Salesman to Mobile Developer with Ephraim Schmitt,https://fragmentedpodcast.com/episodes/227/,"Mon, 11 Apr 2022 01:00:00 UTC",no
