@@ -1,6 +1,6 @@
 """
 Fetch full content for unenriched resources: trafilatura (clean text) + readability.js (HTML).
-Run: uv run pipeline/enrich.py
+Run: uv run pipeline/scrape.py
 """
 import asyncio
 import json
@@ -100,7 +100,7 @@ async def main():
     )
 
     with conn.cursor() as cur:
-        cur.execute("SELECT id, url FROM resources WHERE clean_content IS NULL AND fetch_error IS NULL")
+        cur.execute("SELECT id, url FROM resources WHERE clean_content IS NULL AND fetch_error IS NULL ORDER BY rough_date DESC NULLS LAST")
         rows = cur.fetchall()
 
     print(f"Enriching {len(rows)} resources...\n")
