@@ -13,4 +13,5 @@ dependencies = [
     "openai-whisper>=20250625",
     "whisperx>=3.8.2",
     "pyannote-audio>=4.0.4",
+    "alembic>=1.18.4",
 ]
