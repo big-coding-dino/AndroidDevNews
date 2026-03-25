@@ -1,0 +1,139 @@
+# ep301
+Podcast: Fragmented Podcast
+
+---
+
+[SPEAKER_01]
+Welcome to Fragmented, an AI developer podcast that helps vibe coders become software engineers, one episode at a time. I'm your host, Kaushik.
+
+[SPEAKER_00]
+And I'm Yuri, the other host of Fragmented, where I'd love to talk about using AI to make you a better developer.
+
+[SPEAKER_01]
+So today is a foundational topic. We all just keep talking about AI coding like it's one thing, but it can mean so many different things. Your mental model around how you use AI for coding just is very different between each of these paradigms or these generations. In this episode, let's maybe get the vernacular right so that the next time you talk to someone about AI coding, we know which generation they're talking about. And the second is, let's help paint a timeline in terms of progression. So everyone who's using AI coding has a sense of where they are in that evolution of AI coding. And more importantly, a lot of listeners would be curious to know what's the frontier, right? Like what's the bleeding edge of AI coding? So I'm hoping we can cover some of those pieces. Does that make sense? Yeah, absolutely. Let's do that. Can you walk us through what generation one was of AI coding?
+
+[SPEAKER_00]
+Generation one, like this first paradigm, is basically a super autocomplete, autocomplete on steroids. Yeah. That's really easy to forget, but most people were exposed to that via GitHub Copilot. Those were the days that you could just write a comment, you would start suggesting code, and you would magically suggest the description of what you wrote in the comments or something like that. Actually, you could just write the code and it would also suggest, and that felt a bit like magic even.
+
+[SPEAKER_01]
+In hindsight, that seemed like such a simple thing. During the time, it was pretty crazy. But, you know, just to make that distinction a little more sharper, what was the difference between regular autocomplete? Because we had pretty powerful things like IntelliSense. What was the difference between that IntelliSense type of autocomplete and what AI brought about?
+
+[SPEAKER_00]
+This is more like a heuristical approach. It's like it is actually code. You know, they have a logic, sound logic to generate that. And it's based on types and it's based in what makes sense semantically in the language. So it uses language features to understand the code base and to be able to suggest if you try to autocomplete something on a specific type, then the suggestions are going to be related to that type as well. So it's very much like rule-based approach.
+
+[SPEAKER_01]
+With traditional autocomplete, you would always get the same result. Yes. The prediction would be very straightforward. There's no two ways about it. But with AI, it's literally just trained on a bajillion repositories. So... It's funny, even how you write the comment could change the suggestion that you were about to give, right? Like between invocations, it could just change completely. With AI, it was more like probabilistic or statistical versus rule-based or like juristic. There's pros and cons to it, but that was the difference. You could just write a comment about a function and then it would just autocomplete the entire function as against just the next few lines. Yeah, exactly. And I think an important point is all these paradigms have... evolved in some ways. It's not to say that the subsequent generation has completely made the previous generations obsolete. And a perfect example of this is cursor tab. Cursor is this ultra popular ID that we're going to talk about in a second. They even today have cursor tab, which is a very specifically trained model that a lot of people swear by. When all else fails and you're just not getting that piece of code right, open up cursor and use cursor tab.
+
+[SPEAKER_00]
+Like they iterated on top and they made it like, so that it's like, you know, one keystroke, just, you could just press tab, tab, tab. And then they have this faster model that does it because I think that the innovation is this faster model because it's super, like it's super fast. Sometimes you have, you open a file and it has a bunch of linked errors or something and you just tap, tap, tap, tap, tap, tap, tap, tap, tap. So it feels really magical in that way. I think it's a really great feature. Yeah. Okay, Kaushik, so that's where it all started. That's what's Gen 1, but what comes after Gen 1?
+
+[SPEAKER_01]
+So if Gen 1 was autocomplete, Generation 2 becomes chat-oriented programming. When people talk about AI coding today, a majority of the population, in my opinion... Think of AI coding as chat-oriented programming. And I think you can't talk about chat-oriented programming without obviously bringing in cursor, the IDE. What made it special was the fact that you had this window on the side. So you could talk to the agent or talk to the editor. And I think... you would see those code changes based on just natural conversation. So you no longer had to have mastery over a programming language to make changes to the code. And honestly, to me, I think this really kickstarted the whole vibe coding era, right? So today, if... If we think that vibe coding, you know, set the world on fire, I think this was the paradigm that really brought it home. Do you think that's fair? Like, you know, I think most people today are in this generation of vibe coding.
+
+[SPEAKER_00]
+Yeah, 100%. It's an iteration on top of what GitHub brought about with a lot of UX improvements, right? Yeah. And I think that's what gets people hooked to it.
+
+[SPEAKER_01]
+Why do you think cursor was the thing that really stuck with people? And I don't know what your experience was, but there were even mobile developers who were starting to use cursor because of how grippy it was in terms of...
+
+[SPEAKER_00]
+To me, it felt like a co-pilot. They brought about the revolution with the models inside the IDE and cheap and everything, but it still felt like you were just copy pasting a lot. I remember like when I actually started doing that, I was doing a lot with actually ChatGPT or, you know, like you just open ChatGPT on the window and you just send context back and forth. And it's like the words that... true you would copy huge swaths of code from your file paste it in there with chat gpt have that conversation get the output copy it back and go back oh my god i remember it but but it was very far from ideal and i think copilot was it was still a lot of that it was still just a chat and And I think Cursor made it way better, like with UX improvements. So you could highlight your tags and just apply this change to this piece that is selected or tag files and all these sorts of UX improvements that just felt very compelling to most people. And at that time, that felt like the epitome of what you could do with AI, right? But in some sense, it was still a little weird because it was still stuck in a chat, right?
+
+[SPEAKER_01]
+Yeah, 100%. You're right. It felt like you were always in this synchronous flow, so to speak, with the agent. You would chat with the agent. You would wait for the response. Only after the response came, you're always locked in. if you think about what was the limitation of gen 2 or what is the limitation of gen 2 it feels like that was the piece that slowed things down so what was generation 3 how did generation 3 break that that synchronous flow yeah i mean it's a nice it's a nice pair programming experience that's for sure like instead of being alone you can just be in the chat but it's not like it's actually going to do some major leaps
+
+[SPEAKER_00]
+So the next paradigm, I think, is when the word agent started to come in a buzzword, right?
+
+[SPEAKER_01]
+Yes, yes. If you were using an agent, that was the buzzword of 2025.
+
+[SPEAKER_00]
+Gentic, whatever. Yeah, you just kept hearing that. So I took this definition from blog posts from NVIDIA.
+
+[SPEAKER_01]
+Yeah, those guys probably know what they're doing, I guess.
+
+[SPEAKER_00]
+Yeah, I hope they do. Right, so an agent is like a system, from their definition, is like a system that uses an LLM to reason through a problem. Then it can create a plan to solve that problem and can execute the plan with the help of a set of tools. So I think that's a more grounded approach.
+
+[SPEAKER_01]
+So the LLM, it uses an LLM to reason through the problem. Yeah, that's the brain. And then it creates the plan to solve that problem.
+
+[SPEAKER_00]
+So the plan is made, I think, to... basically break down the task into multiple steps, right? So I think that's one of the main accomplishments that you get with the plan. So then it's able to follow through for longer without getting, you know, getting lost in itself. And the tools, I think the tools are also like the very magic piece. As soon as you have like the ability to reason about something, maybe if you don't think a LLM's reason, whatever, but they still are able to come up with a decision at some point. And then you can actually act in the world. They even came up with this framework there. It's called React, but it's not that React. This is something else. This is the reason plus act framework. So this seems to be like the dominant framework for most agents that are built today. It's a very basic loop, which makes a lot of sense. Like you can see this pattern elsewhere. It's not just for coding, but I think even in the world, like how some entities like beings actually, like very simple beings, I think how they kind of go about in the world. So it's like they have this thought or decision-making process and then they decide to, and they act, they do something. Yeah. And then they look what happened after they act, right? They check the outcome and then they repeat the loop. So what should I do next? and then just keep doing that. And at some point, the task will be completed. So this loop is kind of what separates this single-shot approach that you just, okay, just do this, like fetch this information or answer me this question, to actually something that can go on longer and actually do harder tasks.
+
+[SPEAKER_01]
+We're all just React beans, basically. That's what it comes down to.
+
+[SPEAKER_00]
+Yeah, it's crazy to think about that. I think the main unlock were the thinking models. DeepSeek came out like late 24, early 25. With DeepSeek, you could actually see the thinking traces. And... Before thinking models even, there was this prompt hack. There's a paper about that. It's fascinating. Like you literally ask the agent to, instead of jumping into conclusion, when you ask a question, you just tell him, take a deep breath. Let's think step by step before you answer. You would get a better solution, like a better result in the end.
+
+[SPEAKER_01]
+So this was a hack. You know, I've always felt this, Yuri, like a lot of these AI developments and breakthroughs are such simple things in the end if you look at it. I feel LLMs in general are this paradigm of extremes. You know, the underlying technology and this marvel of technology and engineering. But then when you see how it's applied sometimes, the tricks and the hacks that give like these outsized results, like to your point, you just have to tell the model something like you're talking to a kid and suddenly you get these like results that are mind-blowing. This breakthrough is I just put this markdown file with five instructions and suddenly, you know, you can build an entire company around it.
+
+[SPEAKER_00]
+I think the whole agent harness thing is like very much like that. So this chain of thought thing, like it was like a prompt, but then like the thinking models were the thinking models like DeepSeek also released the paper of how they came up with that. And they got this whole chain of thought reasoning as a part of the processing of the LLM. So instead of start answering questions, it would generate thinking tokens and that would generate a better outcome. The key thing is like inside these thinking tokens, they have like this, what they call aha moment. You give it a task and then you will try to think about it. And then you will think of many ways of tackling that problem. But then at some point it would say something like, no, wait, let me think this through. I think that won't work. Let me think of another way of doing that. And you could literally see the thinking traces. So it was so funny just to actually read it. But now the big thing is that the agent, like the loop could finally sustain longer because the planning part was way better now. Right, right.
+
+[SPEAKER_01]
+And that makes sense because now you're able to give more structure to, you know, the agent. AI and it's able to execute on its own, which I think that autonomous piece was the big unlock.
+
+[SPEAKER_00]
+Yeah. And like the agents, like, so the planning part was good. But then when people actually started using this and there's many, like many companies trying to build agents and you could see like this idea of creating a plan. Yeah. like a literal markdown file with a plan. This was evolving like simultaneously in many places. The whole concept like to-dos, coming back to what you're saying, they're literally creating a file with a bunch of to-do steps in markdown and they're crossing over once they're completed. But it was literally able to improve the quality of the responses a lot. Right now, it's something like everyone does. Like all of these tools have a to-do something or they have a plan mode. So these things become like foundation to these agents. So the other thing is there is the verification loop. So with this step, the agent can actually check if it's... The work it's done is correct. And the cool thing about, I mean, I think the whole reason this thing works so well, especially with coding, and I think that's probably the reason so many companies pivoted to solve coding as a problem with AI, is just because verifying the code is actually possible and we have a lot of tools for that. So we have tests, we can write tests, we can have type systems, we can have linters, and all of that will give immediate feedback to the AI if something goes wrong. So you can immediately try to fix it better. And I think so it ties the whole loop.
+
+[SPEAKER_01]
+And when you say verification loops specifically... Is this something that's built into the model per se, or do I have to add in this verification loop as a developer?
+
+[SPEAKER_00]
+Yeah, so it's not in the model per se. I would say it's more in the agent harness. A lot of these tools, they have, like, for example, this slash init command that you're supposed to run the first time. And one of the things that it does is it tries to find, for example, where are the tasks, what linter is being used. So the harness will try to steer the model into having that in its context from the get-go. So verification is part of what it tries to do after the task, when it runs a task. Yeah.
+
+[SPEAKER_01]
+Makes sense. I think maybe an important piece we should also touch before we move to the next generation is what are the tools that embody this mechanism of using an agent, right? If I were to say, hey, Yuri, how do I know if I'm actually using agents or not? Like, what are some of the tools so people can anchor better in understanding, am I using an agent or not?
+
+[SPEAKER_00]
+Fair enough. Yeah. There are a lot of tools, right? It's a very hot market, I would say. I generally look at them in two separate categories. Maybe there's more. There's these TUIs or CLIs, which are the things like Cloud Code or Open Code or Codex or Gemini CLI, which all of those they run directly on the terminal, right? So it's a different approach. They're all generally trying to accomplish the same thing, which is You can launch an agent directly from the terminal.
+
+[SPEAKER_01]
+Right. And the TUI there, like the TUI, is like Terminal User Interface, right? Yes, yes. This, again, deserves an entire episode. You know, I know you and I, we are like very big fans of the Terminal User Interface, but I also am starting to believe that's not the general case, right? Most people actually don't prefer the terminal for various reasons, but no, I think that's a...
+
+[SPEAKER_00]
+Exactly. For some reason, and I would say just because of these of iteration, maybe, that's a very hot market. Like, there's a renaissance of these kind of tools. Like, there's so many now. But like you said, these are very, like, it's not for everyone. Not everyone's going to like it, but... So there are the other ones. And the other ones are, like, the cursor is the main one. And it's probably what most of people are using, actually. Like, when you look at the raw numbers, maybe cursor is the biggest co-pilot. There is also a Juni from JetBrains. They also have one. And just recently, Google released Antigravity, which is also, you know, like a DS Code fork. Like, a bunch of them are DS Code forks, right? Yeah.
+
+[SPEAKER_01]
+And this is also the thing that becomes confusing. They're all mixing. It's all blurring together.
+
+[SPEAKER_00]
+Yeah, the lines are definitely getting blurred. I think most of these tools, they have some version of all these paradigms already.
+
+[SPEAKER_01]
+And so you mentioned TUIs. That's like one category in this space. You mentioned IDEs, which is like another category. Is there anything else?
+
+[SPEAKER_00]
+Yeah, so there's this other category. I don't know. I'm still like trying to find a... a good way to call it. I'm just calling it headless, which is, I think the biggest example as a tool that is made with that idea is from Google, they have this Jules project, which is a web interface that connects to your repo, which you just, you fire off, you give it a task and it fires off. it will create, you will clone your project in a container and it runs its course and tries to do the thing and it just notifies you of the result. So it's like you don't interact with it directly at all. So that's generation three, right? I say that most people, when you're in the frontier, you're probably on this place, you're living here. But if we want to start looking ahead, what do you think comes next? Yeah.
+
+[SPEAKER_01]
+Gen 4, I want to caveat Gen 4 by saying I don't think people have figured out what Gen 4 is going to be. But there's this general theme or idea where I think Gen 4 is agent orchestration. So let me clarify that. If we thought Gen 3 was having this autonomous loop, it's an agent being given a task. It goes on its own and it does the thing and comes back to you. I think with Gen 4... It's about figuring out how do we get multiple agents doing tasks and then coordinating those results from those tasks? How do we get multiple agents to talk to each other? You know, if you're working on the same code base, there's going to be conflicts, right? It's the same thing. If you and I were working on the same code and you edit a file... And while I'm editing the file, it's going to be problematic. Merge conflicts galore. One way people are approaching this is with this concept of work trees, like, you know, get work trees. But I think where that unlock will be is when we can get an agent to understand the conflict. So we reduce the work involved in merging those conflicts. At least that's where I feel Gen 4 is going. If it's going to be through work trees, is it going to be through a PR? Is it going to be like stacked PRs? Is it going to be agents understanding that? I feel that's the piece we have not all collectively figured out and that's going to be what 2026 is about.
+
+[SPEAKER_00]
+There's a lot of development there. Like you read about all these people creating these complex orchestration flows and it looks very complicated sometimes. And just getting it to actually accomplish it in a safe way and with coordinating multiple sub-agents or whatnot, I think that's the big challenging part. Yeah.
+
+[SPEAKER_01]
+And I feel one of the, like, you know, as humans, one of the challenges that I think everyone is facing now is this whole context shifting thing. You as a developer are probably going to have to spin four or five tasks, right? You're building multiple features simultaneously. And I think we're hitting a human limit there. I don't know about you, but for me, yeah, I'm not able to work on four complex features simultaneously. That's just not possible. I can maybe take the same feature. I can work on the testing, the documentation. That's easier. But I think... Also, there's going to be an evolution we need to do as humans where you need to be comfortable with the idea of having to jump between different context shifts. The new generation of software engineers have to feel fluid in this world.
+
+[SPEAKER_00]
+Yeah, it is honestly a very, yeah, I have lots of ideas, lots of thoughts there. They're not that good in this part. Like one of my main fears where this is going is the more you offload this kind of work to agents, for example, the less you own on the code. So when you get to this point that you actually delegate the whole feature, the whole thing, you don't know much about the code anymore. I've seen that happening with me on like personal projects. When I do that a lot... I lose the ability to change. Even for very basic things, I need to ask it to do it because I have no idea how it works, actually.
+
+[UNKNOWN]
+100%.
+
+[SPEAKER_00]
+No, that's such an important point, right? This is, again, the big challenge.
+
+[SPEAKER_01]
+It will be interesting to come back to these ones after some time. Yuri, one of the things I want to do with these episodes is I want to leave people with a quick tip. You give a tip, I give a tip, and I'm hoping what we can do is compile all these tips and send it out in the newsletter. But yeah, let's end the episode with a quick tip from your side. I can give a quick tip and then you call it.
+
+[SPEAKER_00]
+All right. Yeah, let's do that. Yeah, so I have a very simple tip, but I think it ties to one of the things that I like, which is being able to move between the tools freely and not being locked into any platform. So I like that idea. So the tip is how can you transfer? Like, for example, just think that you started doing some research on Claude on your computer, right? So you're doing that, you launch an agent and you have this session going on for, I don't know, like half an hour or one hour. And then maybe you want to try the same thing, but now in cursor. Yeah. Right now, at this point, it's kind of annoying to try to do that. But there's a very easy way to do it. Like we were saying, these things are not much more than markdown files in many places. So the tip is basically you can create your own compact command. You know, like Claude has this compact command, like when the session goes over above a threshold, you will try to compact the whole conversation so we can go longer and the model doesn't lose track of what I was doing before. So the idea is that you can create your own command and this command will, instead of just compacting the conversation like internally in the session, it would actually output something for you. Like give you a markdown file with the whole session compacted. So you can just copy that text and paste it elsewhere. And you can keep working on this other place. It's such a simple idea, but... Oh, I love it. I love it. Quite literally, the compact command is literally just a prompt. So yeah, there are many people that just shared this online. So you can just use one of those. We'll make sure that too, we can link that on the show notes. So you can just copy the prompt and create your own command that does the same. What about you? What you got for us?
+
+[SPEAKER_01]
+Also is a very simple tip. It's this idea of asking the agent to clarify your own ask. So what I do is I actually have a text snippet called clarify, but I add another extra C so that it doesn't, you know, when I'm actually typing, if I happen to type the word, it doesn't know how to expand. So it's C-C-L-A-R-I-F-Y. So when I type that, it expands into this mini prompt, which says confirm if my requirements are clear. If you have follow up questions, ask me first and clarify before you execute anything. But it's really powerful. It's so surprising how powerful it is because the results you get back usually tend to be better. You know, there's actually research backing this. There's some folks at University of Chicago that released a paper that say this like conversational probing by AI actually enhances like the response specificity and the detail. That's really nice. That's my tip. Clarify. with your agent every single time. All right, Yuri, this was a lot of fun. I can't wait for us to talk in our next episode. Thank you all for listening and we will catch you all in the next episode. Catch you guys later.
