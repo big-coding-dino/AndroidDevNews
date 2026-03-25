@@ -1,0 +1,187 @@
+# ep305
+Podcast: Fragmented Podcast
+
+---
+
+[SPEAKER_00]
+Quick announcement, folks. Every five episodes, we send out an email newsletter to subscribers. It has specific AI-related coding tips from both Yuri and me. We also put together a bunch of interesting links and articles that we encounter as we put these different episodes together. We try really hard to keep it under 30 or 20 minutes, so often we have to cut out a lot of interesting content. that we otherwise would have loved to share. So if you haven't already, make sure to subscribe to our email newsletter. Links in the show notes. All right, onto the show. Welcome to Fragmented, an AI developer podcast that helps vibe coders become software engineers one episode at a time. I'm your host, Kaushik.
+
+[SPEAKER_01]
+And I'm Yuri, the other host of Fragmented, where I'd love to talk about using AI to make you a better developer.
+
+[SPEAKER_00]
+In the last episode where we dove into agent skills, we briefly touched on the topic of sub-agents. But we intentionally chose not to go into the details in that episode because sub-agents just deserve a separate episode of its own. There's so much nuance and it's pretty powerful in terms of a concept. So Yuri, this is going to be that episode.
+
+[SPEAKER_01]
+Nice. We finally got to the big boss. We did. But sub-agents or agents, they're like a loaded term these days, right? So what do we mean actually with agent in this case?
+
+[SPEAKER_00]
+You're right. Before we go into sub-agents, let's briefly touch on what an agent itself is. So in a previous episode, Yuri, you gave a really good definition. pointing to the whole reactive loop. So not that React that developers usually are comfortable with. But this is any system that's able to reason through a problem. then has the tools to execute or act based on that reasoning. So the act part. And finally, the verify part. So they have the set of tools to be able to verify and make sure that the task that they set out to do was complete. So if you take those three components, the reasoning part, the acting part, and the verifying part, and you put that into a loop... so that this system is able to repeat the whole process to come to the conclusion of a task. That's what we call an agent. But like you said, Yuri, in colloquial terms, when the term agent is thrown around, there's just so many confusing things. So what we'll do is we'll quickly spend some time disambiguating that term agent. We'll talk about the different ways it's used and clarify what we specifically mean by agent or subagents here.
+
+[SPEAKER_01]
+Nice. Let's do that.
+
+[SPEAKER_00]
+So the first is agents.md. So people point towards agents.md. Very different thing. That's your systems instructions. Any agent or any tool has a set of systems instruction that it basically builds into the context and feeds into the agent. That's like the Markdown file that the early days of... AI hype was like, hey, you got to really put these 10 tips into your agents.md and you will get unlimited productivity. You know, so that's literally just an instructions file that has nothing to do with agents or subagents as a process. So that's the first context that it's used in. The second is an interesting one. You'll find a lot of these big AI labs talk about agent SDKs. And, you know, the common ones that people hear this term with is Langchain or LangGraph. Then, you know, the big companies like OpenAI actually has an SDK called OpenAI Agent SDK. Anthropic has another one called Anthropic Agent SDK. Google has this one called ADK, which I think is Agent Development Kit. They're very similar in that they are SDKs that allow you to build agents. You know, the whole reactive loop thing that we talked about. These SDKs basically help build those kind of systems.
+
+[SPEAKER_01]
+So like a lower level API that you can use to build your own.
+
+[SPEAKER_00]
+Exactly. If you want to go about building your own cloud code or come up with a tool because you think you can do something slightly better than the others, then you would use these SDKs to build your own agents. And again, it isn't about building an AI solution. These SDKs are specifically helping you build agent-based systems, if that makes sense. Right. So that's the agent SDK piece. And then there's, of course, Yuri, we cannot now leave any episode without talking about the most popular sort of agent systems. Do you know the one I'm thinking about?
+
+[SPEAKER_01]
+Yeah.
+
+[SPEAKER_00]
+Yeah, the lobster. Yeah, the lobster. Open Claw is technically an agent solution. Open Claw is very different because it is a product as a whole, which allows you to systematically execute on tasks. But it's a very different thing. So that's not necessarily what we're talking about in this episode. But the one that we care about specifically is at this medium tier or this medium level. We specifically are talking about agents and sub-agents. Right, that makes sense.
+
+[SPEAKER_01]
+I think at this point we need to also caveat the difference between modes and sub-agents, right?
+
+[SPEAKER_00]
+Oh, that's right. And when you say mode, what do you mean by this is the whole planning mode, build mode, thinking mode, all of those modes, right?
+
+[SPEAKER_01]
+Yeah, so especially like build mode and plan mode, I think for everyone who's used cursor, I think there is a toggle exactly for that. There's a drop-down option and you can select... build or plan for example so the mode is just this behavior and permission profile for the main agent I think like a good way to think about this is like threads in doing parallel work so like the mode is like your main thread so like your main agent so you're in this build mode and that means that your main agent that you're talking directly to, this is going to be in that mode, which allows you to basically go about building code, you know, like writing code directly. But if you would be, for example, in plan mode, then your main thread, your main agent that you're talking to, it would be in this exploratory mode that we would try to plan and think about the solution before.
+
+[SPEAKER_00]
+That makes sense.
+
+[SPEAKER_01]
+Especially like the sub-agent, I think a good way to think about it is like how to parallelize work, for example, how to do, you know, like you can launch multiple of these to do work while the main agent or the main mode will orchestrate that.
+
+[SPEAKER_00]
+Ah, it's like network calls, right? If you want to parallelize multiple network calls to the same order ID, a good way to do it is reduce clock time.
+
+[SPEAKER_01]
+Yeah, it's like literally the main mode would be like the policy routing at the top level. So we would then spawn sub-agents as execution units.
+
+[SPEAKER_00]
+Until we did this research for this episode and you pointed me to this slight difference between modes and regular sub-agents, it didn't click as much. But when you switch your agent into a mode, it's not as simple as just a UI tweak. Initially, when I started to use these tools, I thought it's just switched into this different profile. But it's actually much more deeper than that. In fact, a lot of the newer unlocks we have gotten with recent models is because of this mode mode. So for example, what happens underneath the hood with modes is you actually change the systems instruction. So the main agent, when it switches between plan mode, build mode, the underlying system instructions is actually swapped out and swapped in. And the reason we can do this is if you listen to one of our previous episodes with how LLMs work, the entire conversation is being sent to these models, right? Like when you make that API call, we are basically combining all of the previous conversations. but that system instructions is attached and swapped in and out. That's what the tools do when you switch mode. So it's actually, it goes much more deeper than just this UI convenience that you have there.
+
+[SPEAKER_01]
+Exactly. And one time we could clearly see that happening was the last, not the last one, but the November release. November 2025 release of Cloud Code with Opus 4.5. So when they released that, Entropic published a blog post explaining how the advancements that they did and how it was better and how they did things. And one of the things that they announced was how Opus was better at managing sub-agents for doing deep research. Because before that, plan mode was not that interesting as you just explained. It was something simpler. But now... For example, when you switch to this plan mode on Cloud, it would spawn multiple explore agents through your code base. And these were like running with the isolated context that we're going to talk about very soon. But they were doing this and coming back with a response and it was much more effective at planning, for example, because it would gather much more context much more faster as well. And the models were also trained to... prompt better. So the main model, the main agent that was calling these sub-agents would also prompt the sub-agents better. And all these gains on these different areas were a big unlock. And that's why we're probably talking about this, because the way the tools evolved. There's also an interesting analogy. If you ever played RTS games...
+
+[SPEAKER_00]
+What's your poison?
+
+[SPEAKER_01]
+Yeah, so I mean, I think I've played a lot of Age of Empires. I also played StarCraft, but I think I never played StarCraft like really serious because I was too young. But like Age of Empires, I got more serious. Nothing, nothing good. Anyway.
+
+[SPEAKER_00]
+Fun note, I don't know if I've told you this, but my brother was actually a pro gamer. What the hell? And he was really good. He played Warcraft 3 pretty seriously and competitively. He was so good that even if he didn't try, he would destroy me in these games. So I basically stopped playing myself. But I used to watch him. So when you talked about this analogy, it all clicked really well for me because I could relate very easily. You know, there's these concepts called fog of war, scouting. So let's build that analogy a little.
+
+[SPEAKER_01]
+So this is going to be fast. This is going to be easy. Even if you haven't played much of this, I think it's relatable. So like Age of Empires, we start a game, right? So the map is completely dark. So you kind of have to explore the map. So you start off with a scout. So the idea here is that, for example, just think of a code base. Your agent also starts fresh, like it doesn't know anything about the code base. So for example, when you create like you're in the plan mode and you ask something to the agent about the code base, then what it will do is it will spawn multiple Explorer agents now. Now this is, for example, Cloud Code or I think Open Code also does that.
+
+[SPEAKER_00]
+So it's like my little orc or human peons that we send when they come out when the game starts. You send those little peons to go search the map. Yeah.
+
+[SPEAKER_01]
+And you literally send them across the map in multiple directions. So the idea is that each agent, the Explorer agent, would be doing exactly that. So it would just be exploring the map and gathering intel for you. The idea is that you don't need to do it manually. You don't need to go and control each step and across everything. It's just send these guys and they will reveal the important locations in the map, right? So they will go, oh, there's gold. Here's where your enemy is or here's theirs. this resource, right? So you can, in parallel, launch multiple Explorer agents, gather contacts, bring it back, and your main agent can just reason about the intel that he found, you know, instead of going about, like, each single step. Does that make any sense?
+
+[SPEAKER_00]
+Yeah, I love it. I love it. That makes sense because I'm thinking about this game as you talk about it. You send the scouts, you start with the fog of war where everything is dark on that little mini-map you see on the screen. You send the scouts and then you start to discover different areas. And you're right. you know, a smart player, you don't basically take the entire base and make them scout, right? Like if you think of your main agent being like the main base, I'm not going to send my hero and all my troops and all the guards and all the watchtowers. I'm not going to take all of them, go and scout the entire map. Instead, I just send these peons. They go, figure out what's happening, come back, and it reveals the important things. Yeah. And I feel another interesting point here, and this goes back to the concept we've been trying to really beat in, right, which is context bloat. I think it plays pretty well into that too, right? Because when the peon comes and tells you, well, I say peon, by the way, it's basically like, you know, the term used in the game for like some of these... But yeah, if the scout comes back and gives that information, you don't want the scout to tell you, hey, I went north 10 steps. I then took 20 steps to the east. In my vision, I saw this enemy, so I didn't go too close because I would be destroyed. I went to the other side and I found there's a gold mine there. You literally just want to know, okay, just tell me where the gold mine was. Now, bridging that into a programming concept, you don't want your main agent to actually have the context of all the logs you pulled or the different class names that you went. You just want a succinct summary of the important points so that the main agent can then use that and make decisions. Yeah, exactly. I really like this analogy. And I think part of why it works is because when you have very specific tasks for your agents, the results tend to be better.
+
+[SPEAKER_01]
+Right. So, yeah, I think that gives the intuition, but still like in practice, how do we actually spawn or invoke these sub-agents?
+
+[SPEAKER_00]
+Maybe the best way to understand this is to take cloud code as an example. We talked about this in the last episode. You have agent skills. You can specify an agent skill. And then when you use that agent skill, we talked about context forking. So it executes it in an isolated way. Just like that, you can also have an agent's directory. Anything you put in that agent is spawned as a sub-agent in cloud code. So you can basically create a configuration file. It's a markdown file, but then it has the YAML front matter, very similar to agent skills. For example, you can specify a cheaper model. You probably don't want to use Opus 4.6 fast mode for your researching or your exploring.
+
+[SPEAKER_01]
+I'm bankrupt.
+
+[SPEAKER_00]
+Exactly. If you've seen those costs, it's pretty expensive, man. So you probably want to use a cheaper model, like say the Haiku model, and you can actually explicitly specify that in that markdown file that you put in the agent's subdirectory. That's one way how it does it internally. But Cloud Code also comes with three built-in... This is something actually that you pointed me towards in the docs. There's like the Explorer sub-agent, there's the Plan sub-agent, and then of course there's the General Purpose. And they internally use different tools. So say I start a chat session with whatever model that I pick, when it does this thing that you talked about where it needs to execute certain tasks, it internally uses one of these built-in sub-agents, or it might also, if you explicitly prompt it to do, it will probably use... the subagent that you created in this folder.
+
+[SPEAKER_01]
+Yeah. Theoretically, if you create some kind of a research agent that is focused on using web tools for searching things on the internet, so it would pick up from your prompt, from your main request, and then it said, ah, okay, for this, I need to do some research. So for that, I'm going to spawn this agent.
+
+[SPEAKER_00]
+And does it also work similarly to skills? Like how does the model know to internally use a subagent if I don't explicitly point that out?
+
+[SPEAKER_01]
+This is interesting. Like if there is going to be some overlap on your prompt, then the model will need to decide. So it's very important how you define the description of the subagent. Because the main agent, the one that you're talking to, it's going to have to make eventually a decision. And very beneath, under the hood, a sub-agent is literally a tool call. No way. Yeah. Yeah, so there is this tool called task, and the main agent uses that to invoke the tools. But in any case, back to your point, the metadata in the agent defines the thing that's going to be used for the agent to make the decision.
+
+[SPEAKER_00]
+The question I always had, Yuri, is say by default, we know that a sub-agent needs to be created, but the model cannot use one of the built-in agents and it doesn't use one of the sub-agents that I've created. What does it use? Like it's going to create a sub-agent. What model does it use by default?
+
+[SPEAKER_01]
+It's going to inherit. The default option is to inherit the model that's used by the main session, the main agent.
+
+[SPEAKER_00]
+So in many ways, you can control some of these parameters.
+
+[SPEAKER_01]
+It's a bunch of knobs, right? It's like they're giving us this very big control panel with a bunch of knobs, and you kind of have to decide how to use them.
+
+[SPEAKER_00]
+And when I thought about subagents, I just thought it was like this feature that was built in that I'm just going to prompt the model and somehow I have no control. But you can control so many small things, which model it gets executed in, what the actual persona, the prompt is. You can control the scope too, right, in terms of permissions.
+
+[SPEAKER_01]
+This is actually very useful, I think, because one of the main unlocks I think the subagents gives you is this idea that you can really focus this execution unit into a very narrow scope. So the whole idea of context isolation and isolating or minimizing the number of tools that the subagent will have. So, for example, this research agent that you can build for searching the web, you could... put all your MCPs, like, I don't know, maybe if you want to use perplexity MCP or browser use or all these tools related to research, you give this sub-agent that set of tools. Also, like, limit what it can do. So, for example, it's not going to write any code. When you spawn that agent, you can be certain that that's what it's going to do. And also, like, the idea that you can parallelize work so you can launch multiple research agents. And then the main agent is going to be the orchestrator prompting those sub-agents, right? So if you want to do like a very broad research, you could launch multiple of these research agents with different prompts and with this constrained set of tools. So then it kind of starts making sense like when you put it in that way, like in this kind of context.
+
+[SPEAKER_00]
+that example immediately clicks for me because you don't necessarily always want to give every agent access to the most biggest MCPs. That can context float pretty fast, right? So if you just isolate it to this agent with this set of tools, yeah, let it consume its context to do that specific task. But when it comes back to the result, it just gives the result. So your main agent doesn't have to... bear the burden of taking on. So that's a different perspective to how you can, this isolation works. Context isolation really is the key here. For sub-agents, it feels like that's the winning terminology, context isolation and focused tasks to do something well.
+
+[SPEAKER_01]
+Yeah.
+
+[SPEAKER_00]
+Let's button this up for listeners because we've given the tools, but I don't think we actually straight out came and gave a canonical definition for sub-agents. So what is a sub-agent if I asked you?
+
+[SPEAKER_01]
+So I think in a nutshell, subagent is this fresh context window with a specific system prompt and the scope to access.
+
+[SPEAKER_00]
+And those are some pretty big words. Fresh context window, that's a good concept to think about. You said specific system prompt, so this is the narrow and focused task and the system instructions thing that we talked about, and scoped tool access. So those are the three pieces. Yeah.
+
+[SPEAKER_01]
+Yeah. So the fresh context window is just because this is going to launch exactly like that. So if you're having a long conversation, this is not going to be included. So this is very isolated piece of work. The system prompt is basically because here you can define a different persona completely for how this sub-agent is going to work. So the system prompt is going to be different. And the scope to access is just because like you can literally limit which tools it has, right? And focus this work. And the idea is that now this is going to be invoked by some routing logic from the main agent, right? So the main agent is going to decide when to call it. And it will run this bounded work. Like it will run... do something and come back with a result and feed it back to the main agent that called it. And this is the magic piece because this isolates everything and makes it very constrained and then the main agent can just make a decision on top of it.
+
+[SPEAKER_00]
+Okay. Maybe what we can do is wind this episode down by giving practical tips now for developers on sub-agents. Can you tell me what are some good opportunities to start using sub-agents? When should I be using sub-agents?
+
+[SPEAKER_01]
+I think I would typically use a sub-agent for anything that is very, you know, token hungry or something like that, you know. high output operations. I don't know, like if you want, for example, to do test runs or some debugging that involves reading a lot of logs.
+
+[SPEAKER_00]
+Oh, I see, I see. Because the test runs would, you keep having to dump the output, read the output to see if it passed, failed. So that can flood your context window. Same with logs. I see. That makes sense.
+
+[SPEAKER_01]
+Yeah. So you just spawn a sub-agent. It just doesn't pollute your main session. And trying to keep the subagent role very narrow. So it's like one thing that this subagent will do, you know, so you don't confuse it with other agents that you keep swapping all the time. Yeah. It also prevents overlapping of tools, right? Because even if it's not going to pollute the context... The main, because as we have been talking, for example, skills and MCPs, now they're having this progressive disclosure, this thing that, okay, it's not going to pollute the context all the time, but you can still have some overlap between the descriptions, right? So when you narrow some of these tools and focus them just on one of two sub-agents, then it's also easier for the model to avoid doing that.
+
+[SPEAKER_00]
+That makes sense. And the last one I can think of is the analogy around network calls that you mentioned. When you want to parallelize stuff, that's another good opportunity when you know there's a task that will take some time. If you can split it and reduce the amount of time, if you care about that, then an agent is a good way to do it.
+
+[SPEAKER_01]
+Okay, so these are good tips. So what do you think about when we should not use subagents?
+
+[SPEAKER_00]
+Oh, I see. When we should not use subagents. Yeah. When you have tiny edits, sometimes the overhead to literally spawn the subagent, because remember, you know, there's a separate context window, you're spinning up a separate model potentially. That is also costly. you don't always want to just keep spinning sub-agents left, right, and centered. Like say you have a simple task where you know the main agent can do it within like a single call and it's not going to like dump too much output. Those are times where you should think twice and say, hey, maybe, you know what, I don't want to.
+
+[SPEAKER_01]
+Like you don't want the sub-agent to create commits for you. Exactly.
+
+[SPEAKER_00]
+Which brings us to the next point, when you have tightly coupled tasks. Because sometimes the main agent might need all of the information, right? You know, the scout analogy is great when you just need to know where the gold mine is. But that's not always the case. Sometimes you need to know how you traced your path. There are a few situations where it's important for the main agent to know the final details. In those cases, you kind of want to keep it in the main agent. Don't actually spin it off into separate sub-agents. And the last... point where you probably don't want to use a subagent is say you have an ambiguous problem and you yourself don't know exactly how to get to the end result because that happens quite often, right? Where you're like, hey, I want to use... an agent to get to my results. I'm going to have a lot of back and forth in my conversation. I'm going to ask follow-up questions based on some of the results that I get from the response of the agent. In those cases, it actually makes more sense for you to keep it within the main agent because that context needs to be coupled again. You need to have that back and forth with the model. You don't want to spin off a separate agent and then do this hot potato parsing. In those cases, just use the main agent.
+
+[SPEAKER_01]
+Right, that makes sense. Those are very good tips. I think also with the whole sub-agent thing is that you don't really want to overdo it. Like if you're getting into it, start small. You don't need an army of sub-agents to do anything, you know. So if you're not at the frontier, you know, like really exploring crazy stuff, you don't want to be sucked into this rabbit hole of, you know, coming up with crazy agents. So yeah, start small. Start with something that you can... use and...
+
+[SPEAKER_00]
+So you're saying, Yuri, I shouldn't Ralph Wiggum loop in Gastown when I start to explore sub-agents. Not a great idea, huh?
+
+[SPEAKER_01]
+Yeah, take it slow. Take it slow out there.
+
+[SPEAKER_00]
+That makes sense. You know, all this sub-agent talk has reminded me about Warcraft 3. I'm probably going to go watch some YouTube videos now of people playing Warcraft 3.
+
+[SPEAKER_01]
+Scout Rush. Yes. Oh, look at that. Someone who's playing. Yeah, yeah.
+
+[SPEAKER_00]
+All right, folks, thank you so much for listening and we will catch you in the next episode. See you guys in the next one. Cheers.
