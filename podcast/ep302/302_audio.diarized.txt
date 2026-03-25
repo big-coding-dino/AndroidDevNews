@@ -1,0 +1,118 @@
+# ep302
+Podcast: Fragmented Podcast
+
+---
+
+[SPEAKER_00]
+Welcome to Fragmented, an AI developer podcast that helps vibe coders become software engineers, one episode at a time. I'm your host, Kaushik.
+
+[SPEAKER_01]
+And I'm Yuri, the other host of Fragmented, where I'd love to talk about using AI to make you a better developer.
+
+[SPEAKER_00]
+Yuri, my entire journey learning AI has been this constant flip-flopping of opinions. You see something, you think it's really powerful, then you realize it's probably hype. The big AI companies tweak the model or the harness. And suddenly you realize, oh my God, could be useful. But then you use it more and then you realize maybe not, there's other new tools. And one perfect example of this flip-flopping is what we call MCPs. So I thought it would be interesting to talk to you about MCPs and get your thoughts. What are MCPs? You know, get into some of the details, understand how they work, constrain, challenges, use cases, how valuable or technology or tool this is for AI coding today. Yeah, absolutely. If I asked you to define what an MCP was, what would you say?
+
+[SPEAKER_01]
+MCP is basically a standardized protocol that lets you plug external tools or data sources into an AI client. Basically like USB ports, but for your model. LLMs are very powerful, right? But they're frozen in their training date and that state. They can't see dynamic data like your GitHub or your Slack or any private data that you have. So with this one config file, you can suddenly make your AI read your PRs or query your database or search your company docs. And that's very powerful.
+
+[SPEAKER_00]
+Two interesting points there. Point one is they're frozen in time is a good way to put it. Newer knowledge does not exist. And the second one is these models cannot have access to some of your private data, right? Neither do you want easy. AI lab companies to build models trained on your personal data. But when you need to use this data, MCPs seem like a way to do it. You said it's a standard. Can you touch a little about that?
+
+[SPEAKER_01]
+Yeah, exactly. So MCP... Being a protocol, it makes things easier for everyone involved in a sense that there is a clear specification, right? So basically there are two pieces. There's the MCP server, which exposes tools like Fetcher PR or Search Slack. And this server is describing its tools in a standard JSON format. So there's a name, there's a description, what inputs it will need, what it will return.
+
+[SPEAKER_00]
+Interesting. So it's just like a JSON file that describes the tools that I can use as part of whatever this MCP is.
+
+[SPEAKER_01]
+Yeah, as simple as that.
+
+[SPEAKER_00]
+And where does it live? Because you said there's an MCP client and then there's an MCP server. Where does that MCP server live? Is this something that I have to deploy like an AWS instance with a server hosted somewhere? Or is this like on my machine on my computer? Where is that MCP server?
+
+[SPEAKER_01]
+Yeah, that's a good question. So MCP servers can be in both places. They can be both locally or they can also be elsewhere. When you have them locally, basically your computer is going to spawn a local process. Basically, the MCP is just like a server, like a script running alongside your AI client. But there are also the remote servers, right? I think Glean is an example of that, like one that connects over HTTP.
+
+[SPEAKER_00]
+Glean is this service, I believe, that queries your Slack, Google Docs, Atlassian has like this Confluence and Jira. So it's like this third-party service that packages an API that does all that querying for you. So in this case, the MCP is basically just hitting their service. Yeah. So it could live in your computer or it could just be this cloud hosted thing. Both are viable options for an MCP.
+
+[SPEAKER_01]
+Yes, both. And then there's client side. And the client side is your app or AI app, right? There could be Cloud or it could be Cursor or ChatGPT or anything that supports MCPs, which basically is, I think everything supports an MCP these days. It really has spread out.
+
+[SPEAKER_00]
+I think that's a good point to bring about. now an open standard. So Anthropic came up with this and they donated it as a part of the open standard AAIF, which stands for Agentic AI Foundation. And it's actually part of the Linux Foundation now. It's a nonprofit organization that tries to enable mass innovation through open source. We'll add links to each of these things. So it's interesting. It feels more legit. Yuri, I understand the purpose. I have a sense of like how this thing works. Let's maybe connect it together with an example. Can you give us like an example of a common MCP that I would use?
+
+[SPEAKER_01]
+Yeah, so one of the first ones I think that looked very useful would be like the GitHub MCP. Because... You could be reviewing a PR and it's very likely that the LLM doesn't know what that PR is about. And so without the MCP, you would have to paste a div or describe the file changes or maybe link the related issues. But now with the right MCP, you can just say, yeah, review this PR and just say the number and... it would be able to look up the issue and get the root cause of anything related to that.
+
+[SPEAKER_00]
+That makes perfect sense. It also explains the idea that you're giving this agent powers to look at data that may not be in its model. This MCP sounds like it makes sense, but how is it different from just a set of APIs, right? So if I had the GitHub CLI implementation, right, you know, there's this GHCLI tool that a lot of developers use on their terminal. Can I not just use that instead of using these MCPs? That's a very good question, actually, because...
+
+[SPEAKER_01]
+Actually, you can just probably use just DHCLI, especially with the newer models.
+
+[SPEAKER_00]
+End of the episode, folks. Thank you so much. Just go use your DHCLI. That's it. Pick it up.
+
+[SPEAKER_01]
+Yeah, but especially with the new models, they know how to use CLIs pretty well and tools and things like that. But I think the main compelling reason behind MCP... as a tool or as a standard is just exactly that, this standardization. And also something that is built into it, like this discoverability, the tools are kind of self-describing. So the models know which tools are available and what they do. Great. And that's part of the protocol. So it's built in. So you have to have this description. And with the CLI, the model kind of has to assume that it is or is not installed. The specific CLI you would need to check or maybe would get the syntax wrong if there is an update. or something like this. And I hope that version that it knows about matches what is in the training data. So MCP brings this consistent interface, this protocol, this definition that is clear, both for people in creating MCPs and also for the clients and using them.
+
+[SPEAKER_00]
+It's almost like you're building APIs that are purpose specific to agents. So agents understand how to use these APIs better. And the discovery point is also like fair.
+
+[SPEAKER_01]
+Exactly. When you get a protocol and people start gathering around that, there's momentum and there's aggregators. So there's websites for finding MCPs and there's people looking for MCPs. So you build this momentum. But we have to be clear, and this is important, this whole convenience point, it has a cost. So from your usage of MCP, Kaushik, what are some problems you've observed in the wild?
+
+[SPEAKER_00]
+I would say probably the biggest reason to not use an MCP, at least today, is token bloat. Everything in the LLM world, you have to think, how much does it cost me in terms of tokens? If you think about your model having a limited amount of memory, every token you add in there and the context that's built in is memory that's taken up. And so when you add an MCP to your model, the entire thing goes into your context for every single session that you use henceforth, right? So the definition, every tool that it offers, all of that... is packaged as context that's added into your session. If you go wild and then start adding MCPs left, right, and center, every time you open up a new session, you might only have 40 to 50% of your token budget left. And that can be problematic because the minute you go over that memory that I tried to connect, you'll start getting hallucinations in your results. Key to getting good results in any model is to make sure that your context is tight. And I feel MCPs are an easy way to just completely blow through that context. That's one big problem I've found. The second is also this tool confusion. When you tell the agent, hey, I have all of these five MCPs and each of them have 20 to 30 tools. When you ask the agent a question... How does the agent know which tool to use specifically? You can confuse the model by giving it so many options. It's not surgical in the way that the model tries to approach the problem. And with CLIs, the model can literally just read the result of what you sent. To go back to that GitHub example... If I use the GitHub CLI call, only the results are consumed by the model. But with MCPs, what happens as you make each MCP call, you're burning through tokens there. It goes back to that concept. Can you limit the amount of chatter that happens in your session with the model, right? And I think with these CLI calls, it doesn't go into your token budget. All it does is it just executes that on a background process, gets the result, and only the result is consumed back into the conversation. Does that make sense?
+
+[SPEAKER_01]
+Yeah, totally. I feel a lot of that has to do with trusting the developers implementing the MCPs to be mindful about how they define the tools, how many tools they have, and how preventing overlap and relying on people just to be mindful. It's never a good idea.
+
+[SPEAKER_00]
+Never rely on people, only rely on machines.
+
+[SPEAKER_01]
+Don't quote me on that.
+
+[SPEAKER_00]
+Okay, I've been a complete downer on this. People are going to listen to the episode up until this point and they're like, okay, so it can cause more hallucinations because you're going to bloat up my context. It'll confuse my agent because it gives me more tools than I need. People are going to think maybe I should just stop using MCPs altogether. Yuri, is that what we want to wrap them up with or be the MCP champion here?
+
+[SPEAKER_01]
+I'm going to give it a shot. Well, first of all, setting it up is very, very simple. So you literally just copy this JSON config and you paste into your client, restart the client, and now you have some GitHub integration or Slack or Jira. There is also like the fact that you can even ask the LLM to set up the MCP for you. So you literally can copy that.
+
+[SPEAKER_00]
+Oh, no way. Because they couldn't make it even more easier. You can literally just tell the agent, hey, set this MCP up.
+
+[SPEAKER_01]
+That's the good thing about standards, right? When something becomes a standard, so like it gets into the training data.
+
+[SPEAKER_00]
+So the LLMs already know about MCPs. That's actually a good point, yeah. To your point, they're like stupidly simple to set up, right? It's so convenient and that's a feature. I think you're convincing me. I feel there's a time and place to use MCPs. But what would really cement this is if you can tell me some examples of MCPs that you use. And I think that'll really help connect the dots.
+
+[SPEAKER_01]
+Yeah, so one of the main ones that I've been using, especially for whenever I have to do something on the web, is the PlayWrite MCP. So that is basically a tool that can control a browser, right? So it can literally do anything on the browser. It can navigate, it can take screenshots, and it can inspect the browser, it can click on items on the browser. Mm-hmm. You know, it ties back also like we talked about in the previous episode about the agent loop. With this tool, you're basically giving your LLM eyes that can see the browser. You know, the other day I did grocery shopping with Playwright MCP. No way. I literally did. I give it a list of items. And said, go on this page and shop it for me. Like, do the shopping for me. And he's able to actually find all the items at them because it just is able to control the browser. But okay, but also for development, right? It can also help a lot with especially like getting the design right. So it is able to sustain the loop and check.
+
+[SPEAKER_00]
+A side tip on that note, I've not investigated this as much, but there is a Rust-based CLI tool that actually does browser control. Give me a second, I'm actually going to look at this because I was reading this this morning and I realized. It's like computer use, but like browser use. Yeah. Yeah, I haven't explored this yet. So, you know, take it with a caveat. I do want to do it and I can report back in a future episode. But that also feels powerful because then I don't think it would do as much of the, you know, screenshotting and parsing. And maybe it's more token efficient. But, you know, that's something to just look out.
+
+[SPEAKER_01]
+The other MCP that I like to use sometimes is this Context 7 MCP. So that one is very, very nice because it also has only two tools. So there's one for finding the library ID. another one for querying the docs. So the whole idea of this MCP is that if you want to use some library, some obscure library, or maybe if the library isn't even obscure, but you want to get the latest docs and make sure that your LLM knows how to use that library, you can just tell it to use this MCP to get the data. And you will use it and it gets like a page into its context with all the information related to the library. So, for example, maybe if your LLM is not great at running coroutines and Kotlin, so it's getting confused, you can just ask it, hey, check the MCP for the docs, make sure that you understand, and then come back and try again. So you will literally get that.
+
+[SPEAKER_00]
+This feels like a really powerful tool that you can just... get instant documentation. But I'm actually going to try this one. I like this one.
+
+[SPEAKER_01]
+Before you close off, there's one interesting development in this world of the MCPs. Anthropic recently announced something called MCP tool search. So this is like really fresh. So this advanced tool use is something that's going to solve all these big problems we've been mentioning about MCPs, especially the thing with the context bloat. So the idea is that the system now will only pull the tool definitions when you actually need them. So kind of like lazy loading the MCPs. And so you could connect like multiple dozens of MCPs without having to burn all that context up front.
+
+[SPEAKER_00]
+I can see that being super beneficial because if you remove the biggest... problems with mcps that we talked about especially that context loading i think that one is the one you need to solve right everything else whatever you can create a new session you can manage but if you're the context that you have to work with itself is so limited you're just increasing the probability of hallucinations all right yuri let's close this episode with uh tips for the week maybe you kick it off what's your tip
+
+[SPEAKER_01]
+All right. So I have one which is a very simple tool as well that could also in the topic of waiting context float. It's called AST-GREP. This is basically GREP, you know, the Unix tool for searching. But this one has AST prefix, which stands for abstract syntax tree. So this tool, it is able to structurally search code. So you could search instead of searching just for any tags, it could search for classes with that text or interfaces with that text because it is able to understand the syntax tree of many languages. Much more efficient, right? So interesting tool to have if you want to try. In the basic way you use it because it's just such a simple tool, it's just you add a small prompt telling your LLM that, okay, this tool is available in the environment and you should use it and it works. So what about you, Kaushik? What you got for us?
+
+[SPEAKER_00]
+So this is future me coming back to you in a fourth wall kind of situation. I'm going to change the tip that I gave Yuri when we recorded this episode a few days back because I thought I could actually knock two birds out with one stone. Remember how earlier in the episode I said I'll report back on agentbrowser.dev? As a testament to how fast things move in the AI world, in the four or five days since we recorded and I started editing this episode, I've been using agentbrowser a lot and really, really liking it for my browsing needs. A lot of other people have been reporting back pretty positively. It's extremely token efficient, and you can use it to teach your agent to do any kind of browsing. It's slightly different from a browser MCP, only in the way that it's technically implemented. It uses an agent skill, and as I mentioned in the episode, it's a Rust-based CLI utility. So you can use it even without an agent, but then with an agent skill, you can plug it into your agent and unlock any kind of browsing that you want to do. If you don't know what an agent's skill is, well, wink, wink, wait for a future episode. We are definitely going to cover it. Even just this morning, if you folks know what Home Assistant is, it's basically like a web interface for your smart home where you can control the different things in your smart home. Honestly, I just whipped up cloud code. I told it what I wanted. And I said, hey, can you go build this home assistant dashboard for me? It used agent browser and just built a custom dashboard for me. Usually this is the kind of thing that is just easy to do, but it's just painful and tedious. I've got to look for the different controls, find what I need, look up some documentation or on the internet to see how those specific home device controls are used or those smart device controls are configured and CloudCore just went, searched the internet and did it for me. It's super cool. So that's my tip for the week. Definitely give it a shot and try it out. I think it could unlock a lot of productivity for you. Thanks for listening and we will catch you the next episode.
+
+[SPEAKER_01]
+Catch you guys in the next one.
