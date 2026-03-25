@@ -116,6 +116,25 @@ And I'm Yuri, the other host of Fragmented...
 ]
 ```
 
+## How the pipeline works
+
+The diarized transcription pipeline combines three independent models, none of which communicate with each other directly:
+
+### 1. WhisperX — transcription + word alignment
+WhisperX runs the `large-v3-turbo` Whisper model to transcribe the audio into text segments. It then runs a second pass with a `wav2vec2` alignment model to produce precise **per-word timestamps** (start/end time for every word). Vanilla Whisper only gives segment-level timestamps; the alignment step is what makes speaker assignment accurate.
+
+### 2. pyannote — speaker diarization
+pyannote's `speaker-diarization-community-1` model runs **entirely independently** on the raw audio waveform — it never sees the transcript. It works in two stages:
+- **Speaker embedding**: a neural network processes short sliding windows of audio and produces a vector capturing the acoustic characteristics of whoever is speaking (voice timbre, pitch, etc.)
+- **Clustering**: windows with similar embedding vectors are grouped together and assigned a label (`SPEAKER_00`, `SPEAKER_01`, etc.)
+
+The output is a list of `(start_time, end_time, speaker_label)` segments — pure timing and identity, no text.
+
+### 3. WhisperX `assign_word_speakers` — merge
+This is a pure Python function (part of the WhisperX library, not custom code) that joins the two outputs. For each word, it queries an **interval tree** built from the pyannote segments and finds which speaker's time range overlaps with that word's timestamp. When a word spans a speaker boundary, it picks whichever speaker has the greater overlap duration. The interval tree gives O(log n) lookup — claimed ~228x faster than a linear scan for long recordings.
+
+The three steps are fully decoupled: WhisperX and pyannote could run in parallel. The only dependency is that word-level timestamps must exist before the merge can run.
+
 ## Scripts
 
 | Script | Purpose |
