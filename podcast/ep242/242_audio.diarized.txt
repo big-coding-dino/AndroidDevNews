@@ -1,0 +1,241 @@
+# ep242
+Podcast: Fragmented Podcast
+
+---
+
+[SPEAKER_01]
+Welcome to Fragmented, a software developer podcast where we talk about building good software and becoming better developers. My name's Don Felker.
+
+[SPEAKER_00]
+And I'm Kaushik Gopal.
+
+[SPEAKER_01]
+Welcome to the show. This episode of Fragmented is brought to you by AndroidJobs.io. On Android Jobs, you can post a job posting for free and also sign up to get weekly notification emails of new job postings. These job postings are worldwide, so any company around the world can post for free. However, I wanted to let you know about a couple of feature upgrades that we recently made to the site. Number one, you can now pay for a... upgraded highlighted posts. And this will highlight your job post among all the other Android jobs that are out there. Number two, you can pay for a featured job posting that will highlight it as well as pin it to the top of the job board. Now, again, the free job postings are still available, so you can still post a job for free. But if you would like to kind of give it a little bit more flair, you can upgrade it as you'd like. Now, additionally, every job posting on Android Jobs, including the free one, is now going to be a 90-day job posting. So please check it out when you have a chance. Sign up to get notified of new job postings. And thanks for listening and checking out the site. Again, that's androidjobs.io.
+
+[SPEAKER_00]
+Kaushik, we are back again. How are you doing? Doing good, doing good. The weather's been a little gloomy. I hear you've been getting a little snow up, you know, on your side.
+
+[SPEAKER_01]
+Yeah, I got a little flurries going on right now outside the window. It's kind of, it's pretty, it's nice outside, but yeah, spring is coming though. But that's good that you've got some, I hear you got some wet weather over there. You guys have been through a drought for quite a while, right?
+
+[SPEAKER_00]
+Yeah. California has been through a drought, but we're getting a lot of water. Like, you know, last two weeks, it's been, yeah. And, you know, I always see this every time there's a heavy rain. They're like, oh, if this continues for the next two weeks, then California will finally be out of a drought. Or, you know, that is the usual saying. I don't buy it, though. Yeah.
+
+[SPEAKER_01]
+It's weird. I'm from Northern California too. I'm originally, for the California-based listeners or anyone in the world, if you know where San Francisco is at on the map, I'm actually from three hours north of San Francisco. I'm very familiar with all those reservoirs up there. When we'd have times like you're having, when it would just rain and rain and rain, I remember the lakes, the reservoirs would be so low. People would be freaking out. They would climb hundreds of feet within a few weeks. It was just crazy how fast these lakes would fill up when you just have torrential downpours. So hopefully you guys are full and good to go.
+
+[SPEAKER_00]
+That we are. That we are. Hopefully like the water problem is solved, but you know, the rain sometimes just put a damper. It's not like you can go out or do anything. Our San Francisco area is always cold as it is and kind of like foggy.
+
+[SPEAKER_01]
+So it's like putting even more of a damper on it. But hey, that's why we're here with the podcast. Hopefully spark some excitement in everyone else's day.
+
+[SPEAKER_00]
+Yeah. I got a nice warm cup of chai slash tea with me here and, you know, I'm ready to talk.
+
+[SPEAKER_01]
+Excellent. Yeah, I was just finishing up some mushroom coffee here, so. Oh, mushroom coffee.
+
+[SPEAKER_00]
+I've heard of that. I've heard of those. At some point, we should talk about it. Yeah, the Four Sigmatic is the one I'm drinking.
+
+[SPEAKER_01]
+Anyway, yeah, we'll go on to another time. But until then, we've got an interesting topic that you're bringing to the table.
+
+[SPEAKER_00]
+So what don't we talk about today? Yeah, I think with Spring, there's a whole bunch of topics we wanted to talk about. But today, there was one that was really pressing. Yeah. have you used google java format before yes yeah many times yeah yeah so google java format is this it's not a linter it's a code style program so to speak that basically reformats all your source code to comply with a very specific style right and i think it's called google java style I loved this tool in the Java days because it was opinionated and it would just format your code, no questions asked, right? There's no two ways. There wasn't like, oh, if you configure it this way, then you can do X. But if you configure it Y, you have to do this. It requires a bunch of initialization. to make sure that your baseline, none of that. You use Google Java format. Google has, to its best of its knowledge, chosen a code style that works for the Google code base. Running through your Java works great. Yeah. For the longest time, people have been looking, I think even in the podcast, we mentioned this, we've been looking for a replacement for that. There wasn't exactly a replacement, but there was this tool called KDLint, which is probably what most people have used. And do you use KDLint by any chance? I have, yes. I'll just leave it at that. Yes, I do. Right, because KT Lint was great, but I think, in my opinion, what it tried to do was a whole bunch of things, right? It took care of code style, but it would also talk about linting, errors, and it would have a whole mishmash of different functionality, right? For better or worse. Yeah. I could never get Katie Lindt to like, you know, just work like Google Java format, which is like no questions asked, just do this, get it done, move on. Right. And the more and more like I find that I'm reviewing PRs or MRs or like whatever. Right. Sometimes every time I see someone say, hey, and by the way, you know, I think you got like two spaces in there or like, hey, this thing is formatted by four, two spaces. You could get Katie Lent to flag a warning, you know, so then your CI would throw a warning or it would like... Depending on how strict you are, you could get a failure to pop up. But that was always frustrating. And recently, I've been trying to revive this open source project called TrueTime that I built. I think we talked about it in a previous episode too. And I've converted the entire thing to Kotlin and coroutines and all that good stuff. Again, future topic for a future episode. But one of the things that bugged me, I was like, okay, how much have things changed, right? Like, can I go and find this tool? And Facebook, or I should say Meta, I suppose, came up with this tool. It's been a few years, actually. I don't think it's very recent. Really?
+
+[SPEAKER_01]
+I didn't even know.
+
+[SPEAKER_00]
+Yeah. It's called KTFMT. So KDFormat. KD for Kotlin, FMT for Format. Yeah. And there's actually this blog post. I'll make sure we try to add that in the show notes that talks about how when Facebook migrated over to Kotlin, I think even the title of the blog post is like, oh, this is how meta migrated millions of lines of code or something along those lines. And they wanted a very similar thing, which is like, hey, can we just get Google Java format, but for Kotlin, make it simple, make it straightforward, no fanciness. And so they did. And I think it made the news about two years back, but I think it was still not necessarily just there. And so that's why I think it didn't necessarily get as much attention as I think it should. Yeah. Because today, it actually works really well. And so I want to talk to you because I actually added it to my open source repo and some of the code bases that we work here at Instacart. And it's been working out great.
+
+[SPEAKER_01]
+Yeah, you brought this topic up to me. And I found it interesting because I've used KT Lint. And then I also use Detect for static analysis stuff. Oh yeah, that's right. And I use them both because KT Lint will kind of do some formatting, but then it also does some linting and there's some overlap, I guess you could say, between that and Detect a little bit. But I never really, like I really like Detect. Like I like it because it's just, it's helping me write better code. Like, all right, I got cyclomatic complexity. I've got too many F statements or whatever the file's too big. It's just helping overall. And so like, I never really felt that way about KT and Lint. Now that's not to say it's not a useful tool. It's just, it never really struck me as like, I really liked this thing. And the thing that I've always wanted was some type of formatter. And when you told me KTFMT, I looked at the website, and there's a few screenshots here, and that was immediately what someone was like, oh, yes, that's what I want.
+
+[SPEAKER_00]
+Yeah. I mean, again, their blog post talks about it, but they say that KTFMT is a deterministic Kotlin formatter based on the code and philosophy of Google Java format. Yeah. So that's pretty much what KTFMT is. Detect is also pretty good. I will say KTFMT is not a static analysis tool necessarily. It's just a formatter.
+
+[SPEAKER_01]
+Yeah, and that's what I want because I want to leave all the static analysis. I'll leave that to Detect. I didn't explain that well enough that one of the issues that I've had with a lot of tools that are out there, and I think KT Lint falls into this a little bit, is it tries to do too much. Right, right. And I think, and this happens to actually to a lot of software products too. Like you buy a software product to do one thing. And before you know, it's trying to turn something into a subscription and then you can sell stuff on it. And you're just like, I don't want it to do that. I just want it to send an email. I don't care about anything. And so same thing with these tools. Like, it's like, Hey, we'll do this and we'll also do this and we'll do this. Like, I don't want it to do 20,000 things. I just wanted to do one thing really, really well. And that's what I like here is that I feel like I can use detect for static analysis and then I can use KTFMT for my formatting of my code. And that's all I have to worry about. If I need it to format, it does that really, really well. Is that kind of what you found in your experience? Because I haven't used it.
+
+[SPEAKER_00]
+It is, it is. It's very similar. There are some caveats because as I was integrating it, I realized there were some things I needed to do for my teams, especially when you work with more than one person. Because in the open source repo, it's easy because it's mostly just me maintaining with a bunch of other folks helping. But when you use this in an actual environment where you're building an app together as a team, then there are some caveats that you have to keep an eye out for. And I thought I could talk about some of those things here.
+
+[SPEAKER_01]
+Yeah, let's do it. Let's hop right into it, man, because you have some more experience than I do, and it's something I want to learn more about.
+
+[SPEAKER_00]
+So with KTFMT, right, like there's one thing, getting it to work with IntelliJ is, there's ways to do it, right? You know, Facebook released an IntelliJ plugin. Yeah. called KTFMT, I think. So again, that's something you can go to the plugins marketplace, search for KTFMT, and it should pretty much show up as the first result. And I would suggest people install that. Now, what that does is if you... It only takes... And I think this is more like an IntelliJ idiosyncrasy. The reason it does that is because I think that's all that's allowed from IntelliJ is... You know how if you hit format code, you know, command option L or, you know, control alt L if you're on a Windows user, it takes care of that piece. So you can basically say, hey, KTFMT, take over, you know, the sort of formatting of it. But it doesn't necessarily, it doesn't auto format as you write the code, if that makes sense.
+
+[SPEAKER_01]
+Okay. Yeah. It makes sense. Yeah. Yeah.
+
+[SPEAKER_00]
+So you have to hit that command option L with this plugin. So that's, that's the first step, right? KTFMT itself comes down as a downloadable jar. Like, so you can, you know, you can basically run it through your entire code base using command line and that works too. So it's like a multi-pronged approach that I did for my team because I wanted to make it as easy as possible so people don't have to think about it. You just go forward, you keep writing the code, and then when you see the MR up, it's just magically formatted. So that was my goal. I didn't want people to think about making sure they did this or they ran it first before committing the code because then that defeats the purpose. I wanted to be as seamless as possible. which is why that KTFMT plugin from IntelliJ alone wouldn't suffice, right? Because you could forget, commit the code, it would go up and then, you know, it would not be formatted in the standard way, right? So step one is this plugin. Step two is this downloadable jar. I packaged it into like a pre-commit GitHub. I was just going to talk about that. That's got to be something you can do. That's awesome. Yeah, yeah. So that's the beauty of it. I'm not the biggest fan of pre-commit hooks because you have to be a little careful, as they say, with a lot of power. Yeah. With a lot of responsibility, right? Exactly. You know, the Spider-Man quote. You can throw in a whole bunch of checks into your pre-commit hook, but then it starts slowing your commit down. And that gets really annoying. At least I'm like someone who's super annoyed if, you know, my commit takes like a few seconds. So you have to be careful. But I mean, if folks are interested, like, yeah, ping me and I can like send you the pre-commit I use, but we basically diff... lines. So we only run it on the diff. So if we notice that something has changed in your file, in your source code, only then do we run the, well, not only then, but we run it only across the diff, which is like a good way to sort of contain the scope of how much is being formatted by KTFMT.
+
+[SPEAKER_01]
+Have you thought about, I mean, this is a little bit different because it's hard to tell. I guess KTFMNT depends on the error code that returns or the code that returns on its exit. But I'm wondering if you could put it in a pre-push hook where then you don't even have to worry about it, worrying about doing the commit. And then you just, when you push, it might, if it errors, it says, hey, these 12 files are, you know, need to be formatted. Yeah. Yeah, I mean, I think that's also possible. Like I feel...
+
+[SPEAKER_00]
+I'm just throwing it out there. That's a good point. How would that work? I mean, I've not used pre-push hooks before. How would that work? Would it change your existing commit? Because say I commit over the course of three days locally. Yeah. And then I push, does it just make a new one that formats it?
+
+[SPEAKER_01]
+Well, that's what I think would happen is if that, if, and again, I'm just, this is completely, I don't even know anything about what KTFMT does. And I think the last time I wrote a pre-push was about a year ago. But if I remember correctly, whatever the executable is inside of the pre-push, it needs to have a non-error exit code, which I think is usually zero, I think. Yeah. If it exits with zero, it means, hey, everything's good. But if it exits with anything else, then it means it's not good. So I don't know if KTFMT, how its exit codes look. So if you were to run it, I mean, I guess you could say you could give it a diff and say, hey, does any of these need to be formatted? And I don't know if it would. I guess I'm not sure if this would even work or not, to tell you the truth now.
+
+[SPEAKER_00]
+Well, no, I think, huh, I wonder, because it might fail saying like, hey, yeah, it's not fun. That's what I want it to do.
+
+[SPEAKER_01]
+I don't want it to push. You know, I actually have this inside of a JavaScript project, but I do, I run some JavaScript linter on it, on some other stuff, and I do it on a pre-push because I kept breaking the build because the build would break because of the linter or, I mean, the format would be wrong. Yeah. And I'd be like, ah, after like four minutes of a build. It's the worst feeling in the world, by the way. And so I just put it in my pre-push and it would take an extra 10, 20 seconds to do, but I was okay with that because I could wait 10, 20 seconds now and not be notified 12 minutes later that I broke the build. I'm like, ah.
+
+[SPEAKER_00]
+No, that's a fair point. I think pre-push is a much better opportunity to catch it because, you know, you don't push as often probably as you commit, right? Or maybe some do, but yeah, I would rather have all of that be slowed down in my push versus, because you're anyway waiting for the networking IO, right? So at that point you might as well just wait. Yeah. So I should look into the pre-push. The advantage of the pre-commit is as you commit the code, so like, you know, I give it a commit message, the code that you see is already KD formatted as opposed to like, you know, one more commit that follows up that just does the formatting, which I feel might happen if you catch it a little later. So that's the advantage, I think, with the pre-commit hook. But I mean, I should look into this, the pre-push aspect of it.
+
+[SPEAKER_01]
+Oh, what do we do? I'm looking at my code right now. Oh, I just ran for that JavaScript project. We had everything kind of bundled up into a build command and I would just run the build locally and it would take 20, 30 seconds because it was a very fast project. And it would just build the JavaScript project. And if anything failed, it would fail in the build. And then I'd see him like, oh, so if the build didn't succeed, I couldn't push it up.
+
+[SPEAKER_00]
+Ah, I see.
+
+[SPEAKER_01]
+Okay.
+
+[SPEAKER_00]
+So it is like a blocker, which is, yeah, that's good. And I can follow up. There's this tool called Spotless, which is what we use to also do that. But that's the multi-pronged approach. Well, I think that's a good segue. So what is Spotless? So Spotless is a CI plugin. So the idea with Spotless is it's not specific to Android code bases or even Java or like cotton code bases. It's this tool that someone came up with. that basically has handy plugins to hook into existing build systems. So you could use Spotless to basically say, hey, Spotless, I think is Spotless meaning the code is clean, therefore it's a play on that. So Spotless will make sure that all code formatting is taken care of. But the idea is you could plug in different formatters for different languages. So you could say, hey, for all my Kotlin code, you know, or in my KTS code and all of that, use this formatter. And you can actually, a lot of the examples you see use KD Lint because KD Lint is more popular, but I wanted KD FMT, right? And of course there's also, like, yeah, there's also a plugin for that. So I use, I say, hey, for my Kotlin code, use KD FMT, right? For my Java code, use Google Java format. For my Ruby code, you know, you can use like, you know, but I forget this. Rubicop or whatever. Yeah, Rubicop. Actually, yeah, you're right. I think Rubicop is the Ruby code formatter. So that's the advantage with Spotless. And the thing that makes it that much more better for us as Android users is it hooks really well to Gradle, which is what we need, right? So you can literally, you know, add a Gradle plugin and it's super straightforward. Like if folks are curious, again, just hit me up. I can like, you know, it'll go on a tweet or like, you know, or two to whatever. It's that sort of small. You add that to your repo and you point it to your, like, you know, KD format executable or something. Yeah. Or actually, I think you can point, the plugin makes it easy to say, I want to use KD format version X and it takes care of like downloading it, running it across. So that's the, you know, other prong, which is, you know, if someone mistakenly for some reason didn't have this tooling installed on their local machine, like, you know, if they didn't have the pre-commit hook or the... sort of formatting if they're not diligent to do it manually you can add a ci check in your android code base that would basically fail if you know you didn't send it and actually the approach that you said with the push you can also do this by the way i know there's some folks what they do is In GitHub Actions, they have a post CI check. So they take the code, they actually run it because the Gradle plugin has both a check and it's spotless check and spotless apply are the two Gradle tasks or the commands, right? So spotless apply basically says, just format it. go through the entire thing and just format all the files that don't follow the KT formatting or code style. So that's the third approach, which is you also want to add a CI plugin to make sure that all your code is formatted correctly. And this is really valuable in the early stages. I found it because when I'm trying to move my teams, there's obviously some folks who are on vacation or who missed the formatting sort of announcements. This is great for those because they'll commit it one day and they're like, wait, why is my build failing? It's like, oh, your formatting's off. Why is my formatting off? Oh yeah, I forgot to get KDFMT installed and do all that jazz. So that is another approach that definitely is useful that I think a lot of people would want to leverage.
+
+[SPEAKER_01]
+I think there's probably a whole episode we could do on this, but in my opinion, it's very important to have these steps automated in some type of CI environment where the build will fail if you don't have or meet certain formatting. Some people who are hearing this are going to be rolling their eyes and like, who cares about this? And I get it. If you're working on your project alone, you probably don't need this. Like, okay, you're just going to, you're writing code for yourself. It's not a big deal. But as soon as you enter a team environment, there's different opinions that are going to happen. Someone likes to put their parameters all in one line. Someone likes to put them all on different lines or three on a line. I don't know, whatever. But having a tool like this allows that tool to be the judge and the jury and say, hey, no, this is not okay or this is okay. And since it's automated, as humans, we're going to forget. And pushing this up... to an automated environment like a CI server, if it's on GitHub or whatever, it's going to make a humongous improvement in your code quality across your team because it's just going to make sense. Over time, as you open a file you haven't been in for six to 12 months that it's formatted correctly and it's not some weird random file. I mean, I don't know about you, but I'm sure you've opened a random file that hasn't been open for three or four years and you're like, what is this mess? For sure, for sure. Who did that? You know, Git annotate and you're like, oh, it was me.
+
+[SPEAKER_00]
+It's usually whole lines of being, right? Yeah, no. So this part, this check is great for that reason. I think you, yeah, you captured it really well. You want to make sure that you have some sort of consistency in the way it's sort of maintained.
+
+[SPEAKER_01]
+Have you found anything that you didn't really like about it or did you run into any hiccups during the, when you kind of got first set up with this or did you remember any challenges at all?
+
+[SPEAKER_00]
+Yeah, no, no, there's definitely some. And it depends on your tolerance. So one thing with the pre-commit hook that I realized, and I actually haven't completely found a solution for this yet, is I think intelligence. So if you have... and I have this problem mostly in the app, some of the bigger apps that I work on. If you have a monorepo, one of the problems is your git commit hook is going to be in a different directory than your app. Again, it depends on how your monorepo is structured. And so one of the, you know, it's a funny issue because I didn't realize it. Typically when, you know, the monorepo, if you have a big monorepo, you have your web app, your, you know, your... Android app, your iOS app, it depends on how your monorepo is structured. But one of the monorepos we have here is it has the entire code base for a portion of our company. The Android app happens to be in one of the nested folders in this monorepo directory.
+
+[SPEAKER_01]
+Okay.
+
+[SPEAKER_00]
+The problem with IntelliJ is when I open up IntelliJ, I don't open the monorepo. I open just my directory, right? And when you open your IntelliJ directory, what happens is it doesn't see the pre-commit hooks because that's in like the parent dot git directory. Yes. So what would happen is people would commit and they're like, I didn't have any issue committing. And I'm like, that is not possible. There's a pre-commit hook. How are you doing this? But that's because I'm like more alerted. And I always just use CLI. I don't use IntelliJ to actually commit my code. And so that was one of the catches that I realized. I'm like, ah, that's... tricky i haven't figured out a solution like you know most of like the engineers i work with usually are like okay we get it and they just format it or now the ci check captures it so the few times they manage to commit it just you know takes care of it that way but i haven't found a solution for again if you don't use a monorepo and your android app is the git parent directory you probably won't run into this problem because intellij will pick up the commit hooks if it sees them So that was like one oddity that I noticed in practical use when I actually used this script. Okay.
+
+[SPEAKER_01]
+That doesn't sound like it's too difficult. I wonder how many people actually use monorepos. Do you find a lot are using them out there?
+
+[SPEAKER_00]
+It's a mixed bag, honestly. I've seen both sides. Like I've seen enough. So it's almost a 50-50. Okay. Really? I haven't seen it at all. That's why I asked. Oh, interesting. Yeah. I think what's changed is because the build systems are different these days, because I don't know if you've noticed, but most people are either switching to Buck or something else. And the Android folks obviously stick to Gradle because it was recommended, you know, and it goes back to the, if it ain't broke, don't fix it, right? Yeah. A lot of, especially with modularization and stuff, cradle builds can be pretty fast and the caching that's introduced these days. So I've found that a lot of where there's, you know, where the build system is different, people have started to break away from the monorepo.
+
+[SPEAKER_01]
+Mm-hmm.
+
+[SPEAKER_00]
+But like, you know, larger companies who basically have a single monorepo and they like, you know, searching across the code base and that kind of stuff, they use Buck as their single build system. And in those cases, you know, I've seen monorepos used.
+
+[SPEAKER_01]
+Yeah, interesting. Yeah, it's...
+
+[SPEAKER_00]
+That's another topic for another day, so. I know, yeah, that's definitely going to spawn into another topic. The other thing I noticed is in IntelliJ, again, when you're typing your code, right? Yeah. IntelliJ now has like a lot of settings, right? And there is this thing called the editor config. Yeah. like, you know, the .editor config, because IntelliJ in itself has a code style setting, right? And you can import a code style setting. Typically, people have IntelliJ code style setting, so you could use that. If you use the KD formatter plugin, there is an option to say, hey, respect my editor config. So you can, in your directory, add a .editor config file. Okay. that can specify. So what KD format does is they distribute an editor config file. This only applies for one case. This is when I'm actually typing the code. If I wanted to just automatically be formatted in the KD format style, that's when the editor config comes in.
+
+[SPEAKER_01]
+Does that make sense? Maybe explain it a different way.
+
+[SPEAKER_00]
+Yeah, I need to explain it differently. So with the KD format plugin that I talked about, the first step, right? When you hit command option L, that does it after the fact. So I'm in my editor window. I type a whole bunch of code as I just think through it. No formatting, right? I hit command option L, it gets formatted. But what if as I type the code, I wanted IntelliJ to just make sure that my indentation, all of those follow KD format? Oh, just automatically, right? Yeah, just automatically. So you don't have to hit command option L. But as I'm typing my for loop, I hit my open braces and I hit enter and I hit tab. It just goes to the right place, whatever. Yeah, yeah. So if you want that to automatically be formatted, that actually is not respected by the plugin. The KD format plugin is not able to do that.
+
+[UNKNOWN]
+Yeah.
+
+[SPEAKER_00]
+The only thing that controls that when you're inside the editor window is IntelliJ's code style.
+
+[SPEAKER_01]
+Oh. Yeah, which is just one of those weird things, right?
+
+[SPEAKER_00]
+But what you can do with IntelliJ is now there's this more distributable format, right? You know, this .editor config. That's the editor config, yeah. Yeah. And this is like this cross-platform way that most IDEs are starting to follow. So you can have an editor config, you can open VS Code, and it would still follow the same code style formatting. So KD format also distributes this editor config file that you can use. So you can say, hey, I want to use this editor config that follows KD format with the set of standard settings.
+
+[SPEAKER_01]
+Oh, that's pretty sweet then.
+
+[SPEAKER_00]
+So you just get that right out of the box and it's supported by the IDE then. Yes, yes, it is. But here's the caveat. I know. Yeah, exactly. There's that what coming. There's that what coming. Editor config is not able to handle all the permutations that KDE format follows. So it's not 100% match, if that makes sense. So you get close, but it won't be 100% match. Okay. It's going to give you probably the most common or the most... Exactly. Like, you know, there's some things that it just cannot accommodate. Like, because it wasn't meant to handle specific languages. It was meant more as a general coding sort of code-side configurator. Yeah. So that was another thing. And again, if you want IntelliJ to follow your editor config, it's an option you have to pick. So you should ask IntelliJ, hey, follow my editor config and ignore the code style that comes built in. That's another caveat. So again, a lot of these things, it's like, oh, you can do this and this and this. And together they come, the picture becomes really good once you bring them all together. So what I actually did for my team is I wrote like a very basic shell script that would just do everything, right? Because with IntelliJ and stuff, you can... You can change your XMLs. You can do all of that in your workspace and check that in so that people all have the right thing. So when I went and told my team, hey, we want to start using this, all they had to do to set it all up is, for the most part, run the shell script and it would just take care of most things. Put all the files in the right locations and go from there. Exactly. The pre-commit hooks are in the right place. It downloads the right version of KD format. It replaces your code style with the right one from KD format. It adds the editor config file in the right place. Because you can manually do all of these things, but it just is that much more cumbersome for people who have to do it or don't listen to this episode. Yeah. So you can just run the shell script and say, okay, go forth and just like go on with your life, you know, and things will just happen the right way. So I would recommend people do something like that because there isn't like a one-stop solution to say, just like install this thing and then you're done.
+
+[SPEAKER_01]
+Which kind of brings up a good question that I had for you is, do you have any advice for people that are listening to this that say, hey, this is interesting. This is something I want to do for my team. How can they go about introducing this to their team without getting too much pushback? Or what do they do if they get some type of pushback in regards to this? Do you have any?
+
+[SPEAKER_00]
+Any advice for that? I mean, discuss it with your team, right? Because this is very opinionated. So, you know, you don't just introduce it and say, hey, guys, we're using because here's the other caveat, right? KDFMT chose two spaces, I guess, as against four spaces for their indentation. which can be a little, and because it's an opinionated formatter, they don't want to necessarily change that. They have, by the way, because I think you can add a flag called Dropbox style. I'm presuming maybe Dropbox is also using, you know, and they pushed Facebook or Meta to sort of add this configuration. I don't know what the story is behind there, but that'll change it to four spaces, right? And I think typically Kotlin from the JetBrains folks, they recommend four spaces, if I recall correctly. So you have those conversations. By the way, personally, what I told my team was like, look, I just want this tool to work. I really don't care if it's two spaces or four spaces. I just want it to be consistent. And it goes back to my philosophy, which is like, just try to use the tool. And I think this is something you told me in the early days, try to use the tool to as vanilla version as possible, right? Because the more you try to customize, the more you try to jigger with the tool, you have to introduce those layers in every other place that you use this, right?
+
+[SPEAKER_01]
+And that saying goes for everything across software that I'm realizing now that I'm a couple of decades in. This goes for if you're building an Android application and you're going to use some crazy library that has its own custom activities and does some fancy stuff. Sure, you can use that. But what ends up happening when some new AppCompat update comes out that gives you a brand new feature, but you can't use it until your library updates and now you're stuck? It's like, all right, is there a way that I could do the same exact thing, but depend upon the vanilla libraries to do what I need to do and then maybe add or mix some stuff in through some extension methods or whatever. And the same goes for other languages. This is the same thing that I've written Ruby apps for 10 plus years now, Rails apps. And for the longest time, I would go down some crazy rabbit hole of using some crazy test framework and blah, blah, blah. And then I'm like, I'd run into a wall somewhere. And then eventually, I'd say about five to seven years ago, I just said, you know what? From here on out, I'm just doing everything vanilla. And I've done the same with JavaScript projects. And every time it's paid off. And every time I've deviated from that rule, it's always come back to bite me in every technology I've dealt with because there's always something that pops up because I didn't stay with the vanilla.
+
+[SPEAKER_00]
+No, 100%. That rule applies. I think that's wisdom that you... It's funny because I remember, even if people go back to these early episodes, I'm the kind of person who loves tweaking things, right? Yes, you do. Don knows better than anyone else. And I think that's just wisdom that you get as you sort of either get older or you get more sort of wise. Just don't mess with tools. Especially if something's working, just keep it. For that one tiny... You ask yourself the question how much you care about that. If you don't, like, and more often than not, just let it go and use the tool as is. Anyway. It's funny.
+
+[SPEAKER_01]
+Go ahead. On the same topic, it's funny I think about this because I was doing some work recently and a bunch of the staff engineers on this project that I'm on, what is a team? It's like 40, 50 Android engineers. And... We were having to upgrade some tooling and they sent on a report and said, all right, hey, by the way, everybody needs to be on this new X, whatever version of Android Studio by this date because of XYZ. And it says, here's where everybody is at. Here's where we're currently stand with numbers. And then down at the bottom... There's like the last supported version of Android Studio, which is really stable. And literally almost all of the staff engineers are still on that version. Like nobody wants to move. Like it works. I don't want to break it.
+
+[SPEAKER_00]
+I just want to do my work. No, you're right. There's something there, right? Like there's absolutely some knowledge and wisdom in that saying, which is like, keep it as close to, you know, the intended user as possible. Yeah. It also goes back to, again, the architecture stuff. There's a bunch of really good libraries and frameworks out there, right? But personally, the version of the architecture, the unidirectional state flow architecture I chose was, how can I make this work with the vanilla components we get from Android? If I have to use the standard view model, I'm just going to use the view model. I do not want to add my own layer on top of it. for very similar reasons i just want you know i if app compact changes or something changes i don't want to have to like you know rejigger or make that many changes you know if anvil or dagger or something changes i don't want to like have to rethink my entire architecture right so
+
+[SPEAKER_01]
+Yeah, it goes back into so many different aspects of software development. And like you said, over time, you just start realizing that you'll encounter that pain eventually. And then you start realizing, all right, can we just leave all that stuff alone? And we'll just kind of bolt it on kind of.
+
+[SPEAKER_00]
+Right, right. So yeah, that's KDFMT. If folks have more questions, send it our way. I'm very happy with the setup that we have. There are obviously some of the caveats. Eventually, the thing I like the most, Don, is if I review code, I don't have to think about this anymore. Yeah, that's key. The other way is to go all Zen on this and say, don't care about it. But that's not true. When you see a file that's indented both with two spaces and four spaces in the same file, that's going to drive. I don't know. My eyes bleed. right so those are the kinds of times where you're like ah i just wish there was something that would just do it and now people don't even have to think about it it's like oh it would be nice if you indented this better i'm like well i don't get a choice because you know that's what katie format does like you know it just takes care of it it just makes it so much more easier and you can focus on the actual code you know and that's it
+
+[SPEAKER_01]
+You touched on something there that I think is important that a lot of people don't really realize is that at the end of the day, we only have so much energy in our head and there's only so many decisions we can make throughout our day. And decision fatigue is a real thing. And this is just another thing that I can remove off of my decision-making responsibilities day to day. I can let the computer do it. I've already decided, hey, that's good enough. It looks great. It works. Cool. I'll let the computer take it over. I'm not going to argue with it. I have other more important fish to fry and I'm going to go worry about those things.
+
+[SPEAKER_00]
+A hundred percent. Couldn't have been said better. I feel that just captures it all. Like that mental bandwidth. I want to save it for the important things.
+
+[SPEAKER_01]
+Yeah. A hundred percent.
+
+[SPEAKER_00]
+Perfect. That was, yeah. I, I encourage you to try it. You should try it done and let me know what you think about it. I'm actually, you've already installed it while we were sitting here. I installed it.
+
+[SPEAKER_01]
+It was like, all right, cool. I really want to use this now because it's something that that key combination in IntelliJ is something that is second nature to me, like saving a file.
+
+[SPEAKER_00]
+Yeah, that was it. Oddly enough, that was that's why I started with it. That was one of the most attractive features of KD format, which is like, oh, you have an IntelliJ plugin. That makes it work. Like that, that I'm like, aha, that's because you're right. That command option L is just, sometimes I don't even think about it and I keep hitting it as I'm thinking.
+
+[SPEAKER_01]
+Yeah. I already, I mean, I opened up some of the stuff that I worked on from a jumpstart Android and like, let me see how that looks. And I just opened up a random file and it already reformatted, you know, 10, 20 lines. I'm like, Oh, I didn't even know I had an issue right there. And it's like, it wasn't, I can't say it's a big issue, but But maybe the, you know, where the line broke was incorrect or it wasn't a space after a colon or before a colon or something like that. But it's like, oh, that just, it just cleans it up even more, which is, it's kind of the polish that you need to just have a good, clean code base.
+
+[SPEAKER_00]
+Yeah. Yeah. And if you go to the KT format website, right, we'll add the link there. They also show examples where like, this is what it would otherwise be like, you know, formatted as. And here we are taking like a creative license to make it look more sane. So they have some good examples on the website too.
+
+[SPEAKER_01]
+That's what really sold me there. Seeing the websites like, hey, this is before KT format. This is with KT Lint. This is with something else. It's like, oh, and like here's what it is with KT format. It's like, oh, I really like that one a lot better. There we go. Cool.
+
+[SPEAKER_00]
+All right, Don, if folks want to find out your adventures and what do you think about it after you've tried it a little bit more, what's a good way to do that?
+
+[SPEAKER_01]
+Best way to do that is through follow me on Twitter. I've been a little quiet recently, but that's just because I've been working on a whole bunch of stuff and I'll have a lot to say here very soon. So follow me over on Twitter at Don Felker. And if folks want to see what you're up to and learn about all your new stuff that you're working on and everything that you're tinkering with, as always, how can they do that, Kaushik?
+
+[SPEAKER_00]
+Twitter is a good place. Again, I'm Kaushik Gopal. I'm also on Mastodon now. So, you know, it's the new hotness that kids are following these days. I'm on Mastodon and, you know, a bunch of other places.
+
+[SPEAKER_01]
+So, yeah, you can reach me out there.
+
+[UNKNOWN]
+Cool.
+
+[SPEAKER_00]
+All right, Don. Nice chatting with you. We will catch folks in the next episode.
+
+[SPEAKER_01]
+See you. Once again, this episode is brought to you by androidjobs.io. Post a free job posting. Sign up to get notified of those job postings. And you can also upgrade and make your job posting highlighted or pinned to the top or anything like that. And remember, all job postings are now 90 days long. So check it out, androidjobs.io. Thanks for listening.
+
+[SPEAKER_00]
+That's it for the show, folks. Fragmented is hosted by Don Felker and me, Kaushik Gopal. We edit and produce all the episodes here on Fragmented. You can find more Fragmented episodes at fragmentedpodcast.com. Thanks for listening, and we will catch you in the next episode.
