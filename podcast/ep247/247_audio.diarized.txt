@@ -1,0 +1,367 @@
+# ep247
+Podcast: Fragmented Podcast
+
+---
+
+[SPEAKER_02]
+This is Fragmented, an Android developer podcast where we talk about building good software and becoming better Android developers. I'm Don Felker. And I'm Kaushikupal. Welcome to the show. Kaushik, it's been exciting being back. I see a lot of people that are really liking a lot of the Android episodes. So it's good to hear. Thanks to everybody listening.
+
+[SPEAKER_00]
+Yeah, it's exciting to see all the comments and feedback. And it's also exciting for us to go back into some of these things and revisit what Android world is like 200 episodes in.
+
+[SPEAKER_02]
+It is. As we talked about offline, there's a lot of stuff that we were looking back through the history of the podcast and thinking like, wow, there's a whole bunch of topics that we actually probably need to rehash because things have changed so much over the years. So I think that's something that we and the listeners can look forward to is just a lot of stuff that's going to be talked about that needs to be talked about again.
+
+[SPEAKER_00]
+Yeah, yeah. And in the spirit of that, one of the topics, like, you know, we covered dependency injection, which is an evergreen topic. Another one of these topics that we have maybe touched in the past, but not with as much depth because it's one of those things that has evolved and we have finally come to an opinion. And it's more about modularization. And when we were talking about this, you said that you actually have the perfect guest to help us with this. So can you tell us a little more?
+
+[SPEAKER_02]
+Yes, absolutely. I've recently have worked with this individual regarding modularization and everything, and he has really opened my eyes to the tools that are out there, how I understand modularization, how dependency injection fits in this entire thing. And there's a bunch of concepts that I didn't even... think about because I've been part of many different large applications, but never the one that had this many modules and just so much complexity that was around. And the interesting part is this individual had so much experience with, you know, kind of doing things. Hey, here's a monolith. Now here's how we've maybe have done something one way and we realized it was the wrong way and so forth. And he actually had a presentation, which we'll talk about here shortly.
+
+[SPEAKER_01]
+But...
+
+[SPEAKER_02]
+Without any further ado, folks, I'd like to welcome Siggy Johnson to the show. Welcome to the show, Siggy. Hello. Thanks for having me. So for folks that aren't familiar with who you are, it would be great if you kind of give a brief background about who you are, maybe where you've worked, how you got started in Android development, and perhaps where you're even working at now.
+
+[SPEAKER_01]
+Yeah, sure. So hello, everybody. My name is Siggy Johnson, and I've been an Android engineer for over 10 years now. And for like the last six and a half years or so, I was working at Tinder, where I spent a lot of my time as part of the sort of client platform teams looking at things like modularizations and sort of how that fits into our engineering practices. Tinder, huh?
+
+[SPEAKER_00]
+That sounds familiar. Don, is there something like I'm missing here?
+
+[SPEAKER_02]
+Yeah, so I have been working at Tinder for the last year now, and that's where I worked with Siggy. So Siggy and I worked very closely together, actually in relation to modularization and many other different initiatives. Siggy has since moved on, I'll let him discuss that, but it was and still is an interesting project with a whole bunch of different moving parts.
+
+[SPEAKER_00]
+I like that, yeah. I mean, it's fine. I was trying to be quiet there, but yeah, definitely... Don had mentioned it, and that's also how we came to know about some of the really cool stuff that you guys have been working on. But before we get into that, I think there's this one topic that I really need to, I think listeners would appreciate. It's still left me slightly mind blown. Sigi, can you tell us a little about your name? What's your first name and last name?
+
+[SPEAKER_01]
+And where you're from, yeah. Yeah. Yeah, so I'm recently from Iceland. I've been living in the U.S. for some years now. But yeah, so my real name is Sigurd Johnson. I butcher that myself now, but I go by Sigurd Johnson here. And yeah, we have the system.
+
+[SPEAKER_00]
+And your last name is interesting for a specific reason. Can you tell us a little more about that?
+
+[SPEAKER_01]
+Yes. So my name is, last name is Johnson. And what that means is my father's name is John and I'm his son. So that's how that sort of is put together. And I'm literally Siggy, son of John.
+
+[SPEAKER_00]
+I love that. And this isn't something that your dad was like, you know what, I'm going to name Siggy. I might put his last name and let people know that, you know, he's my son. This isn't something that this is a common like sort of practice in Iceland, huh?
+
+[SPEAKER_01]
+Yeah, this is something that... was common throughout the region, I guess, back in the day and something that we've kept around in Iceland. But it gets maybe more unusual or interesting when you start to look at the daughters. So my sister, she's not a son. So she's John's daughter. And so that's her last name.
+
+[SPEAKER_02]
+Yeah, no. So that means like, I don't know what your sister's name, let's just call her Jane. So it'd be like, you know, Jane, John's daughter. And then since you're her brother, it'd be Siggy, John's son, right? Is that how it would be?
+
+[SPEAKER_01]
+Yeah, that's how we do it.
+
+[SPEAKER_02]
+And that's a very Icelandic cultural thing, right?
+
+[SPEAKER_01]
+Yeah, it's something that part of our culture and sort of our naming conventions, I guess. Yeah.
+
+[SPEAKER_00]
+I love it. If people don't learn anything about modernization, I think that tidbit alone is enough for people to be happy. At least I am. Things you never thought you'd learn on Fragmented. I know. Exactly. Jokes aside, though, modernization is... an extremely interesting topic. And Siki, you gave a talk about this semi-recently, right?
+
+[SPEAKER_01]
+Yeah, I think it was about a year ago at RoitCon I talked about modularization and the title was something about entangling the dependency graph.
+
+[SPEAKER_02]
+So this is a good, you know, kind of a good segue. So it was so, I guess, interesting and important that you were able to give a talk on it and DroidCon had you there. So I think there's so many angles that we can start with this, but I like to take always the beginner approach at this thing is like... Why is modularization even a topic? Because if I open up Android Studio, I get one module. It's my app module. I can just throw everything in whatever package structure I like. Isn't that okay? I mean, I know eventually this is called a monolith, I think. And we should talk about why it's called a monolith later. But why do we even need modularization, in your opinion? Or what's the point of the modularization? Or how do we get to it? So there's many different angles. I'll let you kind of run with it.
+
+[SPEAKER_00]
+Yeah, and it's also easier to just keep everything in one module, right? Like clean, like why do I have to worry about having multiple modules and complicate things unnecessarily?
+
+[SPEAKER_01]
+I think that's a great question. And maybe surprisingly, my answer would be most of the times you don't need anything. You don't need to add the extra complexity that comes along with it. But it tends to happen when you reach a certain threshold of the size of the code base, maybe the size of the team. So you end up having a lot of people. And that's something you'll probably hear me say again and again. It's really about the people that are working on the code. So you want to... put systems and processes in place so people aren't stepping on each other's toes and getting in each other's way.
+
+[SPEAKER_00]
+And so going back to Don's question, right? Typically, when we call it a monolith, right? Is that what we mean? Is it just like, hey, just single module, dump everything in one app module, everything is in there and you don't add anything else. If I hit file new project today on Android Studio, that's basically what I get.
+
+[SPEAKER_01]
+Yeah, you're going to get like one module and that's going to be your app module.
+
+[SPEAKER_02]
+So for, let's say I've got my application. Maybe I've gotten, you know, 10, 20, 30 screens. It was a startup. I've got one or two developers, but things have grown complex and I'm starting to get a lot more features and a lot different things. And maybe I've, like you said, it's maybe it's about the people. Maybe I'm approaching 10, 15 engineers. And I don't even know what that number is, which is a good question here. The root question I'm getting towards is, When does one person or one team need to think about, hey, it might be time to break up this monolith into multiple modules? What's the heuristic that you'll kind of follow? Or if you were to advise a team, what would you tell them?
+
+[SPEAKER_01]
+So there are like a few things that you can look at and sort of different angles to it. But I think probably the approach I would take and sort of thinking about this from a perspective of maybe talking to a new team that's having these questions, like asking what are your pain points? Like what is the team struggling with? What are the things that are getting in the way? And sort of slowing you down in your productivity. And some of those things can be solved with modernizations. But I think the wrong way to go about it is like you saw something in an article somewhere or heard something on a podcast. You're like, oh, we need to do this because it comes with some overhead and it doesn't solve all your problems, but it can be a really good tool to solve some specific problem.
+
+[SPEAKER_00]
+That's like a fascinating answer because I feel it also brings up some questions for me, right? Because you did mention a good point, which is what are the pain points, right? The pain points could be, you know, I don't know if it's cultural, but the pain points could be like, hey, the people in the team, you know, we're starting to grow big. We have like five... five members in the team and two work on one part of the app, three work on another part of the app, and we're constantly crisscrossing. So it makes sense to break it off into two modules. That's one way to look at it. The other that typically when, at least in the early days, when people talked about modularization, the biggest pain point was build times, right? Where we were like, hey, our build times are getting increasingly problematic. So therefore we need to modularize, right? Can you talk a little about that angle? Generally, where does that point come in? Because I think Don asked a good question, which is, what is the heuristic? Is the heuristic more like, hey, whatever comes first? If you're starting to notice... Because in my mind, typically people will... If you have a decently, moderately good functioning team... And the crisscrossing, you can sort of like say, hey, man, like, you know, just don't mess with this area, you know, or like, hey, person, don't mess with this area until like, you know, I finish my feature. So we can kind of sidestep that. The build times is where it gets really painful, where at that point, people are like starting to yell and complain. So is that a good starting point, you think?
+
+[SPEAKER_01]
+Yeah, I think that's usually where this starts out. It's like, hey, I'm making this small change in this small area of the code base. But in order to verify that, I have to build, compile, deploy this huge app that happens to ship that particular feature that I'm working on. And if that's the only way to validate the work you're doing, then yeah, that's going to really impact your ability to move quickly. And yeah, I can maybe talk a little bit about the history there. So this used to be the case. And I'm thinking back to my previous company as the build was pretty painful. And part of that is people will point the finger at Gradle. And for Gradle plugin, it's slow. And I'm like, look, it's doing a lot of things. So if you start looking into it, it's doing a lot of things. And you're asking it to do a lot of the things. as well. So I remember back in the day, so this is maybe some 10 years ago or so, we figured out that we could write our business logic, quote unquote, in pure JVM or pure Java modules. And this meant that we could write the test there. It wasn't dependent on the Android framework, which we thought was a good idea as well, because we didn't want to couple everything to that and delete context all over the place. But it came with the benefit of like, you could write the unit tests and the re-unit test would run instantly pretty much compared to at least what we're used to. But things have gotten a lot better since then. So like, I just wanted to kind of caveat the whole conversation with like, that probably shouldn't be... you're like only heuristic because if you look at it from a perspective of why the build is slow and why build times are high, it means there's a lot of complexity there, but it means there's a lot of dependencies to manage and sort of manifest tumors and resource resolutions to happen. And if that's hard for the compiler to do and the build tools to do, then it's probably also hard for humans to sort of grok and understand. where things are coming from, how they fit together, what makes up their features. So that's, I think, a more interesting angle to the problem.
+
+[SPEAKER_02]
+Interesting. It's got me thinking here that you have a lot of experience with this at Tinder and you kind of came up through the ranks and you talked about this in your talk, actually, where you decided, hey, we decided we wanted to start modularizing things. So it's kind of a two-part question here. The first part is like, what for you was the point in which you realized, hey, we need to modularize this? And then how did you decide to modularize? And I'm kind of... Knowing the history, I'm kind of like almost like pointing you down the path of like the wrong path, like the path that you realize, hey, this actually later on I realized didn't work. How did you decide to go down that path and what made you kind of move in that direction?
+
+[SPEAKER_01]
+Yeah, that's an interesting question. So I think... Yeah, hindsight is 20-20, right? So I'm not sure I'd call it wrong, but it definitely didn't work out long-term. But what we started out doing at Tinder, and this is around the time that I'm joining, we had maybe a handful of modules, was that we started to really lean into modularization by layer. So meaning that the key idea there is you don't want to be doing network requests in your UI, or you don't want to couple those sort of aspects of your app together. So we ended up with sort of extracting out what we then called like the domain layer and the data layer. And the idea is you're using the clean architecture paradigms and you're like your UI is sort of while your data and your API requests, your database stuff is hidden from your UI because you don't want to have coupling there.
+
+[SPEAKER_00]
+And this is like one of those, excuse me, perennial questions slash topics, right? Like I remember, you know, goes back to the early days where people used to say, hey, should I package by layer or package by feature? Like, you know, how are those things handled? And I love how you've like sort of consolidated that saying like you started out by, you know, modularizing by layer. Yeah. Can you tell us more? Because here's my challenge with that, right? Like having had gone through those experience as well in very similar fashions, I find that sometimes it's not exactly easy to say you should go just one route, right? For example, with the modularization by, you know, layer approach, people can say, hey, that doesn't make sense. So let's modularize by feature. But then you run into problems. Like, for example, for the longest time, was it Room? I think was the database. How do you fit that into a multi-module world? Dagger, for example, people use dependency injection. How do you fit that into a multi-module world? Dependency injection is an easier problem to solve now, but even the room thing, do you have a separate database per module? Or do you put it in or like, you know, what you would intuitively think is the right thing to do, which is have a single database, but then put that into a separate module and then have your other features depend on that module. Like that's the piece where it starts to get more beady and interesting, right?
+
+[SPEAKER_01]
+Yeah. I think this has some parallels to micro-architecture or microservice architecture. On the back end, then you hear in those realms, you hear things like applications still being joined at the database, right? So you end up with all these microservices that end up talking to the same database and end up sort of coupling them at that level. And the same is true on mobile app, but... I think maybe a key distinction there is that we do, at the end of the day, have to bundle everything together into one application and shape that binary to the world. So yeah, you can fight that or pretend you aren't doing that. But there are obviously some cases as well where you aren't doing that. We have different applications that you deploy out of the same code base for more advanced cases like that. I think in general, it depends. And there are trade-offs and the database question is a very interesting angle to this. So that's what we did. I mean, originally, we had the data module and that's where we moved our database schema. We're using SQL delight instead of room at the time. But it's the same idea. It's like, do you put all your tables... or like all your schemas in one place, then that also means that if any features, if the schema changes for any feature, then sort of everybody else becomes implicitly aware of that. The flip side of that is you probably also don't want to have, you know, spin up a new database for every feature in a mobile app. So you need to find the correct balance of sort of how things relate. And that's where we did find it quite useful to have that sort of separation by layer, is you can have... like one layer where you're doing all your retrofit things and all your SQL things, but you're like, you've encapsulated that, but it did mean that you ended up sort of putting the backbone of all the features into one place. So eventually we did have to figure out how to split those monoliths. Like we start to say that we had many monoliths then, you know, after some years of doing this. So then you need to get strategies to start splitting up your data layer, for example.
+
+[SPEAKER_00]
+And so where did you land eventually with that whole idea? Because I'm sure that's a question on people's mind. If I have a medium-sized app or even a large app for that matter, how exactly does one accommodate that? Are you saying basically that, hey, we will have to live in a world where you both modularize by partial layers and also by feature? Or are you saying that there's a better approach?
+
+[SPEAKER_01]
+So maybe before I give an answer to that, I can talk a little about the sort of the history and how we ended up where we landed. Yeah. Yes. Yes. That'd be great. We started out like I described with like these. Yeah, we motorized by layer. So we had data domain layer. But before long, we started to sort of wanted what we wanted to do. modularize the features themselves. So your UI code, your views and view models and all those nice things. Well, presenters maybe after that. So you wanted to also not be developing those as part of the big, slow-building monolith. So the question comes up, where do you put that code? And it's like, well, it goes into its own module. And then it's very logical to say, hey, but before we were doing this modularization by layer and... It gave us these nice things where you had sort of forced encapsulation and forced boundaries, which prevented its engineers from doing the quote-unquote wrong thing. So we wanted to sort of keep that in place as well. And what immersed was a pattern where we would sort of add a layer of modules. So for each feature, as the idea was, it would have a UI, data, and domain layer.
+
+[SPEAKER_00]
+And just so I'm understanding, if you have multiple features, like say, feature A is one module, feature B is one module, within those modules, again, you're saying feature A would have a UI layer, a data layer, and a, I forget what the third one is, but a domain layer, basically.
+
+[SPEAKER_02]
+So this started happening with all the features. That's kind of the direction you started moving into. At what point did you determine like, hey, maybe this isn't the best way to go about things? Or what was some of the cues that signaled, hey, this isn't working out the way we intended it to work?
+
+[SPEAKER_01]
+So yeah, first of all, this worked out pretty nicely for quite a while. But... Eventually, we had a build engineer who was looking at build times and how the project was growing and all that. And he said, look, you can't keep adding modules at the rate you're doing. It was an interesting thing to learn. And we're like, well, modules are pretty cheap. In theory, but turned out the real problem, there wasn't necessarily the number of modules in the project, but it was the complexity of the dependencies. So how the modules related to each other, that was getting out of hand. And every time you added a module, you would add, well, more than one dependency. So sort of the number of dependencies within the project was growing at like an exponential pace almost compared to the linear growth of the number of modules.
+
+[SPEAKER_00]
+Oh, that's fascinating. And you're saying just inherently those dependencies, the existence of those dependencies has a direct impact on the build times as against like just number of modules. Yeah.
+
+[SPEAKER_01]
+So it's sort of, and it has an impact on build time, but again, I think it has a bigger impact on, on people. So I see, I see what you're saying. Okay. Got it. And maybe I can sort of explain how things started to get sort of tangled. And that's where the talk came from, was that if you imagine doing these for multiple features, you have feature A, B, and C. Each of them has UI data and domain. Then you might have situations where the features start depending on each other. So... you need to go to feature B from feature A, or, you know, you maybe want to share a color or a string or something small, or you want to reuse some lipstick that was already implemented in that other feature. So you start to ask like, okay, how can those modules depend on each other? And that's where sort of, I think we'd say fail initially as we weren't specific enough about that because... They're like, well, you're not going to have UI depend on data. Well, you shouldn't do that. But still, that happens sometimes. But also, we're like, well, my UI module can probably depend on some other UI modules. They exist at the same layer. So if I need a resource or a string, I need some shared logic, it's probably fine if I just add a dependency on your feature. And if you do repeat that pattern for, you know, five plus years, you end up with some interesting structures. And that's sort of where we had found ourselves is like we had these long chains of modules that depended on each other. And that wasn't great for build times for performance or, you know, sort of the ability for engineers to reason about the project.
+
+[SPEAKER_00]
+Yeah, just the cognitive load, right? Because I remember this is so visceral in my mind because, you know, it's the same thing. You start with good intentions, but, you know, for example, if you're using a regular, you know, like in the Instacart app, for example, if I have an item card, that's a UI, but it's used in so many places that you're like, huh, maybe I should have that as a module. And then, you know, the other sort of features depend on that. Yeah. module that has an item card. And that's when you start to get in all these crisscrossing sort of dependencies. So that makes perfect sense.
+
+[SPEAKER_02]
+The thing that was interesting for me when you really showed me this in depth, Siggy, was kind of just how everything explodes underneath the hood.
+
+[SPEAKER_01]
+And we'll talk about some of the visualization tools here shortly.
+
+[SPEAKER_02]
+But it was interesting to finally see it visually of how these things were impacted. And I think you said something to me last year at some time when you said, hey, look, if you add this module, you're going to add feature X. And feature X happens to depend on feature, you know, let's say feature J. And then you're just, okay, big deal. My great old file just has one dependency in it. Like it's not a big deal, Don. It's just one big thing. But you said, but actually, if you go back through and you take a look at what J depends on, well, J depends on C and B and A, but B also depends on G and G depends on I and I depends on Z. And all of a sudden you explode into this humongous thing where someone down the road changes a variable over in module I, which then forces a humongous recompilation of the entire object graph because of just some weird dependency chain. Is that correct? Did I explain it correctly?
+
+[SPEAKER_01]
+Yeah, that's pretty much what happens, yeah.
+
+[SPEAKER_00]
+No, that makes perfect sense. I see it now. You guys explained it super well to the point where I'm like, okay. But this is nail-biting, by the way. I'm like, so help me. What am I supposed to do? Are there tools that can help point this out? What am I supposed to do? I find myself in this position. Help me out.
+
+[SPEAKER_02]
+Yeah, build times are big. I feel like everything's just mangled and big spaghetti mess. How do I wrap my head around it? What do I do?
+
+[SPEAKER_01]
+Yeah, so maybe before we dive into that, I want to talk about the logical next step is you start to maybe extract those common things. And that's also what we did is you start like, why... It's A depending on J in that case. So maybe you extract that out into a new module. So you have a library and then you have, or you can label it as well. Like you can have these core modules or common modules or base modules. And that's where sort of a pattern that started to emerge on the side. But those also, if you don't manage those well, you kind of end up... maybe exposing or coupling those core common dependencies to feature-specific things. So that's sort of what happened on the side as well. All of a sudden, you have some common library that depends on a specific feature. And now you think you made it a little better. And again, you just added a small dependency to a common module. And the diff looks pretty innocent. Just one line of code, right? But now all the consumers of that common module... are now also exposed to your future. And maybe they didn't want that.
+
+[SPEAKER_02]
+Okay. So we broke apart, you know, kind of got that common piece. Maybe we've found those common pieces and you've kind of moved those out. But like you said, we still kind of have a problem to kind of even wrap my head around it or someone who is in this situation, maybe like Kaushik is right now, like, okay, how can I figure out where my issues are? What tools have you used in the past to do this? Yeah.
+
+[SPEAKER_01]
+Yeah, so what we used and sort of as we went through the motions of figuring out that we weren't growing the code base at a sustainable pace and we had to change how we're doing some things, we started trying to figure out a way to look at this and prioritize that because you aren't going to, in a large project, you aren't going to press pause and refactor overnight. So we needed a way to sort of prioritize and also just wanted to understand. where the problems were and sort of how they had emerged. So we started, we had our own visualization tools. So if you remember early in the Dagger days, there was a ThermoSyphon example that sort of was able to run through a graph using GraphWiz. So we're using a very similar approach to that to sort of visualize our graph, but over time that had also grown to a state where it was really hard to make sense of that. It just looked like a... a blob, and I'll show an example of that in my talk. But it's really hard to sort of reason about that and see any structure from that. But we started playing around with some visualization tools. We found this tool called Gephi, which is an open source graph visualization tool. And we had that build engineer, Inaki, who was attended for a while. He sort of showed me the output of that. And it was like, my jaw just trying to kind of drop down. I was like, how did you make that graph? Because... What I was looking at was the modules that I knew inherently were bad or I had a suspicion, let's say, about it. They were just jumping off the page. I was like, oh, those big ones are the ones that we should be going after. So... So yeah, we use some like graph metrics there to sort of infer and you can graph sort of based on these different dimensions. And maybe we can go and talk about all the details of graph theory there. But the sort of key insight was you were able to visualize and also just like measure how bad or like quote unquote bad EMOS it was or like how big of an impact it was having on your entire build graph.
+
+[SPEAKER_00]
+And just two quick follow-up questions to that, right? You mentioned Gephi. What does Gephi take as an input? Can I just add it as a Gradle plugin or something? Or how do I get Gephi to visualize what my modules look like?
+
+[SPEAKER_01]
+We had our own sort of custom task in Gradle that just sort of created a graph representation of your project. But we later found tools that we then started using, like this one called Graph Assert, that also allows you, and we'll talk about that later, allows you to prevent bad patterns from repeating themselves. But it also outputs a graph representation of your project. Yeah. And then you can take that and plug that into tools like Gephi, GraphWiz or other graphing tools.
+
+[SPEAKER_00]
+Got it. And just to circle back on the point you made, that visualization helped you understand where you need to focus your efforts on. So basically, when you saw that visualization, was there basically just, you're like, this module has arrows going in and out like all over the place. So we need to do something about this module. Is that how you thought about it or...
+
+[SPEAKER_01]
+Yeah. And it created some interesting discussions and ways to look at it because if you see a module that has a lot of arrows coming into it, so it has a lot of modules that depend on that, you might look at that and say, this is bad. But it's not always bad. If you have something like a design system, that's sort of what you want. Everybody's using that design system. So you can't really say that that is bad. Conversely, if you look at a module and it has a lot of arrows going out of it, you might say, well, that's bad because that module has a lot of dependencies. And if you look at the app or a feature module through that lens, you're like, well, it's using a lot of libraries. And that's also sort of what you want. You don't want to be writing everything from scratch. But the insight there was that it was when it was a combination of those two things. So you had modules that have a lot of consumers or dependencies coming in. And those same modules are depending on a lot of other things. That's sort of where you want to start investigating and see what's up and see if you can apply some patterns or split things apart. Because often it was sort of, you know, maybe you had abstractions that were coupled in one module and you were able to split them out. Or maybe the module had grown to serve two different purposes. One of them was meant for a lot of consumers and the other was sort of meant to encapsulate things. So using often a lot of dependencies. Yeah.
+
+[SPEAKER_00]
+That makes a lot of sense. Thank you. Yeah, that clarifies it. That was the aha moment, right? Where you're like, you have this thing that depends on multiple things, but also gets dependent on something's up there.
+
+[SPEAKER_02]
+Yeah. You mentioned graph theory. I don't want to go down the rabbit hole too deep because it's a really complicated stuff. But for folks that are, again, maybe this is the first time they've even heard these words. What really is graph theory, if you had to explain it in like a Reader's Digest version or like an elevator pitch, just for folks who are kind of just getting started with this?
+
+[SPEAKER_01]
+So, sorry, no pressure. I don't have like the theoretical definitions, but it's really just like, it's a common practice. And you'll probably remember this from like studying CS. It's like, it's just a way to represent relationships between things. And, you know, build graphs happen to be directed. So there are a lot of like algorithms and sort of... optimizations that can be applied to sort of describe the problem. Yeah. And like, and I'm sort of blanking on this, but yeah, you can like describe a problem from like more of like a math perspective and put numbers on it. So it's not subjective if a module is good or bad, but you can like put actual numbers on it and rank them. That's sort of a high level idea there. Okay. Thank you. Appreciate it.
+
+[SPEAKER_02]
+There was a couple of plugins, and actually you recently, I think, released one on your GitHub as well that have been used. One, I think maybe you even mentioned already, which was like the dependency analysis Android Gradle plugin. It seems that that's something that's very useful. What did you find, or A, why did you decide to use this and how did it benefit you in... managing this big dependency graph and kind of figuring things out. Was this a humongous help to you, this exact plugin or what?
+
+[SPEAKER_01]
+Yeah, this one has been really helpful and it sort of does a lot of things. I don't want to cover all of that, but the main thing that... helped us sort of starting our cleanup process was that it's able to identify unused dependencies. That's maybe the main thing. So it can tell you that you have modules, maybe it's left over from refactoring or, you know, some things moved around or whatever the reason is, but... Or maybe it was a copy-paste error from a different module when it was created. But for whatever reason, there is a dependency in a module that doesn't need to be there. So those are the easiest things to solve. It's like you can just outright remove that. And now your build graph is simpler.
+
+[SPEAKER_02]
+What are some of the other things that it has done that you've used? I mean, the reason why I'm asking this question is I feel like other people might be able to kind of use this to say, hey, again, Kaushik's in a really weird situation. He's got some crazy build times. Can he use this tool also? He's eliminated the unused dependencies, but can he also use this tool for anything else to help him kind of clean up his situation or get into a better space? Yeah.
+
+[SPEAKER_01]
+Yeah, I'm trying to think how this fit into the big picture. But yeah, it can tell you also just why dependencies are there. That's a really helpful thing that I can do. So you can ask it, maybe you're in a UI module. And if you look at your dependencies, it can also help you just to look at their dependencies. Like, why do I depend on some SQL things? I shouldn't be depending on SQL things in my UI module, maybe, or a component library. And it can sort of help you realize why that is there and how you can then go about removing that.
+
+[SPEAKER_00]
+And Siggy, you, Don was mentioning that you released this plugin too. It's a Gradle plugin to help untangle dependencies, the Graph Entangler plugin. Yeah. Can you tell a little about this? What does this plugin do compared to the other?
+
+[SPEAKER_01]
+Yeah. So maybe I'll start with the Graph Assert plugin that we sort of started out. And it was, yeah. So the Graphicor plugin allows you to, it sort of does two things. It allows you to generate the graphs I mentioned earlier from your plugin and it shows you some stats for it. So it tells you how, we call it height. or the diameter of your graph. So how long those chains we talked about earlier are. So as I was prepping my talk last year, I wanted to give people the ability to use some of these metrics that I was discussing, like in degrees, out degrees, between the centrality and those fun things. So yeah, I had the initial idea to add it to that plugin, but it didn't fit at all. So I had promised to share something. Yeah, beyond that, so that's where I decided to publish my own plugin as well. And that's something we use at Tinder to sort of help us understand and reason about our dependency graph. So that's up on GitHub today if you want to go check it out.
+
+[SPEAKER_02]
+Yeah, we'll put the link in the show notes to it.
+
+[SPEAKER_00]
+And just so I understand, sorry, so I'm going to go back to my app now. I'm going to add your plugin, like Graph Entangler plugin. Yeah. What will that give me? Like, what are some of the things that I can start to notice where I'm like, oh, okay, that's what I need to start focusing on. Can you tell me how I'm supposed to navigate that?
+
+[SPEAKER_01]
+Yeah. So like we're high level, there's the two main things that it does. One is just it analyzes your dependency graph and generates those stats. So you don't need to be looking at things visually. And spinning up tools like Gephi, it will sort of calculate those metrics for you. So you can get your height, your degrees for your modules between the centrality and other metrics, like in a table format. They can then go and look and you can sort and sort of extract that maybe into other tools. Like we were like putting this into Grafana so we could track things over time and how we're making progress against some of these.
+
+[SPEAKER_00]
+That's pretty sick. That's pretty cool.
+
+[SPEAKER_01]
+So yeah, that's sort of the key part of that. But as an added benefit, we do also output these graph representations of your modules or of the entire graph and also reduce graphs for particular modules. Let me try to explain that a little bit. So first, you can get a holistic view of your entire build graph. What happens for Lars Project is that gets really overwhelming, and it's sort of hard to see any patterns or reason about that. So what we also do there is you take a specific module, maybe you own FeatureFoo, and you're working on that, and you're wondering why that is slow and what you can do to optimize that. We can render a graph. Just from that module's perspective, you can see sort of how it's connected to other modules and what other modules are connected into that one. So you can see how it's using other modules and how other new modules are using your feature module.
+
+[SPEAKER_02]
+Is that output as a visual image? Is it just text? Or how does it output again?
+
+[SPEAKER_01]
+So it's outputted using the graphics format. So yeah, they change the file. I think it's like .files, essentially. And then you can take those and drop them into tools like Gaffey that I mentioned earlier. There are a bunch of other tools as well. Or you can sort of render them from a command line using the graphics library.
+
+[SPEAKER_02]
+There's something that you've said multiple times here that I want to make sure that the folks understand that I didn't really understand until multiple times, multiple conversations with you. And that is the term graph height. What does graph height mean to someone who's never heard it before? I mean, what's the best way to explain it to somebody?
+
+[SPEAKER_01]
+I think maybe, and it's not my favorite way to think about it, but the best way to explain that might be in terms of build time. Okay. So imagine you had this scenario you described earlier where you have modules that all depend on each other in sequence. You have A depends on B, depends on C, depends on D. So if you have that scenario, it's the longest path through that graph. Okay. So in that case, there are no other dependencies, A, B, C, D. Your height would be 4. And what that means from a build perspective is you have to start building D, then C, then B, and then A. You can't do any of them in parallel. So that's where you start hurting, really, from a build time perspective. Yeah, so if you take that and apply that to a large graph, you'll often end up seeing these very long paths. And that's what happened for us at Tinder. Our graph was really high. So it was over 30 in height, which means that for a build, it would have to build at least 30 or 35, I think it was... modules in sequence just to build the app. So that's like an obvious thing you might want to optimize for.
+
+[SPEAKER_00]
+It's interesting because there's two aspects to it, right? One is while you work on the module itself, if you make a change somewhere up, then you're like talking about those, like that entire chain. So that's one problem that comes of having the long graph. But the other is just in general, when you're building, you can't parallelize, right? So that means there's the length that the dependency causes, but there's also the parallelization problem, which is you're not using your machine's power to sort of do things in parallel.
+
+[SPEAKER_01]
+Exactly. And again, from the human perspective, it's also hard to reason about what's happening at like 20 layers above you if you're making a change. So I want to sneak that in there as well.
+
+[SPEAKER_02]
+I have so many other notes here that I want to go over. But to be honest, with just the amount of time we have, I can't even get to them because this is such a deep topic. And I'm surprised you only had, I think it was 30 minutes or 35 minutes in your talk at DroidCon. It's so much data. I mean, we talk about degrees in and out between the centrality. All these are very important concepts to Grok. And I think it's important for people to remember those terms and maybe revisit that podcast. Yeah. So that's something they'll want to keep in mind. But what I would really want to kind of direct us towards here is like, okay, we know we've got this situation. The graphite is really tall. Again, I don't know what a good number for graphite is. Maybe it's 10, maybe it's 25. I don't know. I'm going to refer to you on that one. But maybe we've determined it's just too big and we need to kind of move our app in a better direction. What is... If we're in a weird situation where we've got these problems, we've talked about the build problems, we're having the human problem where it's just hard to really reason about. I don't even know how this thing's connected because there's so many interconnected dependencies and it's just too much for my brain to hold. What's... a good way for someone to start moving in the right path? Or what is a path that you would recommend a team moving towards to help improve their build times, to help things more in their brain to start realizing it so it's easier? And I know I'm throwing a bunch of questions at you, but hey, if that was a situation that you were brought on board for a company to consult with them for, what would you do and how would you approach it?
+
+[SPEAKER_01]
+I'd have the same answer, I think, for all cases, and that would be to simplify. If you're finding yourself in a situation where the build tools are confused, the developers are confused, you've probably created the structure that is just too complicated. Yeah. That's sort of what we did at Tinder. That's, I think, what I would recommend is you start to get really specific about what you want the structure to look like and what goes where. And again, keeping that super simple. So what we did at Tinder is we said, look, we have made up a bunch of labels for things, and they make sense in isolation. The common labels, the base labels, the domain labels. that they aren't really useful as a way to organize things. So we took a step back and looked at what are really the things that make up the app? And we decided that, like, hey, there's going to be three types of modules. There's going to be app modules, there's going to be feature modules, and there are going to be libraries. And we didn't need anything else. Well, there was one other thing that we needed, and that's the right dimension that we added, is... We said libraries can be public or internal. So that's meant to encapsulate that sometimes you want to expose a fancy API or library to everybody so they can use it. But other times you want to encapsulate and hide code from everybody else or sort of isolate it. So those are sort of meant to work in tandem to have that separation that also helps sort of with the DI aspect of it. I won't really go into, but you have a way or like a place to put your inversion in place.
+
+[SPEAKER_00]
+And sorry, just to recap, you said app modules, feature modules, and lib modules.
+
+[SPEAKER_02]
+Yeah. Now, these different... I mean, I think... I know you said you didn't want to get into the DI stuff, but I think that's almost probably one of the most important pieces here because it allows us to kind of decouple... Or the way that we do this allows us to decouple parts of the app because... And this is from my experience with this architecture. We have perhaps these public library modules or something like that. Now, in these public modules, this is where I'm going to put something like interfaces, right? I'm not going to put the actual implementation. I might put that inside of the internal code because I don't want to expose that. But I do want to expose the public interface to it. And the reason for this is multiple, perhaps. I can easily test. I can easily mock or fake that out. But then also, I think one of the big things here is, and please correct me if I'm saying this wrong, that at build time, we can have Dagger or whatever dependency injection tool we're using act as a way to glue everything together at the app layer. So the app layer says, hey, we know about the app that I think is the only thing that can know about public and internal stuff. Like you can't have... some other public library depend on something that's internal or something like that and basically this is forcing you to have this separation and then what this does is at build time it's gluing it all together so you don't have so you're kind of almost like naturally reducing the height of your graph is am i saying that right or please fill in any of the gaps yeah i think that was a very good way to describe it and and
+
+[SPEAKER_01]
+So yeah, we used Hilt and Dagger in our process that really helped making these integrations like serial line integrations. So you just add a dependency and that sort of fulfills a contract that just specified. But to try to maybe simplify it a little bit, so if you're an Android engineer today, you're probably familiar with the sort of recommended direct repository pattern. So the idea is you put a repository that encapsulates your data, like we described, like your database interactions or API interactions. You're not exposing that to your view models or presenters directly. So we already have these patterns in place almost. So it's like you have that boundary pattern But if you say, put that repository with the implementation in a Gradle module, and then you have your feature module depend on that repository module to add compile time, you still have to compile all your API dependencies. You have to bring in and sort of pollute your namespace or index, if you will, as well. Like you have to compile... say, the SQL stuff. So if you have a SQL database and you've put that in a library, when you're compiling your feature, you still have to compile that or rely on that having been compiled before. So you still, although you don't expose that directly, you've sort of implicitly or transitively exposed your consumers to the fact that you need to have SQL on your class path, if nothing else. That's where you can, it's really easy to split that. So you have an interface for your repository. And that's the only thing that the consumers need to know about. You can put that in a public module and the implementation for the repository can be like in a sibling internal module. And it's the app's job then to wire those together. So say I'm using that internal module to fulfill those dependencies. Yeah.
+
+[SPEAKER_02]
+And I don't even know. And so given that, that's a great example. Given that example, my interface might just return like a flow of customers, right? I don't even know that it's using SQL under the hood. I don't know that it's using data store or whatever. I just know I'm getting back a flow of customers and I just give it a query. Is that correct?
+
+[SPEAKER_01]
+That is correct. And that's where you can then sort of elaborate from there and maybe you put up interfaces for use cases in your public libraries and push the repository even further down. But you get these opportunities to invert at different places for different purposes.
+
+[SPEAKER_02]
+And then it's, so let's say I'm building a feature, right? I've got a feature module and inside this feature module inside of there, I've got a basically sub module in there, which is called like public and internal that feature module. It can't talk to any other feature modules, internal module, right? It can only talk to other public modules. Is that correct? Yeah.
+
+[SPEAKER_01]
+Yeah, that is correct. That's a very important thing. So thanks for calling that. And that's where the graph assert plugin really helped. We did force that. So it will just fail at build time or in CI if you try to add dependencies like that that we're not expecting. And this really helps engineers to be clear about the intentionality and avoids a situation where you end up mixing abstractions and implementation details. And that's where you have these exposures usually happen.
+
+[SPEAKER_00]
+And Graph Assert is the plugin that enforces this? Or did you have to add a separate check?
+
+[SPEAKER_01]
+Yeah.
+
+[SPEAKER_02]
+Yeah. So let's go. I don't want to skim over that. I think this module Graph Assert plugin thing is super important because this acts as a build time. It'll fail the build, right? Siggy, it'll fail the build if you can set these rules in there. And if one module type depends on another module type and you're like, hey, we don't want that to happen, it'll fail the build. Is that how it works or what?
+
+[SPEAKER_01]
+Yeah, that's how it works. Exactly. So it sort of takes the humans out of it as well, which helps with just making PRs more efficient. But it's not a value judgment at the time. It's like your feature cannot depend directly on that other thing. So we're going to stop you right there before it becomes a bigger problem in Escalade.
+
+[SPEAKER_00]
+And just to circle back on a previous question I asked, right? So I understand the app feature lib sort of differentiation and within those having the submodules of public and internal, the public and internal, you don't always have to have them. It's optional, right? Like if you don't necessarily need to have an internal, like do you always foresee having a public and internal for every single module or are there cases where you probably just don't need it?
+
+[SPEAKER_01]
+Yeah. Yeah, you can make some ad center structure and that's where it sort of maybe gets into the advanced usages. But if you take your question from earlier, like how do you manage your databases?
+
+[SPEAKER_00]
+Exactly.
+
+[SPEAKER_01]
+Yeah. Yes. So you can have multiple public... modules that are feature-facing or specific to individual features. So those features can only depend on that small subset of your interface or your API. And then you can still have a single implementation module, but you've sort of hidden that from the consumer. So your feature modules, and again, feature modules are probably where you want engineers to spend most of their time. They're making the views look nice and all that. they're never exposed to the fact that you have a single monolith database module.
+
+[SPEAKER_00]
+Ah, interesting. And just to clarify this, maybe we can take an example. Say I'm working on a feature module and I need to access a customer repository that gives me a flow of customer, right? Like, you know, the coroutines flow of customer. Yeah. Can you help me understand? So let's start with where does the customer object exist? Then where is the customer database object? You know, the schema thing exists. Where does my SQL delight database exist? Can you maybe briefly touch on that? I think that'll like tie the ribbon. Yeah.
+
+[SPEAKER_01]
+Yeah, so there's an assumption there that I want to poke at a little bit. It's like, is there a central definition of a customer? Or is there a definition of a customer as it pertains to feature A? So both can be correct. So the system doesn't force your hand there. Yeah. It's a very interesting aspect of it. But okay, in that case, let's say there is like a well-defined interface for a data class called customer that is sort of shared across the application. You would have that defined in a public library. So something like library customer public with the colons in Gradle is where that would be. All right, great. You could then have either in that same module, again, you don't need to be super granular, but you could have, say, a use case defined there that is load customers. So it's just like an interface that exposes a flow of customers. Or like a flow of list of customers, if you want to do that. So from feature A perspective, that's the contract that you have in place. And then, yeah, now you need somewhere to implement that module, that dependency. You can also start developing and testing and iterating on feature A just from there because you don't care where it comes from. And that's sort of the key thing. But yeah, then you'd have in, say, library customer internal, you would have an implementation for that use case that you specified that gives you a flow of list of customer. And that's where you would have your repository implementation. And that's where you would... talk to the network or go to disk or a combination of those or sort of manage that complexity behind the scenes in a way that you don't need to expose that to your feature.
+
+[SPEAKER_00]
+Got it. And that implementation module, right? If it's talking to a database, coming back to the original question... Would you put a separate database inside that implementation module or would you have that implementation module depend on something else that contains the database?
+
+[SPEAKER_01]
+Yeah. So this is, again, you have flexibility. So say you have the customer library and you also have, let's say, I don't know, invoice library and you've sort of packaged them separately, but they still need to be... using the same schema or same database. So this is where you can start to layer this in. Maybe you'll extract the library just for your SQL schema. So you can have that still like a single module. So now you'd have a public database library, for example. And now your internal libraries can depend on that one.
+
+[SPEAKER_00]
+So the implementation model, like just how like in that custom lib customer public, there's going to be a lib customer internal or, you know, whatever you call the implementation thing, which, and that module can depend on this database module. So feature A, which is what we're working on, has no idea about the database. And that's what you meant by like, you know, it's completely clean because it's just, I have an interface. I don't care how it's carried over. The implementation module in turn can depend on multiple other libraries that provide or help combine that contract.
+
+[SPEAKER_01]
+And then, again, you can stack or split up the database schema. So maybe you're doing code chain or you're using SQL delight. You can have that or you can have a public interface on top of that. And again, just the implementation detail down again, another layer, but... Maybe one thing to touch on here as well is like, yeah, somebody will hear this or look at this and say like, hey, what's stopping feature A from depending directly on the database module? Yeah, good point. So like you've created the public library there that is not meant for consumption to... by the features. So this is where it can be very tempting to create another tier of modules. So it's like foundation modules, core modules. But we thought it wasn't worth it. And it's not, at that point, it's not the build system's job to tell the engineers to don't talk to the database directly. So there's still going to be common sense or reviews in place. needed, you can probably create custom rules if you wanted to get really strict about it. But we decided that it wasn't worth adding more complexity to solve for this or to prevent people from doing the wrong thing.
+
+[SPEAKER_00]
+Right. It's just relying on general engineering wisdom that, hey, you probably don't want to do this. And that's learned or shared knowledge.
+
+[SPEAKER_01]
+Yeah. I was going to say, you can always, as a feature engineer, you can always, I don't know, import OKCDP directly in your module and start doing network things. So I don't think it's the job of the build system to try to stop you from doing that. Yeah.
+
+[SPEAKER_00]
+Yeah, you're right. I mean, there's nothing stopping you from like importing retrofit and just creating like forget, you know, injection, be damned, you know, just create a new thing in your module. Like, you know, the reason, yeah, that makes perfect sense. You're saying the same reasons as to why you wouldn't do that apply to why, you know, you probably shouldn't have these dependencies. That makes sense.
+
+[SPEAKER_02]
+This all goes back to, for me, like the module graph assert stuff, because it's, I think about it, I'm like, all right, well, how can I make sure that I'm not, you know, I'll have a public feature and I want to make sure that, Hey, I need to use this thing. It's in some, you know, some other internal feature stuff. And I'll try to just add it because you can just add it inside of Gradle, but then the build will fail. Yeah. And what that does for me is it makes me think like, oh, wait, I need this thing that's internal over here. Wait, is there an interface that I can use that's public? If not, okay, that gives me a cue that I need to perform some type of extraction to, okay, you know, can I get an interface in a public module so I can depend on that? And then, you know, the graph cert library is doing its job. Okay. So that's been really useful for me just to make me think about things a little bit differently. And it kind of has caught me in some of those weird situations where I'm like, oh, I just need to use this thing real fast. And it's been a good guardrail for me. But to kind of rewind it all the way back for, again, I like to take it to the beginner level for the folks that are wondering like, okay, I get it. We've got these... these feature modules we've got these library modules and we got app and what i like to think is like you have the app think of a circle at the top and then you have the feature modules on the left you know and then you know the libraries on the right and then underneath that they have you know internal and public libraries but you know we have these rules where you can't depend on you know can't do these cross-dependency things. And I think he talks about it great in his talk, so please watch out if you're still listening here. The part that really made me glue it together is like, okay, inside of the app module, we just tell Dagger, hey, pull in all of the modules, which inside of your feature module, you'll have a... I think it's a feature or is it internal? One of those modules, you'll have a... dagger module says hey here's how here is the implementation of this interface i think that's the internal one and then at build time dagger will just say hey i know exactly how to wire everything up and i'll connect everything for you i'll connect all the dots which is really useful but it buys you also something that we don't have time to get into now which is the opportunity for you to create small little miniature applications that you can work within that don't require you to pull in the entire application. Like you can have like little miniature Android applications that just allow you to run your feature. And then you say, all right, I'm going to provide fake data, fake authorization, fake this, fake that. This module depends on all these things like authentication and HTTP and this repository. but it's just depending upon interfaces. And now I can just provide fakes for them and actually iterate very quickly and I have to build the application. And that's something that is, you know, cute as Ziggy and the folks that were at Tinder before me that you guys enabled, which has been fantastic. And I don't know if you have anything to add to that, Ziggy.
+
+[SPEAKER_01]
+No, I think that was a great sort of summarization. And it's really an important aspect of that. So back to sort of Kausik's example, you have your feature and all it needs is just a flow of a customer. And the idea there is you get better testability with that, right? So... you're probably already creating tests that are sort of giving you or like throwing different data at your feature. So the idea was we could just allow you to run that as a standalone application and sort of having this pattern in place really enabled that. So you can write your tests and you can also just run your feature in isolation using whatever data you want to throw at it. It's been really helpful for... Again, like the humans that are working on this, so it's like helping them get into a flow state and helping them be productive and get quick iteration loops or feedback loops.
+
+[SPEAKER_02]
+Siggy, this has been amazing. There's a ton of information in here. What I would really love from you, if you have any parting wisdom, as Kaushik always says, what would you advise folks who were beginning down this path if they were to say, hey, I do have issues with our build and I know there's modularization problems or I just want to avoid them in general. What's the perhaps parting wisdom that you would leave folks with saying, hey, go check this out, do this, keep this in mind, et cetera?
+
+[SPEAKER_01]
+Parting wisdom, I think, would be to just keep it simple and manage your dependencies. So yeah, and that is sort of resist the urge to add cleverness or complexity to your layers or definitions. And yeah, just sort of look at your... Take stock of your module graph. Look at what it looks like, how things are connected more than just... what things are there and sort of, yeah, take this from there and you'll know your own code base better than anybody else. So use those insights and, yeah, you know, try to poke at the things that don't look right.
+
+[SPEAKER_00]
+And I really appreciate that. Like, I think I finally understand because you started by saying, you started the episode by saying, hey, keep it simple, right? And I'm like, well, that's easy to say. But I think I finally get what you're saying now, which is, you know, the default answer should not be... oh, I saw this person, I saw Siggy say this on episode of Fragmented, therefore I must have a public and internal. Or I saw this fancy blog post that said, this is how I should split. So I'm going to go back and create a MR for all of my colleagues. So I'm just breaking the whole app into a whole bunch of modules. That isn't the idea, right? It's just first look. You mentioned a lot of these great tools. Use these tools, assess the state of the world, and start focusing on the ones where you're actually having a problem, right? And it's funny because I remember in the early days, like literally episode one is where we talked about testing, right? And I remember Don and I used to say this, right? The reason for finding all these pure Java modules and all these things is to serve that effect, right? Because we had a lot of Ruby and Rails experience in the previous days. In an ideal world, if I have a single monolith and everything's quick and fast and my build times are sub 30 seconds, I'm not going to bother with any of this. I don't have to do any of this. If my goal is achieved, which is I want to build features, then I can do it in a way where... I'm able to comprehend that complexity. That's all that matters. So I feel like your advice is actually really resonating well with me now, which is like, hey, approach it as wanting to solve a specific problem. Don't approach it as a guidance towards following a convention.
+
+[SPEAKER_01]
+Yeah, I think that's a great way to put it. You asked about heuristics earlier, and one fun one that we've used is it shouldn't take a committee to figure out where something goes. And that's a real issue if you have a complex setup that we used to. It's like, oh, where should I put this? And if you're spending too much time on that, then I'd look into simplifying again.
+
+[SPEAKER_00]
+This is fantastic, Ziggy. Thank you so much for all the valuable information. If folks wanted to reach out to you or if you had any shout outs or like you wanted to call out anything, anything that you wanted to let people know?
+
+[SPEAKER_01]
+Yeah, I did want to announce or tell people that I'm no longer in Tinder. So if that wasn't clear, I left a few weeks ago. I had a great time there for like six plus years. And yeah, really proud of sort of everything we have accomplished there. But I switched gears a little bit and I'm now at a company called Kindred.
+
+[SPEAKER_00]
+Oh, and just quickly, what does Kindred do?
+
+[SPEAKER_01]
+So Kindred is a members-only home swapping network where we match to make members who have a similar lifestyle to stay at each other's homes instead of having to rent out Airbnbs or hotels. I'll drop a referral link in the show notes for people that may want to find out more.
+
+[SPEAKER_00]
+Very interesting. We'll definitely make sure to add links there to Kindred and also Siggy's contacts. Siggy, what's the best way for people to reach out to you? I'm going to probably keep barraging you now with more questions on modularization. What's a good way for me and the listeners to do that?
+
+[SPEAKER_01]
+So I think probably on Twitter. I'm not super active there, but I lurk around. So I'm on Twitter. Siggy Johns.
+
+[SPEAKER_00]
+Siggy Johns. Who is Siggy Johnson?
+
+[SPEAKER_01]
+We shorten that more on the Icelandic namings, I guess.
+
+[SPEAKER_00]
+Perfect. Perfect. Thanks for that, Siggy. And Don, if folks want to reach out to you based on some of the experience that you had with modernization, what's a good place to do that?
+
+[SPEAKER_02]
+Probably the easiest place is going to be Twitter or my website. And both of those are just Don Felker or DonFelker.com. And Kaushik, where can folks reach you?
+
+[SPEAKER_00]
+My website, KAU.SH, is the best way to reach me. And you can find all the ways to reach me there. Sigi, thank you so much. This was gold. This is super useful information. It's gotten me to think more about my existing apps and how to rethink modularization. So thank you so much for taking the time and sharing all your knowledge with our listeners.
+
+[SPEAKER_01]
+Thanks for having me.
+
+[SPEAKER_00]
+That's it for the show, folks. Fragmented is hosted by Don Felker and me, Kaushik Gopal. We edit and produce all the episodes here on Fragmented. You can find more Fragmented episodes at fragmentedpodcast.com. Thanks for listening, and we will catch you in the next episode.
