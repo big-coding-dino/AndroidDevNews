@@ -1,0 +1,319 @@
+# ep245
+Podcast: Fragmented Podcast
+
+---
+
+[SPEAKER_01]
+This is Fragmented, an Android developer podcast where we talk about building good software and becoming better Android developers. I'm Don Felker. And I'm Kaushik Gopal. Welcome to the show. Kaushik, my friend, the weather is getting warm. How are you doing out there on the West Coast?
+
+[SPEAKER_00]
+It's getting much warmer here too on the West Coast. I'm really enjoying this. It reminds me why I live in California. It's nice and sunny. It does still get a little chilly at night. The weather is a little weird like that, but when the sun shines, it feels like you're in heaven.
+
+[SPEAKER_01]
+It does, yeah. It's enjoyable, just like the topic that we're going to be talking about today, which is interesting because... Just this week, I sent out a tweet about how enjoyable it is to work with compose. And then it just happens to be that we're going to be talking about compose today. So then I'll let you fill in who we're going to be talking to and what we'll be talking about, because you have a background with this person and they've actually been on the show before, but I'll let you take it. And, you know, I'll kind of prime it here. What are we going to be talking about and who are we talking to?
+
+[SPEAKER_00]
+So I was touching base, like you said, with one of my good friends and a colleague from the past. So Colin White is going to be joining us on this show. Folks will remember the last time Colin was on the show was, I think, episode 171. We open sourced an image loading library for Kotlin, the famous coil library that... Most people who pick a Kotlin solution and want a really good, solid, well-thought-of image-loading library use. Colin recently joined Square. He joined, well, Block, I guess. He joined the Cache app, and he and I were touching base, and he was telling me that he's been working on some really cool things with Compose. So I figured, hey, we should talk about some of that stuff. You know, we have talked about... Jetpack Compose on Fragmented. You know, I think we first talked to Vinay Gabba from Airbnb, who's been doing some really cool things. That was around episode 231. And even before that, like, you know, arguably the father of Jetpack Compose, Leland, we talked to him, like, you know, in two episodes where we really... dove deep into like the compiler and like more on the google side of things right so today i'm really excited because colin's been working on some really cool stuff so without further ado colin welcome back hey guys thanks for having me on the podcast again
+
+[SPEAKER_01]
+Thank you for coming back and joining us. And like Kaushik said, again, thank you for the Coil Library. I know that I use it. Many other people use it. It's fantastic. But I'm really interested to hear what you're learning on, excuse me, what you've been working on recently. But before we get down to that, there are probably a lot of people that are just starting to listen to this podcast that I've... are getting interested in Compose and they found this podcast and so forth. So they may not know about you, perhaps where you work now and so forth. So could you give us a little background about who you are, where you work and kind of and so forth?
+
+[SPEAKER_02]
+For sure. Yeah. So as Kaushik mentioned, I used to work with Kaushik over at Instacart. Recently moved over to the Cash App slash Blocks slash Square, the company of many names. And yeah, I work on some kind of eccentric Kotlin things on Cash App. I also work a little bit on product stuff at CashUp. Technically, the team I'm on is the CashOS team. And yeah, I work with a bunch of awesome people you might know in the Android community, folks like Jesse Wilson and Jake Wharton. And we're going to talk about, yeah, one of the projects that I've been working on called Treehouse.
+
+[SPEAKER_00]
+Treehouse. So let's talk Treehouse. Treehouse is interesting because A, I will say initially, Colin, when you told me about it, I was super confused. I'm like, wait, what? Treehouse? What does Treehouse mean? Because there's also other libraries called Zipline and Redwood. So there's Zipline, Redwood, Treehouse, and all these names. And I'm like, oh my God, I don't understand any of this. I need to really talk to you about this. So... I guess like we should, can you tell us a little like at a high level before we dive in deep? Like, is that the stuff that you're working on? Like, yeah. Tell us more like some of the stuff that you've been working on. Yeah. What is it? Yeah.
+
+[SPEAKER_02]
+Yeah, so definitely there's a lot to break down in this episode, I feel like. But the first thing to kind of understand is Treehouse at like a very high level is a code name for a project that we're working on at CacheUp. And yeah, at a high level, it's kind of a new way to build cross-platform UIs using Jetpack Compose. And there's probably a bunch of steps we're going to have to break down to figure out how it does that. Yeah, I guess the first thing we should probably jump into is understanding the difference between Compose and Compose UI.
+
+[SPEAKER_00]
+Right, because again, that's a really common and very understandably easy to confuse concept, right? Because in the early days of Jetpack Compose... We all just thought of Jetpack Compose as being this single thing, but really it's different. And I think the reason we want to bring it up is if you want to understand the difference in like Zipline, Redwood and Treehouse, it's sort of important to sort of gauge this difference between like, you know, Compose and Compose UI. If that, you know, that's the distinction we're making. Can you tell us a little about that? For sure. Yeah.
+
+[SPEAKER_02]
+Yeah, so Jetpack Compose, as you might know it and work on or work with it as an Android developer, consists of two parts. So there's really the composed compiler and a little bit of runtime, which handles things like state management, determining which functions to kind of invoke when their inputs have changed, which functions to skip, and other kind of compiler magic that lets Jetpack Compose update your UI. But there's also a second piece to it, which is the Jetpack Compose UI piece, which are the UI components. So this is the actual piece that replaces views. It handles drawing your columns, your text, your buttons on a canvas. So those are kind of the two differences. You have the state piece, which is Jetpack Compose, and you have the UI piece, which is the UI components.
+
+[SPEAKER_00]
+Right, right. And I mean, that's a good like sort of technical explanation. I think that makes sense for people who have used it, right? The thing that made it click for me was tracing the story of like how it all came out, right? Because in the early days, you know, and when we started this whole reactive UI thing started to become interesting for people, you know, I think React was probably what everyone was looking at, right? Because React has this concept where... with web pages you can incrementally update just a portion of the web page right and that's what makes it compelling that's what made it compelling and that's why you know the entire world at this point sort of started to look at react and i think that notion started to get very interesting and obviously i think google in the background was working on coming up with the equivalent of this along with that like you know the whole uh you know composable UI mechanism of like writing DSLs for your UI, you know, but I think that was also catching on. So that was like their solution, right? It's like, okay, Jetpack Compose for Android, let's just come up with the solution. But what got interesting, and this is the piece that like, you know, a lot of folks I think don't remember or like, you know... Google got really good at removing the UI components out of the OS, right? You know, back in the dark old days, for people who remember, if you had to use, I don't think it was RecyclerView, ListView, I guess, right? Was it called ListView before RecyclerView?
+
+[SPEAKER_02]
+Yeah, ListView. Good old ListView.
+
+[SPEAKER_00]
+Yeah, so a lot of those things were baked into the OS, right? So we had to wait for the next Google I.O. or when the next Android OS version update would come in, and then you could sort of take advantage of a lot of these library and components, right? And obviously, famously, Android uptake for newer versions were pretty bad in the past. And I think... Google wanted to get out of that mode, right? So they started to do, and now we just take it for granted, right? But it was like pretty revolutionary at that point, which is like, hey, no, we're going to tease out all like the UI pieces or like, you know, these libraries, the things that we think of libraries today. And that's like, you know, AppCompat basically came off from there where, you know, even if you used older versions of, you know, the Android OS, you could keep updating the libraries and, you know, leverage the UI pieces as library components. So they got really good at that piece. And I think that learning translated when they built Jetpack Compose, right? So with Jetpack Compose, they were like, okay, we got to make the UI thing separate from this runtime. And the runtime, and Colin, you obviously understand this the best, right? The way it works is it sort of is when we talk about the Compose runtime... it sort of is just like a very efficient mechanism of doing that diffing, like, you know, back from the React days. Like, if you think of your, the whole, like, you know, imagine a node, and if you want to diff just a specific piece of, like, in this tree, if you want to diff just a portion of those nodes, that's what the compiler does, the Compose runtime or the Compose compiler does, right? It's very good at just saying, okay, I know the set of things to change. Yeah.
+
+[SPEAKER_02]
+Yeah, totally. So it understands pretty clearly because it's a Kotlin compiler plugin as well, so it can kind of infer these things. So it understands pretty clearly that if you update the text for, say, let's say you update the toolbar text, you don't need to redraw the world. You can just redraw things that subscribe to that, including the toolbar UI, let's say.
+
+[SPEAKER_00]
+Right. And I think that's the key difference. So you have that compiler that just understands how to do diffing. And what I think they did is that's where Compose UI comes in, where you can plug it to this differ and say, okay, now apply this mechanism to... you know, Compose UI, which takes care of, like, rendering Android widgets. And you could potentially plug it into something else, like, you know, a web UI. You could even plug it to, like, a terminal-based UI, you know. So that was the thinking of how it was built. So now I want to come back to this, what you mentioned about Treehouse, Zipline, and Redwood, right? Is Zipline basically just the compiler that takes care of this? And is Redwood, like, the UI? Like, how do we think about that? You know, because... Is it the similar sort of analogy to Jetpack Compose?
+
+[SPEAKER_02]
+Yeah, so I'd say it's a little different. So Treehouse itself isn't actually an open source project. So if you go to cache app slash Treehouse, you're not going to find anything. Treehouse itself is kind of the combination of Redwood and Zipline when working together. And Redwood and Zipline accomplish pretty different things. But if you put them together, great things happen. So to kind of break down what each individual library is, At a very high level, Redwood makes it easy to write composable functions that target another UI toolkit. And yeah, should I jump into a zipline or should we just kind of focus on Redwood?
+
+[SPEAKER_00]
+Wherever you want to take it. Maybe let's stick to Redwood because I'm curious. Is Redwood aimed just at Android UIs or is it... And so is it like, you know, so that's how it's different. You're saying it's not like a compose UI because compose UI, as we know today, for the most part, only targets Android, right? Does Redwood target just Android UIs or does it target other platforms?
+
+[SPEAKER_02]
+Yeah, Redwood actually lets you target kind of any UI toolkit. So if we, yeah, based on the discussion we just had kind of around Jetpack Compose versus Jetpack Compose UI, Redwood lets you write Jetpack Compose functions. And then instead of targeting Jetpack Compose UI, you can apply that state basically that you've generated in this composable function. You can apply it to UI views on iOS. You can apply it to HTML elements on the web. You can apply it to Compose UI multi-platform from JetBrains. Any UI target, it lets you ensure that the state you're generating from those composable functions is passed on to that UI.
+
+[SPEAKER_00]
+Oh, that's pretty cool. So Redwood is almost like... a layer before even Compose UI because you're saying you can... And Redwood is a library. So I can spin up an Android app or an iOS app and I can import Redwood as a library and start using it.
+
+[SPEAKER_02]
+Totally, yeah. So Redwood is a library. It's also a Kotlin compiler plugin. Yeah, to kind of drill into how it works basically is we mentioned earlier that you can plug in kind of a custom applier into the Compose compiler plugin. So typically that applier will just apply directly to Compose UI. But Redwood adds in its own applier and then does some code generation to let you... hook into the output of these diffs that the Compose compiler is producing. Yeah, so it kind of it generates two sets of functions. I guess actually to back up one second is the first thing when you're using Redwood is you have to define a schema. So Redwood itself doesn't come with any schema. So and this is really great if you have kind of a design system, a very formalized design system. But you want to build a schema that has, let's say, let's let's. Say we're building a counter app, for instance. And our counter app has an increment button, a decrement button, and a count. It has three things in the UI. And we want to build it using Redwood. So the first thing we need to do with Redwood is to create a schema. And our schema would have two widgets, a button and a text, because that's all we need. We have two buttons and a text. And so we only need to define the button once, and we have the text. And then for each of these widgets, we need to define their properties. So our button is going to have some text, just a string property. And it'll also have an onClick property, a callback. And then our text. which it will just have a text property, just a string. And you pass that schema, which is defined in Kotlin as well. You pass that schema to the compiler plugin and the compiler plugin will generate two kinds of things for you. It'll generate functions, composable functions that look a lot like compose UI functions that you can call from your multi-platform compose presenter. So I can write this presenter that'll invoke these compose UI-ish functions, but they're not actually compose UI. They plug into Redwood underneath the surface. And Redwood will also generate interfaces. And these interfaces... have functions for each of your properties. So it's a little tough to explain just with voice, but you essentially, if we're thinking about our button, we're going to have a compose UI or a compose UI function that has our two properties in it that we can just call. And then our interface is going to have an onclick function that gets invoked that essentially sets the onclick. And that's going to get invoked anytime you change the onclick. or change with the text property as well. If the text of the button changes, that method in your interface will get re-invoked and you can use that to update your UI target. So if we're thinking about views, for instance, say we bound our Redwood stuff to views. That method in our interface is going to invoke to say, hey, the text got updated. Then we're going to set text view dot text equals whatever is passed to us. And that's kind of how we end up with these reactive UIs that are built with any toolkit.
+
+[SPEAKER_00]
+Interesting, interesting. And just backing up, so you said you have to define a schema, right? What's involved in defining that schema? Because it feels like that might be a lot of work, right? Because that almost feels like I have to redefine the entire Android UI stuff, or is it a layer lower or higher than that? Can you tell me what exactly is involved in writing a schema?
+
+[SPEAKER_02]
+Yeah, so I think that's definitely a good call out. And that's something that Redwood, yeah, it explicitly doesn't come with its own schema. So when you work with Redwood, and I think this kind of goes to who should be using Redwood, you really want to have some kind of formalized design system and say like, these are the properties I support in my UI, because you need to define what a button looks like to you. You know, does your button have an enabled state, a disabled state, things like that. You have to make the decisions to include those in your schema. Yeah, there is one thing we've been working on, which is actually kind of the main piece I'm working on, which is ideally we don't want users to have to define things like rows and columns and kind of general arranging of widgets. So Redwood does ship an artifact that lets you plug in a multi-platform Redwood multi-platform columns and rows and kind of other layout widgets. But for things like buttons, text, you'll need to define those yourself and the properties they have in your schema.
+
+[SPEAKER_00]
+Got it. Got it. Okay. So perfect. So you... define your schema and and oh by the way so just if i'm purely as an android developer right redwood plugs into the jetpack the compiler the compose compiler you don't have to like also import another compiler or something right like redwood works with the jetpack compose compiler
+
+[SPEAKER_02]
+Yeah, exactly. You just apply the Redwood plugin and it kind of sorts everything out and you can write your composable. I think one thing to stress is that your composable functions look very much like you're interacting with Compose UI. So it really is very familiar for mobile developers who are used to working with Compose. It's the same tooling and it looks very similar to invoking a standard Compose UI function.
+
+[SPEAKER_00]
+Right, right. So once you define that schema, what Redwood does is it basically generates something that looks very similar to what we think of as Compose UI today. But it's not exactly Compose UI because if you use Redwood, you're like replacing the Compose UI piece, right? If I understand that correctly, you are building, like Redwood gives you a version of Compose UI that looks very similar. So it's almost like you're using the same thing, but it is like a replacement for Compose UI. Right.
+
+[SPEAKER_02]
+Exactly. The functions you're calling into, they pipe all those diffs from Compose and apply them to that interface I talked about earlier. And that interface can be implemented by any UI toolkit. It can be implemented by UI views on iOS, standard views on Android, Compose UI, of course, kind of any UI toolkit.
+
+[SPEAKER_01]
+I might be misunderstanding this. If this is a replacement for Compose UI, then how do I use it? If I look at it from a beginner perspective, I'm used to using Compose as it is. I've built some screens with it. This sounds interesting because I would like to try to do some cross-platform targeting. Am I still using Compose? I mean, I know I'm using the Compose runtime in the compiler, but am I still using Compose UI at all or no?
+
+[SPEAKER_02]
+So you actually can, you can still use Compose UI. I think the, yeah, the kind of best way to understand it is that Redwood is adding a layer in between Compose and Compose UI. So you can pipe those diffs into Compose UI, just like it happens today with any kind of standard Android app. But you can also choose to pipe those diffs into UIKit on iOS if you write a UIKit implementation or... HTML elements on web. There's a Kotlin HTML API. So it really lets you kind of decouple Jetpack Compose UI and Jetpack Compose. But you can definitely still use the two together, and they work really great together.
+
+[SPEAKER_00]
+Oh, interesting. So basically, once Redwood does its work, so to speak, because, like you were saying, it's a Kotlin compiler plugin, it basically just generates code for you, essentially. And it generates, if you're on Android, it generates Vue-related code. If you're on iOS, it generates UIKit-related code. And if you're on the web, so to speak, it generates HTML elements.
+
+[SPEAKER_02]
+Yeah. So it's not, it's not actually generating any elements for the individual toolkit. It just generates an interface that then you have to implement yourself.
+
+[SPEAKER_00]
+Oh, I see. Got it. Got it. Okay. So, cause that was going to be my other question. So like, say, you know, your iOS colleagues want to also use this with you, right? What they would do is they could, both of you could use the same schema, so to speak, because, you know, that should hopefully be common. And once you apply Redwood, it generates the interfaces, but then your iOS colleague would have to use the implementation for that interface on iOS, potentially using UIKit or SwiftUI or something. And on the Android side, you implement the interface using existing views, our regular Android views or potentially Compose UI or something.
+
+[SPEAKER_02]
+Totally, yeah. So the way it works today at CacheUp is, say we want to add a new widget to our schema. Say I'm adding a button. I'll add in a button definition into our schema. And then I can write compose functions that call into this Redwood button function. But I just then pass off this button interface. to the ios developer i work with the android developer i work with and they they work on translating on writing that interface for their platform so the these interfaces they can uh yeah they they can be implemented in swift as well because of of course column multi-platform works works great with interoperability this is super cool but it is a lot of work so because initially my thought process was like wait that's a lot of work like every time i do that like it doesn't feel like that would
+
+[SPEAKER_00]
+That doesn't seem easy. But I think what, now that I'm understanding it more, this is geared more towards, I think that sentence you made early on, which is like, hey, if you have design systems, I think that makes a lot of sense because it's very similar to a design system, right? Somebody has to put in the work once to plug that ecosystem in and then everyone else gets to benefit, right? Because every time you add a new button to a screen, you don't have to necessarily generate... a new interface for it, hopefully. If you think it through and have your design system generate the necessary interfaces and you have someone like Colin come in and provide the implementation for that interface, that's a one-time thing. And then thereafter, everyone can just keep using it.
+
+[SPEAKER_02]
+Totally. Yeah. I think that's really key that you want to have a design system coming into this. If you're not kind of a larger org with a set design system, then yeah, Redwood, it adds a bit of overhead.
+
+[SPEAKER_00]
+Got it. Got it. And actually, yeah, maybe thinking more from the practical... well not practical but more from the as a user perspective right does uh do you folks use redwood right now on other platforms like do you use it on ios and web
+
+[SPEAKER_02]
+Yes, we do. We do have some tests running with Redwood and we'll talk about Zipline in a second. But yeah, we absolutely, Cash App does a lot of cool column multi-platform stuff. So we have column multi-platform running on iOS. I don't think any of it's running on web yet, but it theoretically could. We could get there. And yeah, Redwood and Zipline are both in use in the iOS app at Cash App.
+
+[SPEAKER_00]
+So actually, yeah, maybe touching on that, what is the user experience like with the iOS pieces, right? Because, I mean, with all of these multi-platform options, the biggest challenge is always like, hey, how do I get other people? Because, I mean, as Android developers, we love Kotlin, right? So it's easy. It's like a no-brainer. You're like, sure, let's do it. All Kotlin, like, hey, sign me up. I'm... I'm down to doing it, right? The biggest challenge is always being how do I get my iOS colleagues to buy into this, right? So I am curious, can you like touch a little about that? Like what do your iOS colleagues think about using Redwood? Do they use it? You know, are they using Xcode or have they shifted to like, you know, IntelliJ or something? I'm just curious what that realistically looks like for an iOS developer. Yeah.
+
+[SPEAKER_02]
+For sure. Yeah. So I think, I mean, I definitely agree with you that it's always tough to kind of get iOS developers love Swift and kind of introducing an extra language into the mix. If the tooling isn't right, if it kind of holds them back, then yeah, then they might not like it quite as much. I think the reception overall has been pretty good with working with Kotlin. Specifically, I think the thing that's nice about Redwood is even though the new kind of the DOM, the screens are built with Compose functions, iOS developers still work with Swift. The interfaces that Redwood is generating can be implemented in Swift. So it's nice for iOS developers who kind of don't want to work with Kotlin. You can just hand them an interface to say, hey, I need this UI component implemented on iOS, and then they can just work on that. And so, yeah, I think the reception has been pretty okay. We're still not quite at wide usage internally at CacheApp, though, yeah, once we get there, I'm sure there'll be more kind of concerns and things to address. The tooling overall is just... shipping a standard multi-platform, a standard multi-platform library. So I, and I'm not an iOS developer myself, but I believe it integrates with CocoaPods. And it's, yeah, the interop is pretty good between Swift and Kotlin and getting better all the time. So it's as if they were interacting with Swift classes directly.
+
+[SPEAKER_00]
+Right, right. I mean, I've heard good things about, well, I've heard better things, I must say, because I mean, Colin, you remember, we tried something like this long time back, right? And the tooling was just, it was a little tricky. And this was like five, six years ago, a lot of good stuff has gone in after that. So yeah, no, I'm curious to see like how that's sort of evolved and how it's better today.
+
+[SPEAKER_02]
+Yeah, it's come a long way for sure.
+
+[SPEAKER_00]
+Got it, got it. Just before we jump into ZipLine, because I think it's a good opportunity to move on, because I think at this point we understand Redwood. What are your takeaways? What are some of the advantages of using Redwood, so to speak? Just to recap Redwood.
+
+[SPEAKER_02]
+Yeah. So I think some of the biggest advantages are cementing our design system in kind of a very type-safe way. That's something that's great for a bigger org is having our schema listed out exactly these are the properties that are supported. And then it's implemented consistently across platforms. And also it lets us build new UIs that we know are consistent as well and that have consistent logic. All our presenters, or sorry, I shouldn't say all our presenters, but all the presenters we're building with Treehouse, they run the same logic so we can have things like actual business logic in them, shared between platforms. And yeah, we end up with these nice cross-platform and end quote UI because it's still interacting with the native UI components. But yeah, we just end up with nice consistent logic, which is always a tough thing when you have a large org.
+
+[SPEAKER_00]
+Makes sense. Makes sense. I am curious to jump into Zipline, but Don, did you have anything else you want to cover in Redwood or should we jump into Zipline?
+
+[SPEAKER_01]
+No, I think we've covered everything that I had a question on.
+
+[SPEAKER_00]
+Perfect. So where does Zipline come in, Colin?
+
+[SPEAKER_02]
+Yeah, so we were just talking about Compose and Compose UI with Redwood. Zipline is kind of in a whole other ballpark. It's a whole different thing. It's a little magical, but kind of when you understand what's going on underneath the hood, it's pretty cool, I think. So at a super high level, Zipline lets you dynamically update Kotlin code in your app.
+
+[SPEAKER_00]
+Hmm. Damn. Okay.
+
+[SPEAKER_02]
+Yeah. A lot of unpacked there. Yeah. So it does this.
+
+[SPEAKER_01]
+So yeah, I guess I... Do I need to have Redwood? Is this like integrated with Redwood or can it be without or I'll let you explain? Yeah.
+
+[SPEAKER_02]
+Yeah, that's a great question. So Zipline and Redwood, they can stand alone themselves. You can use one or the other. They don't require each other at all. So the way Zipline works is essentially you start off by defining an interface. So let's say that we're defining a function that returns some value, an add function, an add service, let's say. And the add service has a method that takes in two things and adds them together and returns the result. But let's say we want this interface to have a dynamic implementation where we can update it and change it as our business logic changes. Let's say... All of a sudden, we want to change the add function to subtract instead of add. Zipline makes it easy to dynamically update the implementation of this interface.
+
+[SPEAKER_00]
+So previously, I remember there used to be this library called duct tape, which purported to do a similar thing from Square. Is it similar in concept for the few people who remember duct tape?
+
+[SPEAKER_02]
+That's a great question. Duct Tape actually, yeah, preceded me. I think it was an embeddable JavaScript engine, right?
+
+[SPEAKER_00]
+Right, right. I think it was similar to the... Honestly, I haven't used Duct Tape either, but I did remember talking to Jesse in the early days, maybe even in an episode here, where it is that idea of like shipping code. So this sounds like the logical sort of successor, but no, I mean, maybe just diving in, right? I guess like the big question is like, wait, how do you do that? Which I imagine is like, yeah, we got to dive into the details, right? Yeah, maybe let's start with... So when you say dynamic, it's able to ship... So you're still in Kotlin code line, right? Like you're writing Kotlin code. Do you write Kotlin code in the server that just is shipped to your client now? Like, yeah, maybe let's step through what that means. Yeah. I think I understand what it achieves. It seems magical, but I don't understand how. So maybe that's where I want to start, if that makes sense.
+
+[SPEAKER_02]
+Yeah. So I think, yeah, one thing to stress is it's Kotlin all the way down. You're only writing Kotlin. You don't have to, even though I'll mention other languages in a second, you don't have to interact with them. So like I mentioned earlier, you create a common interface. So we create this add service that adds two numbers together. And what you're going to do is you're going to, that's implemented in common main in Kotlin. So if you're familiar with the multi-platform stuff, that's kind of where all your shared code goes. And so, yeah, so you have this shared interface and it's shared between your app and your dynamic code.
+
+[SPEAKER_00]
+So like the part that I'm like still struggling a little, right? Is like today, if I have to change something, I have to change a function in Android Studio or like IntelliJ, right? Like on my Android app, I hit run, build, and then it ships onto, like, you know, I get an APK and then I ship it. How do you bypass that? Like what, well, not bypass, but like, how do you sort of, in my mind, that's the model. Like, you know, you write something on your ID for your Android app and you ship that binary. How is Zipline doing something different?
+
+[SPEAKER_02]
+Yeah, so Zipline is our dynamic code. The implementation of the interface is written in Kotlin.js. So it's in your JS main source set.
+
+[SPEAKER_00]
+Ah, interesting, interesting.
+
+[SPEAKER_02]
+This is where the kind of... Yeah, secret sauce kind of happens. So, yeah, even though it's and even though I mentioned JavaScript, it's it's completely I think I should mention it's completely an implementation detail. So you never write or see JavaScript yourself. You're writing pretty standard Kotlin that is then compiled to JavaScript and Zipline is then handling. handling, downloading this JavaScript from wherever it comes from and running it and updating it on a timer. So let's say... Ah, interesting, interesting. Yeah, so for debug builds, how we set it up in CacheApp is it's typically kind of constantly polling where a local web server for debug stuff. And it's constantly checking like, hey, is there new... Is there a new JavaScript? Is there a new JavaScript? And if there is, it'll download that and just update it. And Zipline is nice because it kind of handles and abstracts away all the requirements for interacting with JavaScript. So... To you, yeah, to you in your app, it looks like you're just calling this Kotlin function. You get an interface. You call zipline.take to get the implementation of that interface. And zipline kind of handles the bridging of everything into that JavaScript code, which is dynamically updated. And it kind of handles all the caching and everything like that.
+
+[SPEAKER_00]
+Ah, interesting. So when you started out by saying it generates an interface, I didn't quite understand why it was important, but I think I'm getting it now because that interface is your bridging. So as long as you conform to that interface, you can change the implementation and that's sent down basically. And Zipline basically is like, look, you're adhering to this interface. So as long as that, you can write anything you want as long as it adheres to that interface and it pulls that down basically.
+
+[SPEAKER_02]
+Exactly, yeah.
+
+[SPEAKER_00]
+Does it run it on a web view or something? How does ZipLine handle that piece?
+
+[SPEAKER_02]
+Yeah, so Zipline packages in this QuickJS JavaScript engine. It's this really small, kind of very, very well-formed JavaScript engine that, yeah, we package it on both iOS and Android. There's another plugin we use that lets us package it into our Kotlin multi-platform artifact so it can easily be used wherever it's needed. And we use that to run the JavaScript code that's produced by the Colin compiler.
+
+[SPEAKER_00]
+Right, right. And Quick Chase is actually pretty reputed. Like it's the FFmpeg guys for people who have used, right? Like, so it is a well-known engine. I'm guessing it's not like something that, you know, was a hobby project Colin did. Not that, I mean, Colin's one of the best developers I've seen. So like, you know, even if he wrote it, I would trust it. But, you know, this isn't, is backed by like some people who understand how this works, right?
+
+[SPEAKER_02]
+For sure. Yeah, I think it's a very well-respected JavaScript engine. It's also very focused on being small. I think it's, I could be wrong, but I think it's like one C file or something. It's a very relatively small amount of code for how much heavy lifting it does.
+
+[SPEAKER_00]
+Interesting, interesting. And just before we, because this thought came to my head, this is, again, aimed more at Android. We're not talking cross-platform. This is just like, hey, how do we get stuff done on the Android side? Or does this also work on...
+
+[SPEAKER_02]
+Yeah, so I actually wouldn't say that this is like coupled to Android at all. It's something we also use on iOS and Android. It essentially lets us kind of separate from Redwood. It allows us to write business logic, say. So at CashUp, we have this thing called PaymentHistory.js. It's kind of this... older file that predated all of Zipline. And it has a bunch of business logic related to payments. So that kind of has a bunch of shared code that we're looking to transition over to Zipline because it lets us have this shared code that we can dynamically update as the rules change. And this is great for like business logic and things that you normally potentially put on the server. But now you can have it on the client. And I think an important thing to note as well is it can be cached. And yeah, so you support those kind of first launch and offline scenarios because we can package the JavaScript with the app when it's being built. But it can also be updated as there is new stuff when the app is run.
+
+[SPEAKER_01]
+For the code that's running on the client, is there any noticeable lag with this since it's actually running JavaScript?
+
+[SPEAKER_02]
+Yeah, that's a great question. I'm not sure about the exact performance specifics, but it hasn't been an issue for us. Quick JS is super quick. Yeah, I don't think it has been an issue. There is a slight performance cost because kind of diving more into the secret sauce, you might be wondering like, okay, when I call the function on the host side... how does the JavaScript actually get the arguments that are being passed to it, right? And so there is this JSON layer, and we use colon X serialization. So if you're passing in two numbers, like for our ad service, it's going to convert those two numbers into JSON, which is, of course, just string versions of those numbers. But for more complex objects, it'll convert those into JSON, pass them, to the JavaScript, the dynamic code, and do all the computation and then convert it back into those objects on the JS side. So it's completely transparent. The JavaScript and the JSON, you never see it. You never touch it. You don't have to think about it. But that's kind of the secret sauce that's happening under the hood.
+
+[SPEAKER_00]
+Interesting. This is actually clicking because now I remember when I talked to Jesse on this on an episode here, he was saying some of the things that you sort of like try to use. This is also when you have, you know, you gave the example, Colin, like payment history, right? Like, you know, different states, countries or, you know, might have different tax laws and stuff. So you could potentially change like some of those calculations and adhere it to that specific. Like I'm trying to think of the application where you would use these things, right? Yeah. The other is like different onboarding flows I remember. So you bake in different paths, but depending on where you are, you can like point to different flows, right? Like, you know, Colin, I know you're in Seattle now. So if you're in Seattle, you don't need to show, you know, I don't know, one screen that deals with taxes or something. Like you can just point, you can skip that screen. And all of that business logic in quotes can basically be tuned. Am I thinking about this correctly?
+
+[SPEAKER_02]
+Yeah, I think that's a good way to think about it. Yeah, you might want to use Zipline for any business logic that you want to share that might normally exist on the server, but you want to support it on a different set of platforms and dynamically update it as it changes.
+
+[SPEAKER_00]
+Got it, got it. That makes sense. How do I deploy my code, basically? Does Zipline point to a web server? I guess that's my next question, right? Because, again, going back to my initial thought process, I think of writing the code on Android Studio, hitting run, and then having that show up in the app. Here, where am I writing that the implementation for that interface that's generated? I imagine the interface doesn't change, but the implementation for that logic, where am I writing that? Am I writing that on some backend server? That's the piece that hasn't clicked yet for me.
+
+[SPEAKER_02]
+Yeah, so that's all, just like a standard Kotlin multi-platform project, you write that in the JS main folder. So you'll have your interface in common main, and then you'll share between your app, which is probably in another module. And then JS main is where you're going to write the implementation. Yeah, and the Zipline plugin provides this nice task. It provides, I think it's serve development Zipline. And that runs a little web server locally that will allow you to, it'll give you a URL that you can point to in your app.
+
+[SPEAKER_00]
+Ah, I see. Okay, so got it, got it. So that URL, that's the setup process, but that URL where it points to is, so you're saying you would write the JS main logic, but then the deployment for that as part of this multi-platform project would be that backend server, which your app points to via that URL you just mentioned.
+
+[SPEAKER_02]
+Yeah, so for what I'm talking about now is kind of how the development flow works locally. You just run this local web server, you're running in the emulator, everything just, you just point to the right place and everything kind of just works and updates dynamically. But for actually deploying this stuff, so if you're not just running the app locally on your machine, Zipline doesn't have any kind of... extras to like it doesn't uh you'll need to work on kind of uploading the zipline manifest in the javascript files to whatever cdn you're working with and then pointing your app to a url that's exposed to the the world the outside world ah got it okay so that i think that yeah that's the part that i was like wait where how does where does it reach out to like you know what server but i think that makes sense so that's got it got it
+
+[SPEAKER_00]
+Thank you. Yeah, that makes sense. And how, I guess like the other question is, you kept saying that the JavaScript is more like an implementation detail. Like you don't need to write any JavaScript, right? Does that mean like in the future, you could swap out that JavaScript with, I don't know, whatever the, you know, people decide is like the new like engine for like rendering things like, oh, you know, the Kotlin WASM thing, right? Like W-A-S-M. Is that something that is possible too? Or no, is this like heavily hooked to JavaScript?
+
+[SPEAKER_02]
+For sure, yeah. So that's definitely something that I think folks are thinking about is as Wasm continues to mature and eventually gets to a place where we could totally use it for Zipline. Yeah, the Zipline itself uses QuickJS, it uses JavaScript, but it's totally an implementation detail. I think there would be some benefits even to jumping over to Wasm when it's ready.
+
+[SPEAKER_00]
+Got it, got it. And I mean, again, Wasm is, I think, the WebAssembly stuff, right? Like that Kotlin is trying to, like the JetBrains folks are coming up with an implementation. So that's how I guess it would sort of bridge together.
+
+[SPEAKER_02]
+Yeah, we talked about performance earlier as well. And generally speaking in broad terms, I think Wasm has even better performance because just the kind of way it's defined, it lends itself better to performance optimizations.
+
+[SPEAKER_00]
+Got it, got it. Wow, this is a lot, but it's a, it's pretty cool stuff. Like, I think it's, yeah, I mean, it sounds super interesting. I guess like the natural question is like, can I use it today? Like, can I use both Zipline and Redwood today? Is it out? Yeah.
+
+[SPEAKER_02]
+So yeah, so the answer is you could, you can. I think Zipline is in a pretty good spot. It's kind of far along. It's fairly close to 1.0, though I'm not sure how exactly. So there could be small breaking stuff, but absolutely we're using it today. And I think there are other companies using it today as well. So Zipline's in a pretty close to done spot. Redwood's a little more early. We have artifacts published to Maven Central, but really there are still breaking changes going on all the time. There are bugs we know about. There are systems that aren't implemented yet, things that we need to get done. So Redwood's a little earlier. But if you want to play around with it, there are sample apps in the repo that you can check out in the samples folder.
+
+[SPEAKER_00]
+Got it. Nice. And do the sample, because I mean, you know, I love the idea and the concept. But I will say I'm lazy. I don't want to have to write all the piping, right? So do those samples have, for example, the schemas and all of the stuff that you said that have to be defined? Do you have, I guess the sample apps should have that, right? It's an entirely contained thing where I can start to see what... what is involved.
+
+[SPEAKER_02]
+Totally, yeah. So we have two main samples. We have one that kind of shows the counter I was talking about earlier, and we have one that shows a list of emojis. And yeah, both of those have readmes associated with them, and you can run them in a couple commands from the command line.
+
+[SPEAKER_01]
+So there's... Tons of information here. And the question that I have right now, I'm wondering if some other people probably have too, is what is the, you know, from, let's just take it back to like a beginner experience again. What is the developer experience look like from, for a, maybe a new developer who's getting started in this? And I'm going to kind of add some, pepper this with some additional information here. So for example, a lot of people might be wondering about how all right should i be using why shouldn't i use react native or flutter or hotwire or web use or whatever why should i use redwood and i guess the big question here is what's that development experience like is this something that's easy to adopt is there some challenges that are still involved is that still being ironed out or what does that whole kind of area and realm look like from you know redwood and zipline
+
+[SPEAKER_02]
+Yeah, that's a great question. I think the comparison to React Native is a little apt. Definitely there's some JavaScript stuff going on and we're using native UI components. But really the benefits, I think, of Redwood and Trios as a whole is that first and foremost, it's Kotlin all the way down. We're big fans of Kotlin. We have a lot of existing Kotlin code as well. And we have a lot of... At Cash App specifically, we have a lot of Kotlin developers. Our backend is in Kotlin. And so folks are comfortable with Kotlin. If you like Kotlin, I think that that's an advantage for Redwood and Zipline. In terms of tooling, Treehouse is built by mobile developers, kind of with mobile developers in mind. So you're not dealing with like NPM or VS Code if you don't want to. It works great with IntelliJ or Android Studio. And yeah, part of the reason we went down this route as well is we think it has the greatest chance of convincing our organization of using kind of a shared code solution. Like I mentioned, we have a lot of mobile developers. And I think folks are kind of more palatable to Kotlin versus introducing a bunch of JavaScript into our code base. And... Yeah, in terms of adoption, Redwood is really built for progressive adoption. So we can use it for things as small as one view in the app. You don't need to go kind of whole hog and adopt it for a whole screen or nothing. It can be as small or as big as you want. And the interop with existing views and UI views and Compose UI is really strong. And we want to keep that so it's easy to integrate. And then, yeah, one other thing is that Redwood is really much smaller than React Native. And that's partly by the fact that it doesn't come with your own design system. React Native kind of comes with its own text, all these components. And that's nice for smaller teams. But if... You have your own design system and you know exactly what you need. Redwood doesn't come with any of the existing components and you kind of just implement your own.
+
+[SPEAKER_00]
+I guess like a more basic question, Colin. You said you want to talk about Treehouse, right? Which is like Zipline and Redwood. I heard what you said about Redwood. I heard what you said about Zipline. Both sound really cool independently, but what's the magic in combining them? Like why bother combining them, right? Like why not treat these as independent sort of efforts?
+
+[SPEAKER_02]
+Yeah, just to kind of sum it up. So we've got Redwood, right? Which makes it easy to write composable functions that then pipe those into any UI toolkit. So pipes those different than any UI toolkit. And then we have Zipline, which lets us dynamically update a Kotlin interface with... We can update the implementation to whatever we need it to be. And when we combine those two together, if we make our presenter, our composable function, if we make that a zipline interface itself, all of a sudden we can have these dynamic screens that are powered by a presenter that can be updated dynamically. So all our presenter logic for a screen and including kind of the screen itself, because it's a compose function that calls into compose UI-esque functions, it lets us define our screens completely dynamically, update them dynamically, rearrange things, change. any of the values for the properties for our items kind of define a screen entirely dynamically. And I think that's kind of the... Oh, interesting. Yeah, the overall kind of awesomeness of Treehouse.
+
+[SPEAKER_00]
+Got it, got it. That's pretty cool. And just like, you know, last set of questions before we start to wind this down. This combination of Zipline Redwood is being used in production today.
+
+[SPEAKER_02]
+Yeah. So I think it's being used. I think we've only launched it kind of like internal employees. I don't think we fully shipped it publicly yet, but it is definitely running in some capacity in Cash App. What are some things like, when should I not use this technology, I guess, is the other question.
+
+[SPEAKER_00]
+Yeah.
+
+[SPEAKER_02]
+I think if you're a smaller team and you don't necessarily have the large team, the large set of developers, and you're not as... Because one thing that part of the reason we kind of went on this route is we're constantly running to issues with the app release cycle. So if you're not dealing with issues with kind of needing to get out new features on a specific schedule, then Trios might not be for you the extra overhead it adds just in terms of process. But if you're a larger team, a larger organization, then I think Trios is really great for unblocking you to launch new things and decoupling you from the app release cycle and ensuring consistency between your screens.
+
+[SPEAKER_00]
+Oh, yeah, that's a good point, too. So you have a similar experience across all these platforms as well. Totally. And I have to ask this question. Square doesn't have a special deal with Google and Apple that allows them to do this, right? This is all very kosher per the App Store guidelines. Yeah.
+
+[SPEAKER_02]
+For sure, yeah. So just because you can update some code dynamically doesn't mean you can use it to break the App Store rules. So it really is. And yeah, one thing to call it as well is, of course, we're using interpreted JavaScript. If there's a whole thing around, you're not allowed to ship a binary... dynamically to the App Store. So we don't do that and Trios doesn't support that. It's all interpreted. And yeah, as long as you're not doing crazy things like shipping a whole new payment system like Fortnite, but then you're probably, yeah, you can't use Trios to break the App Store rules.
+
+[SPEAKER_00]
+Got it. And that interpreted piece is important, right? Because that inherently brings in some of these restrictions. Like, you know, you can't necessarily do two crazy things, though it still makes it pretty powerful. Totally. Cool. Wow. That was a lot. That's like, I think I have to like go back and sort of touch base and try to understand some of these things. But thank you so much, Colin. Really appreciate it.
+
+[SPEAKER_02]
+Yeah. Thanks for having me on. One thing I'd recommend is, yeah, folks are interested in learning more about this stuff and kind of seeing examples and visuals of stuff. Check out the Redwood project, cache app slash Redwood on GitHub, as well as the Zipline project. They include samples and kind of things to play around with and should hopefully make things even more clear.
+
+[SPEAKER_00]
+Perfect. Perfect. So GitHub repositories, Cash App, Redwood, and Zipline. Yeah, exactly.
+
+[SPEAKER_02]
+And there's also a great talk or a great set of talks given by Jesse and Jake Wharton at DroidCon New York 2022. So yeah, those are great talks as well.
+
+[SPEAKER_00]
+And we will make sure to add some of those in the show notes. I think that should be good. Colin, as always, pleasure talking to you, my friend.
+
+[SPEAKER_02]
+Likewise. Yeah.
+
+[SPEAKER_00]
+Thanks for having me on the podcast. Second time. Yeah. And if folks want to reach out to you, ask more, because I'm sure there's going to be a whole bunch of flakes out of questions and queries that come up around this. What's a good place to do that?
+
+[SPEAKER_02]
+Yeah, so you can find me at colin at androiddev.social on Mastodon. And you can also find me at colinwhi on Twitter. Unfortunately, I couldn't get Colin White, so I cut off two characters at the end.
+
+[SPEAKER_00]
+Yeah, that's a good way to think about it. Cut off two characters in the end.
+
+[SPEAKER_01]
+Don, what's your ID? Do I have to cut off any characters on your name? No, but you have to add an extra N. So it's just Don Felker on Twitter and anywhere else online is usually the best way to find me. Kaushik, what about you? How can we find you online?
+
+[SPEAKER_00]
+Usually using my domain name. So mastodon.kau.sh, twitter.kaush. I'm trying to grab as many whatever social media handles that exist.
+
+[SPEAKER_01]
+So, you know, that just points me to the right place. So that's the way to get to me.
+
+[SPEAKER_00]
+Thank you all so much for listening. Colin, again, thank you so much for coming and explaining some of these things. We really appreciate it. And I'm sure our listeners are going to appreciate it too. Awesome. Yeah, thank you. Thank you all for listening. And we will catch you in the next episode. That's it for the show, folks. Fragmented is hosted by Don Felker and me, Kaushik Gopal. We edit and produce all the episodes here on Fragmented. You can find more Fragmented episodes at fragmentedpodcast.com. Thanks for listening, and we will catch you in the next episode.
