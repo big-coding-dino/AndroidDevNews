@@ -188,7 +188,15 @@ def git_commit_push(ep_num, ep_dir):
         step("Nothing new to commit.")
         return
     subprocess.run(['git', 'commit', '-m', f'add ep{ep_num} diarized transcript'], cwd=repo, check=True)
-    subprocess.run(['git', 'push'], cwd=repo, check=True)
+    # Retry push with rebase in case remote has new commits from Mac dev
+    for attempt in range(3):
+        push = subprocess.run(['git', 'push'], cwd=repo)
+        if push.returncode == 0:
+            break
+        step(f"Push failed (attempt {attempt+1}), rebasing and retrying...")
+        subprocess.run(['git', 'pull', '--rebase'], cwd=repo, check=True)
+    else:
+        step("WARNING: push failed after 3 attempts, continuing anyway.")
     step("Committed and pushed.")
 
 
