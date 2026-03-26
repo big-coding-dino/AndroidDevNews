@@ -1,0 +1,355 @@
+# ep235
+Podcast: Fragmented Podcast
+
+---
+
+[SPEAKER_01]
+Welcome to Fragmented, a software developer podcast where we talk about building good software and becoming better developers. My name is Don Felker.
+
+[SPEAKER_00]
+And I'm Kaushik Gopal.
+
+[SPEAKER_01]
+Welcome to the show. everybody before we get going i wanted to tell you about a brand new resource that i released it's called mastering git it is a free git course that will teach you everything that you need to know on how to use git from the ground up in less than 120 minutes It's super easy to follow. You don't need any specific tools installed other than Git itself. I'll teach you everything you need to know from the ground up using the command line and the 20% of commands that are going to give you over 80% of the benefits for you and your day-to-day engineering career. Now there's a ton of git commands out there, you may not be sure which ones you should use. I've been using git for over 12 years now from the command line and these are the distilled down commands that I use on a day-to-day basis. I'm going to show you how to use each one of those from initializing repositories, making commits, how to create branches, conceptually what are branches, how do they work, branch naming strategies, how to merge, how to utilize merge tools, how to handle merge conflicts, how to merge branches, how to create pull requests on things like GitHub, how to cherry pick, how to view logs, how to create aliases and so forth. I cover all of that within this course. There's no fluff in it. We hopped straight into it and you're going to learn everything that you need to know in order to become a master of Git. Again, there's not a lot of commands that you're going to learn, This is the course that I wish that I had when I started. Doesn't matter if you're a beginner or if you're advanced, you're going to learn something for this. However, if your team member is new or you're just learning Git or you want to be able to kind of understand it better, this is the course for you. So check it out. The link is going to be in the show notes. You can also view it at donfelker.com slash git. You'll be able to see a nice demonstration of what is inside of that course on that page, and it'll link you directly to the actual video itself, which is free on YouTube. You can also visit my YouTube channel, which is going to be at donfelker.com slash YouTube.
+
+[SPEAKER_02]
+You can find it there too.
+
+[SPEAKER_01]
+So again, go to donfelker.com slash git for the free git course and learn git and master it. And I really hope that it helps you. Let's hop into the show.
+
+[SPEAKER_00]
+Hey, folks, just a quick note. I'm going to be hosting solo today because Don had an emergency and couldn't make it. But I'm stoked because we have an awesome guest and one of my early inspirations as a Ruby developer in a past life, actually. So let's get started. I want to set the stage a little. Recently, I posted a tweet about pair programming for Android developers. I want to understand, is there any tool out there that folks are using for pair programming? What's the state of the world, especially as a lot of us are working from home today? I got a whole bunch of suggestions, and by far, in a way, the top recommendation was this service called Tuple. And it sounded familiar to me, and I didn't exactly know why. But when I checked the service out, I realized, wait a second, the CEO of this company is Ben Orenstein, and that sort of rung a very strong bell. One thing led to another, and here we are. Without further ado, I'd like to welcome Ben Norenstein to the show.
+
+[SPEAKER_02]
+Welcome to the show. Thank you. I'm excited to be here.
+
+[SPEAKER_00]
+This is sort of a high-water mark moment for me because I've been following you for quite some time in the past. And in a previous life, I've told a lot of the listeners I was a Ruby developer before I transitioned into Android programming. So... Yeah, I'm super excited about this. You got me on to Vim at one point. You taught me how to refactor Rails code at one point. But let's kick it off there. Our audience is largely an Android developer audience. So for the few folks who aren't aware of who you are, could you maybe give us a quick intro, please?
+
+[SPEAKER_02]
+Yeah, sure. First, I'm just sort of struck by the way you phrased those things. I got you into Vim. I taught you these Ruby things. It's kind of amazing how the internet scales you or just educational materials can scale a person because I didn't directly teach you any of that, that you were consuming things that I had made for the world. And you're not the only person who has told me things like, hey, you're the reason I got into Vim or you're the reason I got into Rails or something like that. And man, it's such a cool thing. Having produced educational content is wonderful. And it's still going. People are still watching talks I gave in 2013 or even earlier. And it's a great thing.
+
+[SPEAKER_00]
+I'm pretty sure you get this a lot, but what's the name of the talk? Refactoring from Good to Great. This was Aloha conference, or maybe a mixing conference, I know. But that one was super popular. I'll post that in the show notes because it's evergreen content too. You can watch it today and it still feels as relevant as it has ever been.
+
+[SPEAKER_02]
+I think that was the best talk I ever gave. It was a nice distillation of a lot of my thoughts on refactoring and writing good code after really obsessing about it for years.
+
+[SPEAKER_01]
+And it was a live coding talk.
+
+[SPEAKER_02]
+So it's me actually taking code on stage and changing it around, running the tests, making things go green again. And that seems to have resonated with people in a way that a lot of my other content did not.
+
+[SPEAKER_00]
+Yeah. So can you give us like a quick trajectory of like all the different things? Because, you know, I know you're a prolific conference speaker. So I actually do have a bunch of questions on that, you know, because a lot of our audience is also very interested in that stuff. But before we even get there, what was the inspiration? Because you've talked a lot about refactoring and you mentioned you've been obsessing over this. Can you trace your career? Did you just start off as a web developer one day opening up Ruby saying, this is what I want to do? Or yeah, just walk us through that process.
+
+[SPEAKER_02]
+I kind of had to fight my way into the programming world a little bit because I did not finish college. I got kicked out, actually, because I was such a bad student. That is unbelievable.
+
+[SPEAKER_00]
+I don't think I believe that, but it's true.
+
+[SPEAKER_02]
+It's true. You know, 18, 19, 20 years old, I didn't really have self-discipline or study skills and just had a hard time applying myself in an academic setting.
+
+[SPEAKER_01]
+Yeah.
+
+[SPEAKER_02]
+And fortunately, I had a passion for programming. And programming, it turns out, is a career and is a world where you don't need a credential to get into it. So I thought, you know, I want to be a programmer. I need a computer science degree. And fortunately, for someone who's bad at academics, you don't actually need that.
+
+[SPEAKER_01]
+And so it took me a little while. I had to take some...
+
+[SPEAKER_02]
+some pretty crappy jobs like bartending and things like that. But I eventually found a company that was willing to take me on as an entry-level programmer because I did well on their programming aptitude test and was able to start steadily hop jobs from there within tech and coding. And things kept getting better and better. So my...
+
+[SPEAKER_01]
+Yeah, I guess my professional career started off behind a bar, but then steadily moved behind a keyboard.
+
+[SPEAKER_02]
+That is crazy and very inspirational. Well, thank you. And so the big leap happened when I got into the world of Ruby. I taught myself Ruby on the side and thought it was amazing because prior to that, my exposure in programming was basically all C. And I couldn't believe looking at Ruby just how little you had to worry about. Yeah. I just remember seeing an each block and just being like, what about the bounds of the array? And just being like, where's the counter? And it was just like completely... And like, where are the semicolons and the array subscripts? And I was just like, where is everything? How could this possibly work? Where's my memory being released? Yeah, exactly. It was like, where is everything? Where's all the detail? And it was all just, you know, don't worry about it. And so I remember thinking like, wow, this Ruby thing is pretty incredible. I was turned on to it by the pragmatic programmers who had written the pragmatic programmer, which I still think is basically one of the best books written on being good at programming. And they were into it. And so I was like, wow, if these guys are into it, this must be good. Yeah.
+
+[SPEAKER_01]
+So I started teaching it to myself on the side.
+
+[SPEAKER_02]
+I learned just enough Rails to pass an interview for a junior Rails position. And that was really when things changed for me professionally. I went from a programming job I was really not into in a dead-end language to a world where everyone was passionate. And when I got into Ruby, it was probably 2000... eight or so maybe and people were uh it was a very exciting time in ruby like it was like it was the cool it was the kind of the hip cool new thing where like the most passionate people were going and so the energy was really high there was tons of educational stuff and i just like just jumped into it and had a blast So I had a turning point by entering Ruby and then also another one by joining Thoughtbot, which is a pretty well-known Ruby on Rails consultancy full of really passionate people who are super into their craft. And I just learned a huge amount there.
+
+[SPEAKER_00]
+Yeah, Thoughtbot, I think, is where, like, you know, the first time I heard about, like, a lot of your work and, you know, I guess, the talks. That's amazing. I had, so at some point, did you all, and we're going to talk about, you know, Tuple in just in a second. I have a bajillion questions on it as well. But with respect to pair programming, right, was Thoughtbot like a shop that encouraged a lot of, like, pair programming? How did that ever come in? Or was that just, like, something that was organic for you?
+
+[SPEAKER_02]
+There was a little bit of pair programming at Thoughtbot, but not a ton. Actually, the pairing came to me at the job before that, my first Ruby job. So I had passed this interview. I was very green. I knew like a little bit of Ruby and a little bit of Rails. And to get me up to speed, my boss and I paired for a few hours, basically every day for months. And I learned just a huge amount from him in a really crazy fast time period. And that was when I really got exposed to the power of pairing because I was learning Ruby. I was learning Rails. I was learning subversion at the time, workflow, how to use Vim better, how to debug things, how do you write a test, in what order. There was just a million little technique things that I was absorbing by pairing. And it really stuck. And even though I didn't do a lot of pairing at Thoughtbot after that, this experience really stuck in my head. It's like, wow, this is just an unbelievably high bandwidth way of gaining skill.
+
+[SPEAKER_00]
+So I have a question for you, right? I've done a little pair programming too. And I think by and large, when I've asked everyone about pair programming... The experience has unanimously been great. Everyone's like, oh, I really enjoy this. This is great. This is what we should be doing. But for some reason, I don't think it's caught on in the same way in non-indie shops. If you go to the big companies in the world, the ones that are doing a large part of the software writing today, I I don't necessarily hear as much about pair programming. So I am curious what your thoughts are. Do you think it's just something that hasn't caught on because of the setting? Or do you think it just happens, but it's natural? We are at a point in this world where everyone does pair programming and it isn't called out as being separate? Or do you actually think not enough people are leveraging pair programming?
+
+[SPEAKER_02]
+I think of pairing as a tool within the tool belt. Yeah. There are some places and some people that think, yeah, you should pair on everything. And if that's what you want and you get good results from it, that's fine. Sure. You can do that. I wouldn't tell people not to do that. I think pairing is a bit more of a tool to be used when it makes sense and when it feels good to you. I think it will always be more tiring than programming by yourself. When you're writing code and you get in the zone and it's just you and maybe some music or silence or whatever gets you in the zone and you have the program fully loaded in your head and you're making changes and time just disappears, that's wonderful. That's such a great state to be in. And I wouldn't want to take that from people. And I think you can get in the flow in pairing, but you always have that social thing where you're thinking about the other person. Is it time for a break? Are they doing okay? How do they feel about that? We're debating things. Are they okay with this decision? And so there's the social piece. And there's also this double-edged sword with pairing, which is that it keeps you very on task. It becomes very hard to go check your email or Twitter or take a mini break kind of thing. And so pairing for two hours, I think, is more tiring than programming for two hours because you probably are taking more mini breaks by yourself.
+
+[SPEAKER_01]
+Yeah.
+
+[SPEAKER_02]
+There are ways around this, like Pomodoros and things, like planning scheduled breaks. So there's things you can do. But I would say, on average, you're going to be a bit more drained after pairing, perhaps.
+
+[SPEAKER_01]
+And it's not for everyone.
+
+[SPEAKER_02]
+It's a sort of extroverted work style, in a way. So it's probably extra draining if you find interaction with people draining as opposed to energizing. So I basically... I am a very big fan of pairing. I think it is an incredible way to accomplish things that most teams want. It's a really incredible way to spread knowledge around a team.
+
+[SPEAKER_00]
+Mm-hmm.
+
+[SPEAKER_02]
+It's a fabulous way to onboard a new developer. It is a great way to reduce defects. It's a great way to improve average code quality. Because the code that's produced by a pair is the max of both programmers' ability. And I think it works better than code review for things like catching bugs, having better design, staying consistent, that sort of thing. Because you can push back on things in the moment in a pair that you wouldn't really want to do on a code review where it just feels like, I mean, Kaushik has already written this whole thousand-line PR, but I wish he'd designed it differently, but I'm not going to spend all the social capital to ask him to rewrite it. Yeah. So I'm a big pairing advocate. I think it does a lot of wonderful things and does some things better than practices people are often doing already. But I wouldn't go so far as to say, everyone should do this. You should do it all the time. It's always the right answer. I think it is a powerful and quite good, mostly tool. But if you said... Hey, I find it too draining. I'm going to pair a couple times a week. I would say that sounds very reasonable to me. Or like, I just want to write this by myself because I want to get in the zone and it keeps me productive and happy. And I would say, yeah, that makes sense.
+
+[SPEAKER_00]
+Yeah. It's funny because I think with, so pair programming started with the whole like agile software development sort of world around that time, right? With extreme programming. And that was one of the things that they said, they're like, look, you only work eight hours a day, but you pair the entire time, right? And part of that is because I forget some of the name of the shops here that practice it pretty, Pivotal Labs, I guess, is one of the other, they're like extreme programming all the way, right? At least that's how they they used to be. And I know a few friends who worked there and they used to say the same thing, which is after you pair, like you're drained, you're exhausted because yeah, like you said, you don't take those mini breaks where you're like, okay, I'm waiting for a build to happen. You know, I'm going to like... quickly check my email, like check Twitter. But it's almost like, you know, well, if you came out of that, are you more productive? Like, you know, does the company benefit more from having had your people paired the entire time? It's easy to say yes to start with, but I think you capture that really well, right? Because if someone gets drained within like two days, like, you know, it's like, are you running a marathon or a sprint, right? Like, you know, I think that's the... sort of challenge that comes up more often than not with pair programming, I feel. How do you think about pair programming? So if I were to say, if you think about your daily, and I know currently you play a large part of, I don't know how much of IC time you get at Tuple now, but I am curious, how do you think about pair programming? Do you still reach out for it as a tool outside of just using it for Tuple testing?
+
+[SPEAKER_02]
+We pair on non-programming things at Tuple. So not shockingly, we're pretty big pair advocates, pairing advocates. And so we pair a lot on code and we pair on non-code. So I'm not writing code these days, but I am working on things like sales deals or marketing campaigns.
+
+[SPEAKER_00]
+Can you talk to me a little about that? Because that's fascinating to me. What does pairing on non-coding things mean? Can you elaborate a little on that? Yeah.
+
+[SPEAKER_02]
+Yeah. Well, sometimes it's just as simple as like, let's review this document together and like, I'll pull it up and you're looking at my screen and we're both like kind of reading it simultaneously and calling out different areas that we're interested in. Sometimes I even just do like co-working almost like where I will hop on a Tuple session with someone and like, we're just working on different things, but, but, you know, talking to each other, like having like a buddy sitting next to you sort of thing. Yeah. I do design pairing. Actually, just yesterday I did a design pairing session where I was on a Tuple session with our designer. And we were reviewing mocks for a thing that we're building. And we're just live saying, well, what if he moved the search bar over here? And he'll sort of quickly move around in Figma and say, well, how about this one over here? Oh, this color needs to match this. And then how about this hierarchy? And I think pairing suffers a little bit from a marketing problem in that people hear pair programming and they think like...
+
+[SPEAKER_01]
+It's this process.
+
+[SPEAKER_02]
+It's this art that you need to understand and is sort of this complicated or sophisticated approach to programming. And it's true that there is a skill to be learned there. You can get better at pair programming as an activity. And I think there are concrete things. You could say this person is better at pairing because XYZ. But at the same time, it really is just two people looking at the same code and working together. If you have two people looking at the same work product and working, I call that pairing. Design pairing. We're both looking at the mocks. One person is at the controls, but it just has two brains applied to the problem in real time. really all it is like on the programming side as well it's like you don't it doesn't have to be this complicated ballet of who writes what and who switches when and what are the break schedules look like and it can really just be as simple as like hey kaushik you you you wrote some of the auth code over here right like will you just look at this while i'm working on this and kind of help me find the right bits and five questions like and it's like yeah you're just we're just two programmers working over here
+
+[SPEAKER_00]
+Yeah, no, I really like the way two things that just came out of what you just said is one, there is this complicated ballet. I like that word choice. There seems to be this complicated ballet about, oh, there's one person who's the driver, there's the other person that's the observer. But really, it's just two people jamming on this thing, right? And I feel that is a much better way to sort of portray what pair programming is. Yeah. And I think the pairing is, actually, I think I'm going to start switching that because I keep, it's almost like pair programming is the thing in my mind, but I noticed that you keep saying pairing. And I think that actually is a much better description of it because, you know, like how you talked about pairing with a designer, that's, oh, that makes perfect sense to me, right? Like that just, it resonates pretty strongly. Yeah. I want to ask one thing. So post-COVID, like a lot of folks have been working from home and I imagine like, you know, that art of pairing has like, you know, people initially thought like, hey, pairing, you know, is no longer a thing. It's hard to do it. Obviously, I imagine that's where some of the whole like, hey, maybe there should be a tool for this came about. What was your experience? Because obviously, you started Tuple. So actually, let's start there. Can you tell us more about Tuple? Because I think I've been mentioning Tuple, but I didn't actually call out what Tuple is. So could you tell us a little about Tuple at this point? Yeah.
+
+[SPEAKER_02]
+yeah tuple is a an app for remote pair programming so it is a we have a mac os app a native mac os and a native linux app and the pieces you need for pair programming are screen sharing with very high quality um remote control with very low latency so if you want to take over someone's machine it's not hard to do that and ideally you know nothing in your way so We were originally inspired by this tool called Screen Hero that existed back in the day. And I used it for pair programming. And they built a nice app. And Screen Hero got acquired by Slack and then shut down and never really rolled into the Slack product, unfortunately. Kind of, I guess, an acquisition that just didn't quite work out. Yeah.
+
+[SPEAKER_00]
+It's funny because I think I've mentioned Screen Hero on the podcast and I'm like, oh my God, there's this amazing tool. Everyone should try it. And literally a month after they got acquired and I'm like, what?
+
+[SPEAKER_02]
+Yeah, it's unfortunate.
+
+[SPEAKER_00]
+Yeah.
+
+[SPEAKER_02]
+Yeah. So it was great. A lot of people loved it, including... me and um it suffered an unfortunate fate and so i would ask around my programmer friends and ask them what they used now that screen hero was gone and no one really had a good answer and that kind of set off this like little thing in my head where i was like huh that's interesting There was this good thing. It went away. There's still this opportunity here. But there's nothing that seems to have stepped in the gap in the intervening years.
+
+[SPEAKER_00]
+So we have had other tools, though. Can you talk about what are the specifics that made you think? Because, I mean, I hate to say, yeah, you could use Hangouts or Zoom or something, right? And the screen sharing has gotten better. And like you said, Slack has... some portion of Screen Hero, like I still feel the implementation, I remember the implementation being very different from what Slack has today versus what Screen Hero was. There are solutions, you know, and they, granted they don't work as well, but what was the impetus for you, right? You know, was there something where you're like, well, this exists, but it's just not that, like, what is that thing that you felt needed to happen that led to Tupul sort of forming?
+
+[SPEAKER_02]
+So it's a few things. One of them is, it sounds weird, but it's literally just like clunkiness. Like, is this tool pleasant to use? And if you've used something like Zoom screen sharing with that like big control toolbar that you have to move around the screen and gets in the way and like the like, Ben would like to control your screen. Is this okay? Do you approve this thing? And meeting invites and follows URL and things like that. Click multiple times to end a call. It was just enough that like... It felt to me like the seamlessness was not there. The thing that if you make a thing a bit easier, people will do more of it.
+
+[SPEAKER_01]
+And so when I looked at the experience of pairing over Zoom, Meet, Skype, that kind of thing...
+
+[SPEAKER_02]
+It never felt like this is an experience people can love. It was like, this is one small feature in a larger mass market product. And it will never care about the things that I care about as a programmer. One thing is latency. If you're going to control someone's computer remotely, you care a lot about 75 milliseconds of additional latency on something.
+
+[SPEAKER_01]
+Right. But if you're Zoom, you probably don't really care about that that much.
+
+[SPEAKER_02]
+If screen sharing is mostly for presentations, like I'm going to share a deck with you or an Excel spreadsheet, you don't really care. But if you're doing remote control, it feels very different. And so my theory was, if we make it less clunky, if we focus hard on latency, and also focus on quality, like biasing screen share quality... Like on Tuple calls, we separate the screen share and the audio track and the webcam track so that we can degrade them differently. And so that like your screen share quality takes high priority. So it's like you might get a little crackly or the webcam might slow down a little bit, but the screen share looks crisp.
+
+[SPEAKER_00]
+It's funny, I was going to ask that exact same thing because, I mean, I have tried Pupil. So obviously it's funny. It feels that there's like this very, it just works like, you know, for the tool. And so I was going to ask, like, you know, when you actually build a product, do you actually look at like the two streams independently? And it sounds like you do, right? Like you actually, you have like parameters that you tweak depending on like the network connectivity, I presume that... allows the latency to creep in in certain aspects, but not the other. That is fascinating. Was that something? Yeah. Was that organic?
+
+[SPEAKER_02]
+Organic. Well, it was a thing that we decided was important. And so we spent time on it. Like we would do latency tests and try different settings and experiment with things. And we were often like taking pictures of two monitors to see like what the timers on them to see what the delay between two machines was. It was a thing we spent a lot of time on, particularly in the early days as we were figuring things out and pushed us to make a number of design decisions, like writing this app natively in C++, for example.
+
+[SPEAKER_00]
+That's the other big question I have. So let's just dive in there. My understanding is a lot of the original developers on Tuple, as I read them, are famous web developers, right? So you guys do a lot of web development. How did that transition to building a native product work? Did you say, okay, I'm going to take the next six months and learn how to code? I'm exaggerating a little, but where does one start? I work as an Android developer, but if you said, hey, go build a Windows native application... You know, I'd say, okay, where's the book that tells me how to build native apps, right? How did you folks make that transition? Well, I did not.
+
+[SPEAKER_02]
+I have two co-founders. All three of us are technical, but we decided... Pretty early on that it didn't make sense to have all three of us writing code. Like someone should be on sales and marketing and being on podcasts and things like that. And so that was me. And so that left my co-founders, Joel and Spencer. And Tuple's success is quite a bit, thanks to them and their willingness to go learn these new skills. In particular, our CTO Spencer. He... He really dove in and just accepted like, okay, I'm going to have to learn about real-time communication protocols. I'm going to have to learn about C++. Also Swift for doing the native macOS controls. And he, with Joel's help, kind of like just really dove in pretty fearlessly and just said, yeah, this is not like what we know. It's just not. And that was the big risk of the company in the early days, it felt like, was just, can we successfully build this product? It felt pretty obvious through various validation exercises that I did, mostly by selling vaporware for a while. It was pretty clear that people would pay for it if we could build something that was like what I was promising them. Yeah. And the question was, can a handful of web developers or could a couple of web developers reskill themselves enough to build a product that is good enough that it achieves what we're promising?
+
+[SPEAKER_00]
+Did you start with like Electron? I imagine like an Electron kind of app would have been easier for a web developer. That would be my natural sort of thought process. Did you start with that or was it?
+
+[SPEAKER_02]
+Yeah. So we built... I think the version of Tuple that exists today was basically the third major rewrite of the app. Oh, wow. Actually, I mean, kind of fourth now, but basically there were two false starts. We definitely started off in Electron, hoping that that would work for us because it was most familiar. Yeah. And it felt like this is convenient and it's going to give us sort of the same performance that everybody else gets, which is fine. And it has some limitations around creating the kind of experience you wanted, especially like when I talk about that seamlessness.
+
+[SPEAKER_01]
+OS level integration through an abstraction is just, you know, is not as good as you can get if you have the full host operating system at your fingertips like you get when you were like coding in C++ or Swift.
+
+[SPEAKER_02]
+And so we wrote an initial... There was an initial spike version that we threw away. Then there was, I think, a pretty solid attempt in Electron that we eventually decided, yeah, we're going to need to get what we want. We think we have to compile our own version of Chromium. And then our fork, like fork chromium fork electron to get the kind of control we want. Do we really want to maintain these things? Probably not. Let's just go all the way. Let's go fully native and get as close to the metal as we can so that we can eke out these performance wins that we want and have the seamlessness and like OS level integration that we want.
+
+[SPEAKER_00]
+And you have native clients for the Mac that because I've used that one. Are you thinking about other platforms as well or do you already have?
+
+[SPEAKER_02]
+We have a Linux client in beta right now that beta is increasingly open. And that's going pretty well.
+
+[SPEAKER_01]
+Windows is... I wouldn't say it's on the table right now. I think we are getting used to being a multi-client company right now and attempting to bring the clients more in parity.
+
+[SPEAKER_02]
+And Windows is a thing that maybe we discuss a little bit later. But there's no one in the company that runs Windows day to day. So it's kind of like, well, this is going to be a big lift to get over here.
+
+[SPEAKER_00]
+For sure. Can you briefly talk to us about what the tech stack is as much as you can share? What does the tech stack look like for Tuple?
+
+[SPEAKER_02]
+I mean, I'm increasingly far away from it. I'm increasingly the wrong person to ask this question. But I think I've basically touched on it, right? Which is that it's mostly a big pile of C++. We use WebRTC for the real-time components of Tuple, but with some changes and setting like... We've landed some patches upstream. We've also forked in the past and made some local changes. We've tweaked our settings there and done some experimentation around that to arrive at a setup that we like. We have our own signaling service that handles the connect a lot of sort of keeping a persistent connection between tuple clients and a server. And saying, hey, who's online that's on my team? And then helping broker the initial connection between two clients. Like when I actually call you, we need you to know about it. And then we need to be a key exchange to set up the encrypted tunnel between the clients. So we have a server in between there that handles the initial thing and then creates a peer-to-peer connection. And that is... What is that written in? go i think i think it's a go service yeah that's i think that's the main thing right now we're we're adding a new architectural piece which is to allow calls with more than three people we are adding uh like uh media servers in the mix sort of like uh to make that tolerable bandwidth wise
+
+[SPEAKER_00]
+Yeah, I was going to follow up on that because currently Tupel is just two people, right? And is that where the name comes from? Like two people plus the programming, the play on the program?
+
+[SPEAKER_02]
+It actually kind of is. Yeah, that was one of the pieces that we liked about that name. Tuple, the idea was kind of like, yeah, a tuple takes disparate elements and combines them together. And so does our tool. And so that was cool. And it kind of sounds like two people.
+
+[SPEAKER_00]
+It's a good name. Well done on the name, I'd say. So you were saying that you are considering now maybe adding multiple people into the same call, so to speak.
+
+[SPEAKER_02]
+Yeah.
+
+[SPEAKER_00]
+Yeah. Does that change the architecture? I mean, I imagine it does, right?
+
+[SPEAKER_02]
+Yes. So I actually misspoke. The current max is three people. So you can do three people on a call. And what we do is we set up a mesh network right now. So it's still peer-to-peer with three people. But as you can imagine, when you add a fourth person, now everyone needs three connections. And then when you add a fifth person, it expands. The number of connections expands very quickly. Yeah. And so it works great for two. It works okay for three. We're not going to push it to four. Everyone would need amazing connections for a mesh to continue to work past there. And so we are going to move to an architecture where people communicate with a server that combines streams. And this appears to be the current best way to do this thing. As you move from direct peer connections to like, there's like an intermediary somewhere. And so people can just connect to that and get the streams of everybody.
+
+[SPEAKER_00]
+That makes sense.
+
+[SPEAKER_02]
+Combined into one.
+
+[SPEAKER_00]
+From the product perspective, right? What do you think is the logical end for Tuple, right? Are you going to become like...
+
+[SPEAKER_02]
+Logical end makes it sound like you're going to reach here and you're going to be happy.
+
+[SPEAKER_00]
+But do you imagine it is just going to evolve into a screen sharing software? Is it going to be competing against Zoom or Hangouts with a focus on screen sharing? How do you think about that? Because one thing I immediately thought of is we have different kinds of developers. For example, as an Android developer... I usually have Android Studio, which is this IntelliJ editor, and I have an emulator. And that's my work setup. I'm curious, how did you go about thinking that, no, what we really want is to plug into the native system and just think about it as a screen sharing versus... Because IntelliJ also has this sharing thing, but I think it's called Code With Me, which is you have to have an IntelliJ editor and then you can just share the editor pieces, right? Tuple... almost gives you a window into like the other person's computer, which makes it far more like sort of easy and intuitive frictionless, I guess. But how do you think about the product? Like, do you think at one point you're going to focus it and tailor it more towards programming folks and give them like, you know, oh, here's an easy way to share code snippets or I'm just making things up on the fly. But how do you think about that? What is like logically at the end, do you expect it to just be the best screen sharing software or how do you make those decisions?
+
+[SPEAKER_02]
+Yeah, I think so. We always intended to make a purpose-built tool. So Tuple is for pair programming. And when we make decisions about how do we design it? How many clicks does this thing take? Do you have to get permission to do remote control? What does a friends list look like? What does the copy say? Which stream do I prioritize? How much bandwidth do we use? How much CPU do we use? Do we support command tab? All these questions always come down to, we're doing this for programmers to do pair programming. And so that's our niche. And that is a niche I'm very happy in. I like making things for programmers. I like when programmers have a purpose-built tool. As a programmer, I like when tools are made for me. And so I don't have much interest in leaving that niche. I think there's tons of opportunity here still. There's more programmers every day. There's more remote programmers every day. Tuple is built for pair programming, but it still could get a lot better for programmers. There's still lots more we want to do beyond just making it a more capable screen sharing tool, but also make it more programmary, like moving our configuration to a thing you can store in some .files. So you can sync it across your various machines. Adding hooks so that you can do things programmatically when a tuple session starts or ends or when someone comes online. Make it extensible as a tool. There are a number of things that I think we will continue to lean to. This is for programmers. We're going to make it more programmary, not less. Yes, I know there is this large, huge market over here of... Yeah, screen sharing can be used for lots of people. We could just say, we're the best remote collaboration tool for teams. Yeah, I know that there's a big market there. If we wanted to raise a bunch of money on that thesis, I'm sure we could. But I'm very happy here. There's plenty of market here. There's plenty of interesting problems here. I like working with... I like building for programmers. Programmers give awesome bug reports. It's true, isn't it? Yeah. It's just a great audience. It's fun to make things for them. And so, yeah, I think... I don't think there's a... Under my leadership, I don't think Tuple would go into the mass market. I think that's not what I'm interested in. So I see us stand probably here-ish for a while.
+
+[SPEAKER_00]
+That makes sense. And I've used Cupool, by the way, for the folks who are listening. I must say it has been definitely the best experience. And I'm not just saying that because obviously you're on the show. It truly, it's funny because when I started, I actually told some of the engineers on my team, I was like, hey, there's this thing I want to get us to pair program more, just spend a little more time in this remote work from home world. And we tried Tuple, and initially I almost was like, wait, is it actually running or do I have to do something? Because that's how seamless the experience was. So it definitely shows that you're focusing on something. I can see that, okay, there's thought put into each of these small decisions. Yeah. And it's, unless you try tuple, it's really hard to explain that because both, and the funny thing is like, I remember with my engineer, we were talking, we're like, oh, this works well. And he's like, I wonder why I can't see you. And I'm like, well, let's see. I'm sure there must be that too. But you open it up and then you're like, oh yeah, you can add the other person's face on the side there, right? And the thing that blew my mind, and I don't know if this was intentional or not, was you get multiple curses, like two multiple curses, right? Which is, I can, literally almost feel like I can tell my, you know, like my colleague, hey, give me a second. Let me just try this on your screen. And I get a keyboard and cursor and it's just like almost into that person's like environment, right? Was that intentional or was that like, I'm just mind blown by that feature. That doesn't sound easy because...
+
+[SPEAKER_02]
+two cursors you know is that i mean actually maybe i should ask is that something that's easier did you put some time like you know walk me through that yeah yeah uh no there is one mouse cursor in mac os and any uh implications the contrary is a very carefully orchestrated illusion
+
+[SPEAKER_00]
+So it's smoke and mirrors. Oh, wow.
+
+[SPEAKER_02]
+That took a lot of work. So there's a lot of things like deconstructing the Mac OS mouse acceleration code in order to reimplement it, painting fake cursors, transferring the bitmaps that are used to create alternate cursor styles like the eye beam or the grabby hand, that kind of thing to show up at the right time. Yeah. It was a lot of work. Multicursors is an iceberg feature. Yeah, everyone should have their own mouse cursor. No problem. I'll talk to you in several months. So yeah, that was tricky.
+
+[SPEAKER_00]
+The closest I can think about it is the Mac has this thing called screen sharing where you can share into another Mac. Tuple almost feels like take that, but just make it 10 times better and less seamless, right? Because screen sharing in itself is pretty good on the Mac, right? Like it's the tool that I use, but it's obviously very laggy and I can almost feel like, you know, a trail of cursors follow me as I sort of move things around. Tuple feels like, oh, just take that, but make it much better. And that's how it feels. Yeah.
+
+[SPEAKER_02]
+Well, thank you. That's flattering. It's great. Yeah, so that actually kind of touches on, well, I thought of a thing. You'd ask me sort of, what's the end state of tuple? And to me, it's not go broader. But we are coming up on, maybe this is an illusion, but it feels like with a year of development, I think feature completeness is potentially plausible-ish. Yeah. Are you ever really done adding stuff? Probably not. Completely, no. But in terms of big pieces, critical things that are like, this is what you need, considering that the tool is intentionally constrained and is for a particular use case, eventually you kind of say, I think we built most of the things into this that we want to be into it. You're sacrificing simplicity eventually, right? If you just keep going. Eventually, one of the things that people love about it, which is that it is purpose-built, goes away because they just say, this has so much in it. But at that point, that opens another door, which is like, now we can just optimize this thing to within an inch of its life. You can't spend too much time reducing latency. Right, right. Like, give me another five milliseconds. I don't care if it takes you all quarter. If we can chop off 8 milliseconds of our non-network latency for all customers, that's amazing. And that helps us dig this moat around the product.
+
+[SPEAKER_01]
+Or add another 9 of reliability.
+
+[SPEAKER_02]
+Not even uptime, but more like make it work in more circumstances. So the thing that happens is a lot of the time, our average call quality rating is usually a 4.6 out of 5. So it works well in a lot of circumstances. But there are still dozens of people giving us a 1, a 2, or a 3 each day. Whereas if your network is really terrible, you have a certain poorly configured VPN for your company, you have a firewall that is a really aggressive... there are places that we fall down. Or sometimes it's not our fault at all. There's just horrible... You're in the middle of nowhere. Your Wi-Fi is super congested. But maybe we can detect that and tell you and help you fix it. So there's this march of make it so that it just works as much as possible, even when you throw horrible settings at it.
+
+[SPEAKER_00]
+That makes perfect sense. I know we're getting close to time, but I did have a couple of few last minute questions. I'm going to just throw them at you in no particular order. In general, I'm sure you've been pair programming a lot, obviously, owing to Tuple. What tips do you have for our listeners? I can start off with one, which is download and try Tuple. So I kicked it off with that one. Give us some more tips on pair programming. What do you think are things that'll help programmers become better at that?
+
+[SPEAKER_02]
+Well, I'll give you a meta tip first, or a high-level tip, which is just... I've written a lot about this. If you go to learntopair.com, that's our pair programming guide. Very nice. And I've got a good number of articles and videos and podcast recordings and things that you can... If you want a lot of content on this, it is there. And that'll be in the show notes for sure. Great. But I would say a few things. One, don't make a big deal out of it. It's really not a big deal. You can literally just be like, hey, a programmer friend of mine, will you look at this with me while I do it? And just like, hey, can I get a second set of eyes on this? Just make it low ceremony and just write code with someone else that can see your screen.
+
+[SPEAKER_00]
+So my official email announcement about us wanting to pair program, not a great suggestion. No, I mean, that's fine too.
+
+[SPEAKER_02]
+But I think people sometimes get intimidated by that phrase of pair programming. And they think it's this practice that they need to know about. come give a violin concerto is like what they're hearing and like I'm suggesting say more like come jam like here's a drum like bang on this and just like make it just make it low don't make it scary and don't make a big deal of it and don't worry about if you're doing it right because literally it really is just two people looking at the same code at the same time And so if you have two people looking at the same code at the same time, you are pairing in my book. And just try to take advantage of the fact that you have another smart person there with you. And let them help you make good decisions, pick their brain on things, discuss design choices, that sort of thing. So don't make too big a deal of it. It's sort of my advice for people that are intimidated by it or are new to it. And I think you will see your code improve. You will see your skills improve. You cannot pair with somebody for like an hour, especially if you're watching them write code and not be like, whoa, what was that shortcut you just used right there? How did you jump right to that error? Or how did you jump to the test? Or how did you pop that window over there without touching your mouse? You just always learn something. So that's nice. If you're a bit... Some people have had an experience of pairing that was negative, and so they've been turned off from pairing by bad past experiences. And to those folks, I would say, recognize that people are... There's different levels of goodness at pairing. Mm-hmm. So you can have a bad pair and try not to let that turn you off the whole practice. I say the same thing when friends are looking for therapists. Therapy is a great thing and is really a useful practice.
+
+[SPEAKER_01]
+And there are plenty of mediocre to bad therapists. And so if you have a bad therapy session with someone that you tried, don't be like, oh, I tried therapy.
+
+[SPEAKER_02]
+It was terrible. Like, no, the experience is highly dependent on the participants. And so it could be you were in a bad mood. It could be they were in a bad mood. They could have just been like pathologically bad pairing partners. Like you may have just run into some bad luck. And so if you are sort of scarred or turned off by the idea of pairing, maybe give it another shot with someone a bit more promising. It helps to choose someone you get along with already that you like, that you have some trust built up with, that you feel safe with. Those things are nice attributes for this. Mm-hmm. And then, I guess beyond that, I would say, recognize that while pairing, it's totally possible to jump into it and don't have to make a big deal of it. It also is a skill that you'll get better at.
+
+[SPEAKER_01]
+So if you practice it a bit more, you'll notice things. You can do a little mini retro after a pairing session and just say, how was this?
+
+[SPEAKER_02]
+Did we get distracted at some point? Would it have been nice for us to take breaks a bit more often? Or should we have maybe swapped who was driving halfway through? Would that have been nice? Or did I say anything that made you feel uncomfortable or made you seize up? It's a skill. And over time, you'll learn to get better at it.
+
+[SPEAKER_00]
+Thank you. That's like a low ceremony. That's what I heard first, which is like, don't make a big deal about it. Pair length sessions. So don't like, you know, don't go for like two hour pairing sessions or like, you know, if you feel it, but like recognize the length of how long. Don't let one time negative experiences affect. And lastly, this is something you can get better at, which I think is like a pretty powerful thing, right? Which is you, yeah. Don't try this and say, yep, I fried it. It's out of... out of question now, you can start getting better at it. And yeah, those are powerful tips. Thank you. Before we start to wind down, I have to ask, and this is more out of my personal desire to ask you, you are by far one of the most prolific conference speakers I've seen. You have this beautiful art of storytelling. What are some tips you have for the few of us who speak at conferences and want to get even... better at it or even like a lot of our listeners who want to like start there uh you are like a Jedi master at this and I'm definitely going to put a whole bunch of talks here so but how do you think about that like is this something that you think through carefully have you been practicing do you do something that helps with this yeah like how do we become a band at speaking
+
+[SPEAKER_02]
+Well, this ties in nicely to something I've been working on that I need to release soon and I'm hopefully close to, which is back when I was speaking a lot, I wrote, I wouldn't say it's quite a book, but maybe an extensive guide on giving talks. It's called Speaking for Hackers. You can find it on my GitHub under the Speaking for Hackers org. I guess. And eventually this will be a real public website that I'll point people to. Actually, if you go to sfhbook.netlify.app right now, actually, you can see it in its current state, SFH for speaking for hackers. And it's still slightly in draft status, I would say, but probably useful. But if you don't want to do that, I would just say at a high level, I guess my high level advice is a conference talk is a performance. It is not a great medium for transferring information. People think a talk is an opportunity to teach the audience a lot of things. And I think a talk is a nice opportunity to teach the audience two things, three things. They're going to remember a couple things. And it's more about giving them an experience, I think. Bored people don't listen to anything. So you have to be entertaining to teach your audience stuff. Otherwise, they'll tune out and they'll go on Twitter. And so I would say your first thing is don't be boring. Come up with ways to keep attention, but recognize why is your talk better than just reading documentation is a question I think you should be asking. So if you're like, I want to show off this cool tool, great. Show off the tool, but do it in an interesting way. Do it live or do some really creative things. Can you give some examples?
+
+[SPEAKER_00]
+I can think of some of the ones that you have done, but I'd love for you to maybe...
+
+[SPEAKER_02]
+Well, yeah. So that refactoring from good to great talk is my most popular. And I think part of it is because it's live coding. And so everyone can see that I am actually writing code on stage. And that freaks people out. It makes people deeply uncomfortable that I'm going to get really stuck. And like, we won't actually make it out of the branches. And like when stuff like the tests, like you start making changes, the tests start failing. And it's like, and I'm taking suggestions in the audience and we're trying stuff like people, everyone's like, whoa, this is risky. Like, is he going to be able to pull this off?
+
+[SPEAKER_00]
+We are a bunch of sympathetic or empathetic folks, right? You know, it's like, oh, like, you know, like, let me help you out. Like, you know, I see you're going to make this mistake. Hey, you're going to, you missed this semicolon. It's going to like bite you on the back. Yeah.
+
+[SPEAKER_02]
+And so I think that's good. That's intentional. I want people to be a little bit on edge. Not because I want them scared, but I want them to be like, whoa. It's like watching a trapeze act. If there's no risk in it, it's not as exciting. But when you're like, yikes, okay, here we go. Everyone pays attention. And so that is just one technique I have used to keep attention from folks. It's just like, do a high risk version. I love it.
+
+[SPEAKER_00]
+I love it.
+
+[SPEAKER_02]
+But there's a bunch of ways. So yeah, it's not that live coding is particularly mystically powerful, although it kind of is for programmers. But thinking along those lines of like, why is this better and more interesting than reading documentation? Why is it worth flying here and being in the room with me to see this talk versus a recording or just reading a readme somewhere when I could just skim it much, much faster or watch a talk at 1.5x or something? Like, why is it worth that? And I think that's the answer. A friend of mine once said, I think of CFP as not standing for call for proposals, but calling for call for performances. And I think that's... You could maybe just take that piece of advice right there and end up in the top 10% of talk quality, I think.
+
+[SPEAKER_00]
+Perfect. Ben, I cannot thank you so much for your time. This is, as I said, a great honor for me to speak to you.
+
+[SPEAKER_02]
+My pleasure.
+
+[SPEAKER_00]
+Any parting words of wisdom? And please, if folks want to reach out to you, what are some good ways that we can do that?
+
+[SPEAKER_02]
+My parting words of wisdom are spend a lot of time with people you love. Can't go wrong with that. And tell people you love you love them.
+
+[SPEAKER_01]
+If people want to reach out to me, that's great. I'm into that.
+
+[SPEAKER_02]
+I'm on Twitter. R00K is probably your best bet. I respond to Twitter probably faster than email most of the time.
+
+[SPEAKER_01]
+But do it publicly. DMs are getting a little overwhelming these days.
+
+[SPEAKER_00]
+I can imagine. I'm also going to pitch. You have a podcast too, which is really good. I'm surprised I haven't actually heard before. As I was prepping for this, I've blown through at least 10 episodes. I'm glad I have an entire catalog to listen to. But yeah, please tell us a little about your podcast too. Sure. It's called The Art of Product.
+
+[SPEAKER_02]
+I've been recording it for years. four years five years or something it's amazing some number of years I don't know a long time hundreds of episodes it is sort of a chronicling of my journey of being a programmer and then being a business on like a being a business founder and CEO along with my co-host Derek Reimer Derek is on break right now so it's been me and some guest hosts but you can hear from like I record pretty often with Adam Wathen who created Tailwind CSS oh nice Also Peneldi Fippin, who is the technical advisor to the CTO at Stripe. Nice. So we have some really interesting perspectives of other indie businesses and also, you know, inside look at a really large, successful technical business. And yeah, I think it's pretty, pretty cool.
+
+[SPEAKER_00]
+Ben, oh, I just remembered one thing, which I think I have to mention this. Tuple supports a lot of open source folks, right? Like you're pretty big on open source. What's the thought process there? Yeah.
+
+[SPEAKER_02]
+Open source is good. We want more of it. We are happy to throw free Tuple at it. We rely on open source to succeed. And so we are very happy to give back to that world. So if you go to tuple.app.oss, you'll see that Tuple is free for open source software teams. So if you're doing some OSS work and you would like to try out Tuple for no cost, we are more than happy to have you do that.
+
+[SPEAKER_00]
+Ben, thank you so much, both for all the good work you've been doing for the developer community, but also thank you for Tupul and thank you for the good stuff that you've been enabling us programmers to do. My pleasure. Thanks for the good interview. Thank you all for listening and we will catch you all in the next episode.
+
+[SPEAKER_01]
+Thanks for listening, everybody. Before you get going, don't forget to check out my free course on Git. This is going to be the course that shows you everything that you need to know in order to get started. It is the 80-20 of Git. You'll learn that 20% of commands are going to give you well over 80% of the benefit. Heck, I'd even say over 90% of the benefit. In fact, these are the commands that I use every single day and I rarely step out of these boundaries. To learn more and to watch the course, you can go to donfelker.com slash git or just go to donfelker.com slash YouTube and check it out there for free. I really hope you enjoy it.
+
+[SPEAKER_00]
+That's it for the show, folks. Fragmented is hosted by Don Felker and me, Kaushik Gopal. We edit and produce all the episodes here on Fragmented. You can find more Fragmented episodes at fragmentedpodcast.com. Thanks for listening, and we will catch you in the next episode.
