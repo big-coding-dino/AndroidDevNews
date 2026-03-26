@@ -1,0 +1,325 @@
+# ep243
+Podcast: Fragmented Podcast
+
+---
+
+[SPEAKER_00]
+Welcome to Fragmented, a software developer podcast where we talk about building good software and becoming better developers. My name is Don Felker. And I'm Kaushik Gopal. Welcome to the show. This episode of Fragmented is brought to you by androidjobs.io. On Android Jobs, you can post a job posting for free and also sign up to get weekly notification emails of new job postings. These job postings are worldwide, so any company around the world can post for free. However, I wanted to let you know about a couple of feature upgrades that we recently made to the site. Number one, you can now pay for a... upgraded highlighted posts. And this will highlight your job post among all the other Android jobs that are out there. Number two, you can pay for a featured job posting that will highlight it as well as pin it to the top of the job board. Now, again, the free job postings are still available, so you can still post a job for free. But if you would like to kind of give it a little bit more flair, you can upgrade it as you'd like. Now, additionally, every job posting on Android Jobs, including the free one, is now going to be a 90-day job posting. So please check it out when you have a chance. Sign up to get notified of new job postings. And thanks for listening and checking out the site. Again, that's androidjobs.io.
+
+[SPEAKER_02]
+Ashik, it's good to be back. How have you been, man? Been good, been good. It's starting to get a little warm now in California, which is nice. I'm starting to get out a little more, you know. A lot of old things that we used to do before seem like we're starting to do them again.
+
+[SPEAKER_00]
+Yeah. Yesterday, I woke up and think it was in the 20s. And today, it's supposed to be like 86. What?
+
+[SPEAKER_01]
+It's crazy.
+
+[SPEAKER_00]
+Anyway, that's not why we're here. We actually have a former guest on. And you actually spoke to this person. So I'll kind of let you run with it and kind of introduce him again. Yeah. For sure.
+
+[SPEAKER_02]
+This is a good friend of the show. He's been on multiple episodes, actually. Probably a record if you're counting most number of times a guest has been on the show. And we want to talk about something a little different. Usually we are pretty, you know, with this guest specifically, we've gone really in-depth. talking about Android stuff. The show's going to be a little different. But before we go there, I think it makes sense to welcome back Dan Liu to the show. Welcome back, Dan. Hello.
+
+[SPEAKER_01]
+It's been a while.
+
+[SPEAKER_02]
+It has, yeah. How have you been, Dan?
+
+[SPEAKER_01]
+I haven't had anything to say for many years, and now I'm back.
+
+[SPEAKER_02]
+Dan, you've been on the show for like five episodes. Episode three and four, that's something. Early. Yeah, super early. And then nine and then 49 and then 93. We're at like, what, 200 something now, right? So it has been some time and it only makes sense that you'd return back to the show. But we want to talk about something different. You've had some changes recently. Can you talk a little about that?
+
+[SPEAKER_01]
+Yeah. So I also understand the podcast used to be more Android. focused still has plenty of android content obviously um but i myself used to be more android focused so about a year ago i left my job working on trello android and took a few months off took about half a year off and then got back into work and now i'm not working on android anymore oh really i'm in kind of the climate tech world now
+
+[SPEAKER_00]
+Oh, wow. So are you still in tech though? Are you still working on technical stuff or what?
+
+[SPEAKER_01]
+Yeah. So the impetus of all of this, and this has been something that's been on my mind for a long time, which is that I've always cared about climate change, but it was never quite so real until the moment that my son was born about five years ago. And I was like, okay, if the world goes to hell in a handbasket, I've had a very lucky, privileged life. And that's great and all. Maybe I'll live... to 50 or 60, and then everything goes terribly wrong. And that's all right. But I realized that's not really fair to my kids in the same way that you invest in your kids' future and for them to be able to go to college or something like that. I was like, I want to work on climate stuff in order to invest in their future, just living on the planet in general. And so I've been thinking about that for a long time. I kind of dabbled in volunteering, but it just didn't feel quite enough. Because when you volunteer, it's hard to work 40 hours a week come home and take care of a small child. And then at the end of all of that, spend a few hours volunteering for climate stuff. Like it's just too exhausting. Plus there's that big chunk of the day, the 40 hours that it's like, well, if I could be working on it that whole time, that'd be great. And it just so happened that beginning of last year was a good time for me to leave my last job and then kind of... go out and look for something to work on with related to climate. It didn't specifically have to be climate tech, but I was like, the thing that I'm good at is programming. So I feel like someone's got to want a programmer who's working in this space.
+
+[SPEAKER_00]
+Now that one of the big questions I have is when you decided to make this change, of course, you're looking at climate as kind of the big area of wanting to step into. Were you looking to step away from Android or were you looking to maybe grab another Android role or did that not really matter at all?
+
+[SPEAKER_01]
+I wasn't specifically looking to step away from Android. Even after doing it for over a decade, I wasn't quite disillusioned with it yet. But the issue is that most climate tech is not mobile-based. And I'm honestly pretty skeptical of most of the mobile answers for climate issues. I think there are a few legitimate roles that make sense for mobile and climate tech. So, for example, one of the places I talked to was Octopus Energy, where they... they are a renewable energy provider and they have a client app that like their residential users can use in order to like pay bills and stuff like that. It's like, that's the sort of thing where I could see myself ending up at a place like that. But there's a lot of other apps that are like, you know, track your personal carbon footprint. And I am a little skeptical of that and I'm a little skeptical of carbon offsets. And so it's just like, I was open to working anywhere. And I kind of knew that the majority of the jobs out there were going to be in things not mobile. Yeah.
+
+[SPEAKER_00]
+I mean, we don't really know, at least I don't, what your background is other than Android. What other skills do you have that allows you to step into other technical roles? I know you do have other ones, but for the listeners, what are those?
+
+[SPEAKER_01]
+Oh, none.
+
+[SPEAKER_02]
+He plays the trombone really well.
+
+[SPEAKER_01]
+I do play the trombone. That was not a factor in my interviews, unfortunately. I like to swim, also not a factor. Ah, damn it.
+
+[SPEAKER_02]
+Yeah.
+
+[SPEAKER_01]
+No, I mean, I think my whole theory when switching a job, when switching tech stacks, was that the nuts and bolts of day-to-day programming, like knowing how a constructor works in one language versus another, knowing what kind of frameworks to use or how to use them correctly, that's just a small part of your job. There's so many other elements to it, such as communicating with design and product and figuring out what you're actually going to build. Just architecting the solution that you're looking for, like how do you build it in a way that's maintainable and that actually works? Being able to debug code quickly or like, I don't know, there's so many skills, especially with like being a senior developer. Those sort of skills that you get don't have as much to do with like the day-to-day nitty-gritty of coding. They have more to do with like interpersonal relationships and reviewing code and mentoring and stuff like that. And I figured all of that would transfer wherever I was going. as long as someone else would give me the chance to learn their tech stack.
+
+[SPEAKER_02]
+So John Carmack, one legendary developer, Quake IDE from the previous times, a CTO of previous... Yeah, I mean, hopefully folks know who John Carmack is. Very celebrated software engineer. This was in the context of, there was a tweet that he recently posted. This was in the context of, hey, with all this AI stuff, writing all our programs, does it mean that we are relevant as software engineers? And he alluded to something very similar. So I think what he said was, software is just a tool to help accomplish something for people. And many programmers failed to understand that for a long time. If you keep your eyes on the delivered value and don't over-focus on the specifics of the tools or the programming language, you're kind of safe. And I think that resonates pretty well with what you're saying, which is like, hey, just writing the actual code and knowing the language, knowing the syntax and being able to write it is an important part of the job, but it isn't actually the biggest chunk of why software engineers are paid so well these days. Because especially as you progress to the senior levels, the other aspects become much more important.
+
+[SPEAKER_01]
+Yeah, it's not the hard part. And this is something I've said about GitHub Copilot when it came out and ChatGPT now, which is that they solve what I kind of consider the easy part of the problem, which is like figuring out the exact syntax of what you're trying to express. But it's figuring out what you want to express in the first place that's always the head stumper to me. Because it's like, oh, okay, a good example of that I was just working on this morning... What API design should I use? You know, I've been working on backend stuff now. Someone, one server is going to talk to another server over HTTP. Like, what parameters should I allow them to send over? Should I be more restrictive? Should I be more unrestricted in terms of what I accept? And that's not something that like an AI or the whole copilot can answer for me. Yeah.
+
+[SPEAKER_02]
+That's right. I think that really sums it up pretty well. Going back to what you were saying, right? So I just had a question around, like, when you decided, okay, hey, I'm, you know, climate tech, that's basically where I want to go. How did you start with that process? And how long did it take? You know, were you saying, I'm going to give myself, like, one month, I'm going to give myself six months, or was it like, no, I'm just going to keep trying... You know, and once I find the right place, I'll just know. How did you approach that? Because that is a pretty daunting task, especially if you're moving so far away from what you would otherwise consider your comfort zone.
+
+[SPEAKER_01]
+Yeah, honestly, it was it was sort of a years long process where, like I said, early on wanting to get into climate stuff, I started volunteering. And so that was like gathering some information from like I volunteered to work on a carbon footprinting app for a while, which is part of why I became disillusioned with it, because I think like I was working on this in my spare time. And I didn't want to use it. And it was like, well, if I care this much that I'm writing this app, and I'm not footprinting myself daily, then why would someone else do that? And then in future years from that, I went to classes and learned more about climate and change in general and kind of like figuring out where I'd want to fit myself in the solution. And then I did a lot of research on like, okay, not just what jobs are out there, but what routes are there. Like I considered for a bit, maybe I should go back to graduate school and get some degree in data science because maybe that would be more useful for people. Or would I want to work in like a governmental job or a nonprofit or something in tech startup world. So there was a lot, there was like years of me just kind of throwing these ideas around. When I really got down to it though, like the actual process took maybe like two or three months. And the first step of that was really to like, I wrote down everything that was my priority for my next job. So I found this to be extremely helpful. Just like anything I could think of that I wanted or wanted to avoid, I wrote down and then prioritized into like, these are required versus this next thing is, let's see here. Some of them would be required. Some of them would be optional, but like, and some of them would be like, you know, if it happens, great, but whatever. Yeah. And so the required thing would be have to work on climate tech. And that's true of any sort of mission-based thing you might want to work on. And then the second thing was have a good work-life balance because that's very important to me. And the third requirement was I came up with a certain number for salary that I could maintain my current lifestyle at. And so that gave me a good basis. And then all of the optional stuff became a good way to compare. When I got multiple offers, how do I compare these to each other? It was nice to be able to go back to before I was emotionally in the moment. What did I think was important or not important?
+
+[SPEAKER_00]
+It actually brings up a good question that I have written down here. And I'm wondering if you encountered this at all. It's kind of a parallel area. I did step away from Android for about two years. 80, 90% of my time was not on Android. It was on the web. And the other 10% was still on Android. But I face this and I'm wondering if you did. I'm wondering when you were going through the interview process and you're evaluating different companies and these companies learned that you were or you had a very large Android background and you're applying perhaps at a web-based company. Did you find that the offers for salary were lower because you didn't have that seniority in that tech platform or was that not a no issue at all?
+
+[SPEAKER_01]
+That wasn't an issue. The issue was getting my foot in the door in the first place. So a lot of places I would send out a resume and say, I know a lot about development in general. I understand that my resume says Android, but it turns out I know a lot more than just Android. The skills I have are multivariate. And a few places, like the place I ended up at, said, sure, we'll talk to you anyways. And I figured the easy part would be learning the language and the framework, and that's turned out to be true. But most of them just didn't even respond. So if I ever go through this again, I mean, for one thing, my resume will have now a completely different tech stack in it, which would make it easier to get my foot in the door. But if I ever were starting from scratch again, I think I'd be spending more time figuring out how to actually get your foot in the door versus just assuming that people would see 15 years of developer experience and want to go for that. Because it still turns out that there's these filters where it's like, oh, you didn't have Node.js listed on your resumes. We're not interested in you. Because there's no way you could learn Node.js in like a month or something, you know? Like, yeah, you wouldn't necessarily learn the nitpicky framework parts of it, but you can certainly hit the ground running on it if you know how to program in general.
+
+[SPEAKER_00]
+Yeah, definitely. And the issue that I noticed too when I had stepped away for a little while is that I ran in the same exact problem. There's a lot of this existing bias out there. Like, oh, you don't know this. It's not on your resume. Okay, we're not going to talk to you. I dealt with that too. But the other thing I noticed is hey, I'm very senior in the Android world, but maybe not in like Node, like you said. So I might get paid X as an Android person, but I'm going to get paid Y, which is substantially less. Now, I don't know. Forgive me if you answered that previously. Did you find that to be the case with you too or no?
+
+[SPEAKER_01]
+I didn't. Although like... There's another element to this as well, which is that where I was working at before was Atlassian. And Atlassian is one of those large companies that can afford to compensate developers really well. Maybe not at Google levels of well, but substantially better than most companies. And... I knew that switching jobs would involve a pay cut, which is why one of the things I did was write down like what my minimum salary was that I was expecting.
+
+[SPEAKER_00]
+Of course, super smart.
+
+[SPEAKER_01]
+So like here, it's like when I was getting into climate tech, I very actively knew that I was going to be taking a pay cut. And so I was already ready for that possibility.
+
+[SPEAKER_00]
+Okay, that's good. Thank you for sharing that because I know that there's a lot of folks out there that I've spoken to on a personal level that have said, hey, I want to get out of whatever tech that they're in, but they're afraid to leave because of like, oh my goodness, I'm going to have to take this pay cut. But I think you did it very wisely, understanding what the minimum number that you need to hit is and then going for it. And with doing that, I mean, this is kind of an overarching question. How would you say that your quality of life as a developer, human, whatever, has it improved now? Do you enjoy what you do much more?
+
+[SPEAKER_01]
+Well, to back up just one second, I don't want to like bad mouth climate tech in general as being like low salaries. Like the salaries here are good. The salaries before were absurd. Yes, no. We're going from stupidly, the sort of thing where you look at that and compare it to what teachers are making. You're like, this society is messed up sort of things to this is still very generous. In terms of quality of life, I would say it's actually pretty much the same as before. And again, but that's because I prioritize work-life balance as one of the things that was important to me. There are companies that I talked to when I was getting into this where they said, you're going to work a minimum of 50 hours a week. And that was the minimum they were saying. And people sometimes work 60 or 70 hours a week here because we're fast-moving Silicon Valley tech startup, and we just go, go, go. And I just stopped the interview process there. Yeah, I don't think the industry necessarily dictates whether the company is good or bad. I think... it's more just on a company-by-company basis what their values are.
+
+[SPEAKER_02]
+I agree. I had a, sorry, quick follow-up to something that you said before we move on to Don's question, right? You also said, hey, knowing what you know now, you might approach things a little differently, right? What would some of those things be, right? Like, would you start resume packing?
+
+[SPEAKER_01]
+Like, you know, just add all the technologies and then... Yep, that's one of the pieces of advice I got is just throwing a bunch of buzzwords on so that it passes filters so that a real human actually looks at your resume for a moment. Another piece of advice I got later was to reach out to the recruiters at these companies, like message them on LinkedIn instead of waiting for them to happen upon your resume. So just ways to try to get your foot in the door that's a little more aggressive than just sending in your resume to the job site and hoping that they see it.
+
+[SPEAKER_02]
+Right. I mean, and some of the other things I've heard too, just to add on to that, right, is again, a lot of people say, the obvious one is if you know someone in the company, it's always best to first reach out to them and try to get them to talk to a recruiter to like, you know, send out an invite. Again, you know, if it's a different industry, that's difficult because there's most likely you don't probably know people in that company or in that space. But if you do, that's a good way out. The other one is also, of course... sending, actually, I don't know if you did this, when you send your resume to companies, do you also add like a cover letter, which just allows you to explain a little more beyond just like the bullet points that are in your resume?
+
+[SPEAKER_01]
+Yeah. And the cover letter basically said what I said before, which is that like, I understand that I'm not part of this tech stack, but I think I have a lot to offer and I'm looking to move into this space. Yeah. The networking thing was a huge loss for me too, because I've been doing Android for over a decade. You know, I go out and give talks. I know plenty of Android people. And when justifying this job switch to my wife, I was like, you know, worst case scenario, if I strike out, I can always find another Android job. Like, I think it wouldn't be too hard because I have such a huge network there. It's like, I know so many people who would be willing to interview me and talk to me about working there. Whereas moving into a completely different space, it's like, I know no one here. And so it was kind of like starting my network all over again, which is a bit of a handicap there.
+
+[SPEAKER_02]
+For sure, for sure. Don, sorry, you were asking a question. Maybe you switch to that one?
+
+[SPEAKER_00]
+When you move from one tech stack to another, you know, of course, like you said, as long as you know how to program, you know, are we doing dependency injection? I know I need to do unit testing or et cetera, et cetera. But still, at some point, we're always going to run into some challenges when you're moving into one of these new roles. What are some of the challenges that you ran into when you started this new role with a new technology that you remember being like, oh, this is something new I haven't done in a long time or something I haven't seen before, etc. ?
+
+[SPEAKER_01]
+Yeah, I think the challenge is just, there's kind of two. One is contextual where, well, how do I put this? You know, let me scratch that actually. Let me go to a different challenge that's easier for me to elaborate. So when learning something new, what you tend to do is look at what people have done before you. And so, you know, you look at a code, you're new to a code base and you're new to the framework at the same time. And looking at that, it can be hard to tell like, so what here is the best practice? So like the documents online say one thing, the thing that we're doing locally says another. And, you know, it could be hard. You have to go up and talk to people and say like, what is the reason for the code being like this? Because sometimes they'll say, oh, the answer is because some old version of Node did not work with this thing that we were doing. And so that's why it's a little awkward here. But now that we have a newer version of Node, we can do something like better. That's the sort of difficulty that I had was like figuring out what the best practices are. moving into a particular language.
+
+[SPEAKER_02]
+And quickly, can you actually tell us, because we talked about this, what is the tech stack that you're working on now? Just for folks to get a sense of how different it is.
+
+[SPEAKER_01]
+Yeah, so the language that I'm using primarily is TypeScript, which if you don't know, TypeScript is kind of like a superset of JavaScript. So at its core, what you're programming is JavaScript, and then TypeScript adds types on top of that. And you know what, TypeScript, I actually did JavaScript at my very first job. TypeScript is definitely an improvement on top of that, but it is still no Kotlin. And it continually makes me sad every day not working in Kotlin and working in TypeScript instead. So it's TypeScript on a Node.js backend. There is an advantage to using TypeScript and JavaScript, though, which is that you can write the frontend and the backend using the same language if you're small and scrappy. And then we have all the engineers, no TypeScript and JavaScript. And can switch between working on front-end and back-end because the language is shared. Now, I know that this is like the dream of Kotlin multi-platform at some point as well. But obviously, you know, I showed up here years into a project that already existed. I wasn't going to come in and like bust down the door and say, we should switch everything to Kotlin multi-platform. I don't think that would have gone over particularly well.
+
+[SPEAKER_02]
+I know they would have loved that colleague who comes in and says, listen, guys, we need to change everything.
+
+[SPEAKER_01]
+Yeah, that was another hard thing actually was... There's all these conventions that exist in the Android ecosystem now that don't necessarily exist in other tech stacks. And that was very eye-opening to me. So one example of that was actually dependency injection. I think dependency injection in Android is just like a given. It's just the way that you connect together, the way that you glue together the parts of your app. And I found that on the back end, dependency injection is not a given necessarily. And that was just... Wild, wild to me. But hey, you know, I will eventually... But I didn't want to come in guns blazing and be like, we should add dependency injection right now. Because even in TypeScript, it was like, okay, there's a TypeScript dependency injection library that uses experimental features because no one's super prioritized making this happen because it's just not part of the normal thing that people do necessarily. That was really interesting. So yeah, TypeScript and Node.js. For searching, we're using Elasticsearch. So that's been a very interesting... thing to learn how to use. We're using an actual SQL database instead of SQLite. I mean, SQLite's an actual database, obviously. But you can't do ridiculous queries with it. And it's been fun getting into Postgres and being like, all right, let's do some real wild stuff here. Those wild queries that we can't get away with in Android. And then a lot of connection with AWS. Yeah. you know, using them with S3 buckets to store data. And that's where we're hosting the database and the app and the actual app itself. So learning how that all fits together as well.
+
+[SPEAKER_00]
+During this process, you know, again, you went from Android, you were there, you're very familiar with it. Now you're in the web world and there's no right or wrong answer here, but have you found development to be more enjoyable, the same or more painful with web development versus Android?
+
+[SPEAKER_01]
+I would say that the only thing that's really continually painful to me is not being able to use Kotlin or a more statically typed language. The dynamic typing is just always going to be a little sad to me. Just being able to get away with like, oh, we're referencing this thing on an object. Where did that come from? Well, then you have to trace through tons of lines of code and then you discover like, oh, it exists because it assumed that the HTTP request would post this in the body.
+
+[SPEAKER_00]
+I haven't been there many times. So it sounds like the tech stack is pretty fun. You're enjoying what you're doing. That's good. You've had some challenges with moving from one language to the next, but you've figured all that out. Now, kind of on the same topic, but on a different spin on it, what are some of the soft skills that you found to be the most useful in your transition from Android to where you are now?
+
+[SPEAKER_01]
+Oh, like all of them. It's hard to list them out. That was the thing that was advantageous. I mean, like being able to talk with people about code, first of all, being able to ask questions. I've always considered that sort of a superpower. I feel like people in general are too shy about asking questions when working with other people and end up just floundering around too long. Whereas I just come in and I'm like, I'm going to ask every question until I understand this. I don't really mind if I annoy other people because it's like... I'm going to annoy you now. And then a few weeks from now, I'll be going, I'll be doing so much better that like you will be less annoyed then. So it's worth a trade off there. being able to do code reviews, also being able to like... One of the things that was unexpected to me was, you know, I've worked with good coworkers in the past and excellent coworkers in the past. I've had teams that are extremely cohesive and, you know, ones that were not as cohesive and not as great. And I can compare and contrast and pattern match and whatnot. And I can bring it to this new company and their culture and like... take first you know again not coming in guns blazing take stock of the things that they're doing and the things that feel good and the things that don't feel good and be like you know what i bet we could change this that and the other and it would feel a lot better because like this is what's happened with teams in the past where maybe we're having this problem and it would it would fix it to go to this other direction
+
+[SPEAKER_02]
+Putting a slightly different spin, but in the same direction. How is a two-part question? One is how long after joining the company, right? Like in this completely new setting, did you start to feel effective, right? Like, did you start to feel like, okay, I feel like, hey, I'm making a change here, right? And also, you know, similar to what Don just asked, were there any specific things where you're like, ah, I can see that I'm really bringing this in? you know, to the team where, you know, that makes me that much more effective, right? Like I can see that this specific thing is making the team go faster or like, okay, this company is now like getting the benefit of me being a part of the team. Do you know what I mean?
+
+[SPEAKER_01]
+Yeah, I definitely know. I mean, there was, it was funny. My first job, I was working there. I've been there for maybe six months. We always had lunch together because this was before I was remote all the time. And One of them was telling a story about some other intern or someone they worked with years ago where they're like, he wasn't doing anything. But he's like, oh, but it's been nine months. He's like, but I don't expect anything out of anyone who's been working here for nine months, like the first nine months. And he looked over at me. He's like, oh, sorry, Dan. I didn't mean to insult you. I was like, no, thank you. Because I've been here six months and I feel like I haven't done anything. And I'm glad that people don't expect me to do a whole ton yet. So... Things have changed since then because that was my very first job. I didn't really know. Honestly, this one, I had about a week and a half of onboarding. And then pretty much immediately, I feel like I was actually contributing real code. And there were two aspects to that. And the first was that, again, noticing issues that were happening there that people had gotten used to, this kind of learned helplessness of like, this is just the way it is. So for example, when the unit test ran... you know, obviously you want to have your database in a clean slate before you run your unit tests. And what it was doing was it was clean slating the one database. So, you know, if I was running the app locally and I was making changes and then I want to run the unit test to verify those changes, it would blow away all the changes I've made locally because it would reset the whole database every time. So like one of the first thing I was like... oh, we need to separate these out so that the unit tests are running on like just a separately named database that like it can run while not blowing away my local data. Like noticing that sort of thing and being like, I'm just going to make this change. And then suddenly like the unit tests become better for everyone else. Or like I got the unit tests down from like running. They took like 10 minutes to run down to like one minute.
+
+[SPEAKER_00]
+That's awesome.
+
+[SPEAKER_01]
+So like stuff like that where it's like... oh, I can see where there's slowness here and just knowing that this would be a huge impact if I were to change that.
+
+[SPEAKER_02]
+That's excellent. Yeah, that's exactly the kind of thing.
+
+[SPEAKER_01]
+The other thing that I felt like I was contributing early on, and this is the senior developer part of it, was like hearing about the different problems at work and knowing that like one of these is hard and no one wants to work on it basically because it's hard and being like, okay, I'll figure this out. And because it's hard, no one else had... necessarily the experience necessary to solve it because it just requires research and figuring out what the right design is to solve that problem. And it's sort of the curse of being a senior developer. I would love to work on easy problems and solve them well all the time, but that's not what I'm here for. What I'm here is to chomp on these big meaty issues that no one else wants to deal with because it's painful and hard to figure out.
+
+[SPEAKER_02]
+That's such a good attitude, right? Because I think sometimes we get caught in this like sort of self-gratification kind of thing, right? Which is like, ooh, I would like to take this small feature, deliver it with perfection and, you know, pat myself on the back. But you're right, that isn't, you know, as you rise in your career or grow in your career, that's the hard, you've, you worded it so well. It's, you want people like those problems that nobody wants to deal with. That's exactly where you can be more impactful. So that was, yeah, well said.
+
+[SPEAKER_01]
+Yeah, it's especially the really ambiguous problems where there's no obvious solution to it or there's no right way and you have to figure out between multiple competing methods what would be the best one to do. That's like sort of where the senior developer signs, I feel like.
+
+[SPEAKER_02]
+Makes sense, makes sense.
+
+[SPEAKER_00]
+Dan, question for you here in regards to, you know, you're working in Node now and you've left Android. And I see like a parallel or at least myself in your situation because I've been there. And one of the things that I remember worrying about is like, wow, I'm falling behind on all the things that are happening in the Android world. So this is a two part question here. The first part is, do you worry that you're falling behind on all the stuff that's happening in the Android world? And do you think you'll return to Android? Or does this not even matter because you're not even planning on returning? Or do you not even know?
+
+[SPEAKER_01]
+Sure. So about falling behind, do I worry? No, actually the exact opposite. Here's why. It's because I tried so hard to keep up with everything in Android and it's so much work. It's exhausting. And I think the reason I tried so hard is because I'd been around Android so long that like... you could just kind of accrete knowledge every year after year. So I had some knowledge of almost every aspect, not every aspect of Android, but like a lot of it. And so it felt like, ah, I got to keep up. I got to watch like half the Google IO videos on like 2X speed, just so I have like a, you know, a general idea of everything that's happening and stuff like that.
+
+[SPEAKER_02]
+And then Google I.O.
+
+[SPEAKER_01]
+happened last year, and I was like, I'm not watching a single video. I don't care. It's fine. So this gets to your second question. Will I ever return to Android? Maybe. It really depends. There's definitely a future where I don't stick around to the current company. I look around again, and the next place I find is another Android gig. The way I see it, though, is that I could be gone for four or five years... Things would change so much in that time. It's not really worth me keeping up those skills in the meantime. It's more worth like, okay, the moment I am going to jump back into it, then I can spend a month or two researching and get myself caught up. Because there might be a whole area of discussion that pops up in 2022 and then dies by 2024 and no one would expect me to know it in 2025 anyway, just something like that.
+
+[SPEAKER_00]
+Yeah, that happens quite a bit on Android, I think.
+
+[UNKNOWN]
+Yeah.
+
+[SPEAKER_01]
+Yeah. Not that I think it's going to go away. I think it's here to stay. But imagine Compose. Maybe Compose gets released in 2021 and it's the big thing. But then they're like, oh, we're going to do a new view system in 2025. And that suddenly becomes the big thing. And it's like, well, why would I spend all this time keeping up Compose skills where maybe it doesn't matter by the time it comes out?
+
+[SPEAKER_00]
+It's very similar to the whole data binding thing. I mean, it kind of came and went and then went away a little bit. Or for the most part, it seems like a lot of people are getting away from it. So I see what you're saying.
+
+[SPEAKER_01]
+Yeah, I mean, we actually never got into data binding. Again, for something I said similar earlier, which is that it wasn't solving the hard part of programming for me. Like, it doesn't seem worth the extra overhead to solve what was possibly the easiest part of Android development.
+
+[SPEAKER_02]
+True.
+
+[SPEAKER_01]
+Like, it's tedious, but it's easy. And so by the time it was dropped, it was like, okay, great. We never got into it and it never mattered.
+
+[SPEAKER_02]
+This is also another gem. I say this because I've been in recent conversations with some of the engineers that I work with. It's so easy to sort of feel like you're driving impact by making some of these large-scale changes. It's like, oh, Google has recommended that we do X, and it makes this thing easier. I think, you know, just pausing a little and asking that question was like, yeah, but is that a real problem for us? Or would you rather spend your time working on something else that would really drive benefit, right? I think asking that question is so important, you know, and, you know, sometimes it's easy to get lost in it, right? Even, and, you know, this was one of the harder questions early days, like even converting to Kotlin, right? I mean, granted, it's a very different outcome. I think it totally is worth it in my humble opinion.
+
+[SPEAKER_01]
+Definitely, yeah.
+
+[SPEAKER_02]
+But asking that question is like, okay, wait, is this going to solve the problem? Like, what is the actual impact? Is the team going to find this thing like, you know, that much more easy to work with and ergo be more impactful or like, you know, be more effective? I think asking that question is so important.
+
+[SPEAKER_01]
+Yeah, I actually gave a whole talk on this once, like, I don't know, four or five years ago. But basically it boiled down to, like, whenever you want to refactor, it's about kind of going incrementally and taking multiple steps to experiment before you go all in. And actually, in general, I find that, like, architecture is maybe, like, 10% knowing where you want to go and 90% figuring out how to get there. Because, like... You can spend all day long coming up with the most imaginative, dreamy architectures for making your UI and your view models and everything talk to each other in a beautiful manner. But if you don't have a way to get there without rewriting everything, like you're lost.
+
+[SPEAKER_02]
+Right, right. That migration piece is the most painful and potentially the difficult part here.
+
+[SPEAKER_00]
+Yep. Dan, if you could do this all over again, now that you've kind of went from A to B, would you do it again?
+
+[SPEAKER_01]
+Oh, yeah, definitely. I want to work on climate stuff, like I said, and I think the same feelings apply to many people wanting to work on anything mission-based. I was just talking to someone else the other day who said that she wanted to work on stuff relating to elderly care. And that's another great example of some mission-based work you can do. And all you have to do is keep your eye out for those specific positions. Yeah.
+
+[SPEAKER_00]
+It's true. It's funny that you bring it up that way, like mission-based, because that's exactly why I decided to step away from Android for a little while was because I wanted to help a friend of mine who's over at Yale University do a bunch of stuff for some researchers and build some software for them to help with some of the research that was being done. And I was really passionate about that. And I didn't really care if we were using Python or if we were using Perl or whatever. I just wanted to commit to the cause. And I did spend a couple of years doing that. So I can very much relate to that. So it's good to hear that you would do it again. Last question for me really here is for the folks that are listening, there's a number of people out there that want to make transitions, want to do kind of what you have done. If you could give them some advice and parting advice, what would you tell these folks? And this could be, you know, technically it could be for resume, it could be anything. What advice would you give for someone who's looking to make a transition like you did?
+
+[SPEAKER_01]
+Yeah. Besides prioritizing where you like figuring out your priorities, where you want to go. So like that helps just focus down from the vast ocean of all the possibilities down to like the very few. Specifically wanting to work on climate stuff. There's like a whole work on climate slack group. and website and working groups and stuff like that that is devoted to the idea of like, you want to work on climate stuff? We will help you find a role in climate stuff. And this isn't related. This isn't just for programmers. It's for anyone who wants to work on climate.
+
+[SPEAKER_02]
+So that's probably where I'd go first.
+
+[SPEAKER_01]
+And then also for mission stuff, I think I would spend a while thinking about what exactly that mission means to you and how you're going to effectively help out that mission. Because, for example, I think there's a lot of companies, especially in climate stuff, where they want to act like they're being greener than they really are. So, for example, there's a website called Climate Base that has all these job listings for climate-related stuff. Yeah. And that's a great place to go. But it's sort of dominated by VC-funded companies that want to claim that they are greener than they really are. So, for example, I think when I was applying around, Bird was everywhere. I think they're having... more issues now than they were a couple of years ago. But they were like, we are a green company because scooters are better than cars, which is true. It is true that scooters are better than cars environmentally. But I think fundamentally, what they're trying to do is sell a product. And it just so happened that their product is greener. And that versus something where it's like, no, we're explicitly working on something. So where I ended up was actually, it's funny, we haven't mentioned this yet, is this company called Reapley. it's like the word cheaply with an R instead of a C. And they're focused on like circular economy stuff. So like right now we live in a very linear economy where goods are taken out of the, or materials are taken out of the ground, they're processed into goods, you consume them and then you throw them away. And this is obviously kind of unsustainable in the long run because like there's only so much stuff on earth and also only so much place to dump our trash. And so what Ripley focuses on like the circular economy is, So trying to get more reuse into our world right now with like a focus on like what's known as FF&E. So like the company has a warehouse with a bunch of stuff just sitting in it. And they might be like, well, it's easiest for us to throw this all in the dumpster. And it's like, no, don't do that. Why don't we make software that makes it easy to like get this stuff out in a marketplace for like other people to be able to consume these goods and reuse these goods.
+
+[SPEAKER_02]
+Yeah, it's funny. I was going to transition into that because we kept talking about climate tech and we were dancing around it. But yeah, thank you. I want to ask you like, hey, what's the...
+
+[SPEAKER_01]
+I don't want this to be like a big advertisement for like a particular company or something like that.
+
+[SPEAKER_02]
+Oh, no, no, no. I mean, I'm genuinely curious. Like, so this is, yeah, this is like less about an advertising, you know, sort of... So is Ripley an app? Is it like, do I use it on the website? Is this, yeah, like, can you talk to us a little about like, how do, like, okay, I'm sold. I like the idea that, hey, it's the circular economy. I want to like, you know, I don't want to necessarily dump the stuff that I have or like, you know, if there are other people willing. Is it sort of like a, you know, marketplace, like, you know, Craigslist kind of thing where you can exchange or like, how is it or is it driven by an economy?
+
+[SPEAKER_01]
+It is. It's a website right now. It's focused on businesses. Individually, we already have a lot of good solutions. There's Craigslist. There's Goodwill. There's the whole Buy Nothing group, which is really great if you've never heard of them. So being able to just trade stuff for free between people. This is more for software for like big companies. I'm not sure if I'm allowed to talk about who's doing it or not. So I'm not going to tread there. But like big companies who like want to either internally manage their goods better so that they reuse better or be able to put their stuff on external market and say like, we have these things which we're no longer using. Does anyone want them? And like what people say internally is that like we're kind of combating like our competitors are like spreadsheets and dumpsters. Because pre-reekly, it's like either people are just throwing these things out or they list all this stuff out in a spreadsheet and it's impossible to use.
+
+[SPEAKER_02]
+And it's a B2B company as in a business-to-business? So like right now, this is purely between businesses and that's how it works?
+
+[SPEAKER_01]
+It's mostly B2B, yeah. I mean, I think, I don't know, I'm working on one piece of software that is entirely internal to companies at the moment. There's a more external marketplace and I can't speak to that one as much because I don't work with it as often.
+
+[SPEAKER_02]
+Sounds good. Sounds good. And so this is basically a website. So the way people would use this is, you know, they log into the website. It is also a little different in that it's not a consumer app, which is what I think if I remember your past work experience, like you've always pretty much been on straight up consumer apps, right?
+
+[SPEAKER_01]
+Yeah. Although, I mean, I'd say it's still a consumer app because it's people putting up listings saying, you know, I have this... you know, 50 office shares or something. And then other people being able to browse and look for those office shares that they're looking for. But it's a really hard problem. It's interesting because, like, just a marketplace in general, just like an Amazon, is very complicated. But it's made a little easier. I guess Amazon's a bad example because they do have the whole used section to it. But, like, it's made a little easier generally by, like, the default, being able to just default to, like, get me something new. Whereas with this one, it's like, oh, you have to care about where it's located. because it's not necessarily going to just ship to you. You have to care about what condition it's in. It's like, is it a really good condition? Is it kind of damaged? Does that matter to you? And like, you know, it can be kind of complicated to reuse things. It's something I hope that like we figure out. I mean, it's still a small startup, so.
+
+[SPEAKER_02]
+No, that makes sense. And I mean, before we start winding down the last few questions, how did you find Replay? Was it just like, did you hit a recruiter or like, you know, did you know someone who worked there? Like, how did that happen?
+
+[SPEAKER_01]
+Oh boy, I like hit the books. So like I said, it was hard to get your foot in the door in places without having a resume that like listed the specific tech they were looking for. And I also wanted to work at a smaller company. So it's obviously easier to find listings at a large company. It's like, do you want to apply for Google? Very easy to apply for Google. They're everywhere. You've heard of them and they have a great careers page. Do you want to work for a company that has like 10 people in it? Much harder to find that company, right? So what I actually did was on the advice of some other people I talked to, I would look through all of like the climate-related venture capital companies and see who they were investing in. And that way it focused in on like, these are all climate-related companies that are on the smaller scale. Yeah. And I just went through probably hundreds. And the first thing I'd do is go to the careers page and see if they're hiring. And then if they were hiring, then I'd back up and be like, okay, what are they actually doing? I realized quickly on it was not worth spending the time to fall in love with the company and then find out they're not hiring or never will be hiring. And through that is how I ended up finding Reaply. because I think they had been invested through, I can't remember any of it now, but one of the big VCs, I think the one that Bill Gates funds quite a bit.
+
+[SPEAKER_02]
+That's awesome. That's awesome.
+
+[SPEAKER_01]
+Well, there were a few in-network connections, but this one was like really out of the blue. And it's funny because I keep telling people that networking is very important for finding jobs. And then inevitably, every time I find a job, it's not through networking because that was the same with Trello. Trello was also just a random job posting I found. So there you go. You can do it without networking, but it's harder.
+
+[SPEAKER_02]
+No, I agree. And also, I imagine if you're networking with Android developers, that would have definitely been easier, right?
+
+[SPEAKER_01]
+And there were a few leads I got from Android developers. Again, like I said, I was skeptical of most mobile things, but there were a few mobile things that were really cool. There was the Octopus Energy client app I talked about. There was one where a company that was working on having smarter HVAC in buildings so that it would be like keeping rooms... a higher or lower temperature depending on whether they sensed any people being in the room stuff like that and all of that was using like an android controller as like as its main cpu for all of that oh nice nice and then i've also heard of companies where like they have a field app like you're you have people going out in the field and documenting like how many trees are of certain types there are out there just to be able to like do research And so they have a need for like, you know, mobile apps that are pretty competent.
+
+[SPEAKER_02]
+Makes sense. Makes sense. Dan, this was great. I learned so much. It's also like, you know, got me a lot to think about, you know, if and when I find my next job, you know, the whole mission driven aspect of it, how to approach it. Hopefully a lot of other listeners find this inspiring.
+
+[SPEAKER_01]
+Yeah, thanks for having me. It's great to talk about this stuff.
+
+[SPEAKER_02]
+Thank you so much for coming on to the show. And before we wind it down, if folks want to reach out to you or reach out to Reaply, what are some good ways for us to get in touch?
+
+[SPEAKER_01]
+Sure. If you want to reach out to Reaply, it's just Reaply.com. Again, it's the word cheaply with an R instead of a C. If you want to reach out to me, I'm in a weird spot right now. I don't like what's happening at Twitter, and so I don't use it for the most part, but I also don't really have an alternative yet for publicly reaching me. So if you want to reach me, I check Twitter every once in a while. So I'm at danlu42. I don't really tweet anymore, but I don't know. If you DM me, I'll see it within a week or two.
+
+[SPEAKER_02]
+Don't expect immediate responses, but eventually you'll probably see it.
+
+[SPEAKER_01]
+Yeah.
+
+[SPEAKER_00]
+Thank you so much, Don. Don, if folks want to reach out to you. The best way to reach out to me is going to be through Twitter or Instagram. It's going to be at Don Felker. And Kaushik, what about you? How can folks get a hold of you?
+
+[SPEAKER_02]
+Yeah, I'm starting to switch more to Mastodon. You know, I'm just like very curious and interested with the whole like federated world. So yeah, Mastodon would be a good way. I am K-A-U-S-H. And this is the worst part about Mastodon. It's like trying to talk about your handle. But I am K-A-U-S-H at hackaderm.io. Or, you know, you can just go to mastodon.kau.sh and it will just take you there.
+
+[SPEAKER_01]
+Nice. That's what you got to do is have a quick link to it. You do.
+
+[SPEAKER_02]
+It drove me towards the end after I did that because to make matters worse, I also within Mastodon moved from Mastodon.social, which is easier to say, to Hackaderm.io, which I actually think is a beautiful, excuse me, Mastodon instance, but it is impossible to pronounce. Sure, yeah. So I was like, huh, maybe I should just take my domain name and, you know, slap in a subdomain and they'll just redirect me to the right place. So that's what I figured out.
+
+[SPEAKER_01]
+Yeah, the whole Twitter thing just kind of made me reevaluate my relationship with being social on the internet and how much I really want to broadcast every thought publicly. So that's why I haven't really figured out where I'm going to land if I am going to land anywhere.
+
+[SPEAKER_02]
+Thank you all so much for listening. Again, Dan, thank you so much for your time. You're always very generous with us and it's always super insightful. So I know our listeners are going to appreciate this. Thank you so much. Thank you.
+
+[SPEAKER_00]
+Once again, this episode is brought to you by androidjobs.io. Post a free job posting. Sign up to get notified of those job postings. And you can also upgrade and make your job posting highlighted or pinned to the top or anything like that. And remember, all job postings are now 90 days long. So check it out, androidjobs.io. Thanks for listening.
+
+[SPEAKER_02]
+That's it for the show, folks. Fragmented is hosted by Don Felker and me, Kaushik Gopal. We edit and produce all the episodes here on Fragmented. You can find more Fragmented episodes at fragmentedpodcast.com. Thanks for listening, and we will catch you in the next episode.
