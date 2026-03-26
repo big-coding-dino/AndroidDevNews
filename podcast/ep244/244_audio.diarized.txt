@@ -1,0 +1,58 @@
+# ep244
+Podcast: Fragmented Podcast
+
+---
+
+[SPEAKER_00]
+This is Fragmented, an Android developer podcast where we talk about building good software and becoming better Android developers. I'm Don Felker. And I'm Kaushik Gopal. Welcome to the show. This is a short little episode as people can see from the length of time that this is in your podcatcher. Very short episode because this is an announcement that we wanted to make and it's something that's actually pretty exciting for us to do. And I'll let you kind of spill the beans here. So what is our announcement that we have?
+
+[SPEAKER_01]
+So, you know, the pandemic hit, you know, we went through some changes. The podcast went through some changes. And now it feels like we are finally getting back to a world where we have adjusted and everything is back to, you know, quote unquote normal, if I can say that. But I think one thing that you and I have felt strongly in, you know, by virtue of circumstances, we both have gotten really into Android development again.
+
+[SPEAKER_00]
+Yes, yes, heavily.
+
+[SPEAKER_01]
+And the things that we started to notice is that we, you know, we position fragmented as a tech podcast, but inevitably after we hit that stop button, we start to like talk about Android stuff far more deeply again. Because I think as I understand, Don, you're working like, you know, almost day to day with Android again. And so am I. And I thought maybe like, you know, you know, we've always taken the listeners along our personal journeys as well. So I thought maybe I could share a little of what I'm doing now and maybe you can, and then we can tell people what we're going to change. Yeah, definitely. Okay. So as folks know, I've been a part of Instacart for some time now. You know, I'm mostly in, I started out as an Android developer. Eventually, you know, I was doing both iOS and Android development. So it was like more mobile. Eventually then it was tech focused. And I think, you know, that transition made me think like, hey, that's where I'm at. I recently have joined a sort of a subsidiary that we acquired called Kaper. And what we do is we deal with smart cards. those smart cards run Android. So basically what I'm doing day in and day out again is Android development. And it's exciting again for me because it sort of gives me a different angle towards how I look at things. And I felt like I basically want to like talk to you about a lot of this stuff. And I realized that, you know, we almost like got two episodes, one which is on the air. The other is like off the air where we talk about Android development stuff. And hey, Don, how are you doing this stuff? And we figured... is kind of what revitalizes us, right?
+
+[SPEAKER_00]
+Yeah.
+
+[SPEAKER_01]
+Have you been working with Android development more closely?
+
+[SPEAKER_00]
+Yes, I have. So I'm not going to let the full cat out of the bag here because as we have discussed offline, this will probably be an episode all in itself. But to kind of let a little bit of the cat out of the bag, about almost exactly a year ago, coming up very soon, I accepted a full-time position. And that position is working on Android for a very popular application that has over 100 million installs. Very in-depth, lots of stuff going on. And so I have found myself in the belly of the beast per se. And I have been working in-depth every single day, weekends included a lot of the time, just because of the interest level in it. back in android and again there's lots of topics that i found myself tweeting about talking about and this was kind of a very organic decision i feel that you and i had because we kind of came to it at the same time i believe you messaged me about it saying hey what do you think about returning to our roots is this a pure android developer podcast and i thought i was like that is It was the perfect timing because I had that exact same feeling. Now, that doesn't mean we might not still talk randomly about something that we did something else. But I would say the vast majority of what we're going to talk about again is going to be Android. There's just so much happening in Android. And there's a lot of stuff we want to talk about. And sharing that with the listeners is something that you and I have been passionate about. And as soon as we rekindled that... Almost like that old flame, you would say for Android. We both got really excited again. It's like, okay, cool. Let's plan when we're going to release episodes then. And let's plan this and let's plan that. And all of a sudden it felt like the old days of us recording podcasts. So that's kind of what we're here to say. is that we're back as an Android developer podcast. We're happy that you are listening to us. Our schedule will be a little bit different. Kalsh will let you talk about that in a second. But I wanted to say thanks again to everybody for listening and joining us. If you're just joining us now, thank you. If you've been with us the whole time, thank you. We're very grateful for everything. And here's to the future of Android development podcasts. Do you want to talk a minute about the schedule and what we were thinking? Yeah, yeah.
+
+[SPEAKER_01]
+So we were thinking that we'll start releasing episodes on a more regular cadence because that was also part of the thing. A lot of listeners have told us like, hey, you know, we really enjoy the podcast, but it seems like you guys are not as active anymore. And the truth is we were active, but we're just not very regular about it because life and, you know, different things. So I would say like now what we're aiming for is expect an episode on like the second and third, second and fourth Monday, you know, because what we do is we record like, you know, on the first and third Mondays, like just so people know. Then we just give ourselves some time to edit it and put it up there and then you'll find the episode, right? So that is the cadence that we're shooting for. So... And you know how the months go, but typically expect two episodes per month on the second and the fourth Monday. And that's pretty much how we're going to go about it. Don, are we changing anything else about this in terms of podcasts, the art, some of that stuff?
+
+[SPEAKER_00]
+Well, I think if you're listening to the episode, hopefully your podcatcher has refreshed the artwork, which unfortunately they don't do that often. But yes, you ask a very good question. Yes, we are updating the art. If you haven't seen it, go into your podcatcher and see if you can refresh your art there. As you probably can tell just from the intro, you're like, wait, am I listening to the right podcast? The music has changed. Now, sticking with our original roots, we are still using the same producer that has produced our last podcast music, Blueprint, who is from Columbus, Ohio. And of course, like the artwork and this. And so we have the cadence and we'll be updating the website to match it and so forth. So basically think of this as a brand new rebrand for the Fragmented Podcast to bring us back to our roots in Android development.
+
+[SPEAKER_01]
+Yeah. And I hope the art is like a cheeky throwback for, you know, the people who've been with us for all this time. And to be clear, like there's going to be Android hating, you know, because, hey, like, you know, we've been with like, you know, it's like a love hate relationship with that. Right. But I have like one last thing to tell you, Don, for the podcast, I've done the unthinkable.
+
+[SPEAKER_00]
+What is that? Do you hold on? Let me guess here. You you switch task managers again because we've done that like 12,000 times.
+
+[SPEAKER_01]
+The irony is I actually did, and I haven't given you the last update, but that's not what I'm going to tell the listeners about. What I'm going to tell the listeners is I actually went back and got a Pixel phone, just a Pixel 7 Pro just for this. As some of you know... I was on this mode where I was like, I hate that. And to be clear, I still think, you know, the hardware has a lot to be desired with. So I'm not saying I'm like sold again. No, if anything, I feel like it makes the pain that much more. Sort of like I can feel it that much more. But hey, you know, sometimes you've gotten for punishment. You got to sometimes do what you got to do. And so for our listeners, just so I feel I'm more connected to the Android world. Listeners, I've done you a solid and I've decided I'm going to go back to being a Pixel 7 Pro primary user.
+
+[SPEAKER_00]
+That is big news because you are the one that got me to think about evaluating iOS, which eventually I did and I'm still over there. But on the same token, I've always been a fan of iPads. I just like that form factor better for tablet use. and i actually did pick up an android tablet uh which funny joke because i asked it on twitter i said what are the best android tablet apps that are out there you know design games entertainment whatever and one of the responses were like oh there's android tablet apps and i was just like oh
+
+[SPEAKER_01]
+Yeah, it's funny. I will say I'm excited about the new tablet that's going to be able to control your home slash Google. That one is exciting. So yeah, that's pretty much for this episode. Expect a regular cadence, second and fourth Monday. We hope you enjoy the new music. Blueprint is awesome. We've loved sticking with a lot of the music that he's made for us. And we are excited to talk more about Android development.
+
+[SPEAKER_00]
+Thanks for joining us. I'm going to steal your line this time.
+
+[SPEAKER_01]
+I know. I was like, oh, I like it.
+
+[SPEAKER_00]
+Love it. That's a wrap. See you in the next episode.
+
+[SPEAKER_01]
+That's it for the show, folks. Fragmented is hosted by Don Felker and me, Kaushik Gopal. We edit and produce all the episodes here on Fragmented. You can find more Fragmented episodes at fragmentedpodcast.com. Thanks for listening, and we will catch you in the next episode.
