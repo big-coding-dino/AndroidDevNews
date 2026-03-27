@@ -1,0 +1,313 @@
+# ep233
+Podcast: Fragmented Podcast
+
+---
+
+[SPEAKER_02]
+Welcome to Fragmented, a software developer podcast where we talk about building good software and becoming better developers. My name's Don Felker. And I'm Kaushik Gopal. Welcome to the show. Kaushik, welcome back to a nice summer day.
+
+[SPEAKER_01]
+Indeed. It's getting a little toasty. It's time to stop wearing those jackets and sweatshirts and get on the summer attire.
+
+[SPEAKER_02]
+Yeah, I'm welcoming it, though. I'm over on the East Coast, which is actually where I believe our guest is from, too. And I'll tell you what, it seems like every year the winter gets longer and longer and longer. And it was almost all the way until June, I was in almost 30 degree weather. And so I'm really enjoying going outside without a sweatshirt right now. So anyway, it's fantastic.
+
+[SPEAKER_01]
+Yeah, yeah. And, you know, we've kicked things back off. I'm super excited about today's episode.
+
+[SPEAKER_02]
+Yes, definitely. So this is a very exciting topic for many different reasons. And I don't want to kind of give it all away. So we'll let our guests do that. But who are we talking to today, Kaushik?
+
+[SPEAKER_01]
+This is a good friend that we have run across and we have been wanting to have on the episode for quite some time. What makes it that much more exciting is actually this person actively works on a library that both of us have been super curious about. And interestingly, I have heard from a lot of listeners and just in general the Android Dev community that this is a library that everyone's been wanting to find out more about. And I think we have the perfect person to help us with that. Definitely. Definitely.
+
+[SPEAKER_02]
+So without further ado, I'd like to welcome, like, as you said, we've had a challenging time kind of working out schedules. So without further ado, we'd like to welcome J-Rod to the show. Welcome to the show, J-Rod.
+
+[SPEAKER_00]
+Hey, how's it going, everyone?
+
+[SPEAKER_02]
+It went pretty good. You know, we're finally, like I said, we're excited to get you on the show. We're finally here and we've been able to catch you. We've been wanting to talk to you about your car's extended warranty and we're glad that you're finally here. No, I'm just kidding. So, J-Rod, for folks that aren't familiar with you, though I think a lot of people probably will be, where do you, you know, what is your name? Where do you work? And, you know, how did you get into Android development? Yeah.
+
+[SPEAKER_00]
+Sure. So my name is John Rodriguez. I go by J-Rod on social media and at work environments. I work at Cash App on the Cash App product at Block, formerly known as Square, where I've been there for coming up on seven years.
+
+[SPEAKER_02]
+Wow, that's awesome. That's right. They did rename it to Block.
+
+[SPEAKER_00]
+I forgot about that. They did, yeah. And as how I got into Android development, I started my career as like a back-end J2EE. engineer and um i think as a lot of us did in the heyday once uh mobile became the cool thing dabbled into both ios and android and android just stuck with me very cool very cool the j2ee the spring web development days oh yes did you ever do any j2ee
+
+[SPEAKER_01]
+Oh, yeah. I mean, I went through the dark side there. Really? I didn't know that. In a previous company, I actually worked where it had a complete Oracle stack. Okay. I forget what it was. So Oracle actually had their own version of J2E. I forget if it was Web Forms or some very generic sounding name. Okay. I was deep in man. Like, you know, I did that. Then it be moved to spring. Yeah. Oh yeah.
+
+[SPEAKER_02]
+I am like one of the only Android that have never touched it. So I don't know. I've probably been blessed by that.
+
+[SPEAKER_00]
+I guess anyway, I definitely would agree with that sentiment.
+
+[SPEAKER_02]
+So, J-Rod, the reason why you brought me on the show is you have helped author a pretty cool little library by the name of Paparazzi. Can you tell us what this library is and where did that need come from to create it?
+
+[SPEAKER_00]
+Sure. So, where did it come from? Basically, during a hack week, I want to say about three years ago. Jesse Wilson and I hacked on this. It was an idea he came up with. I think he previously explored it and said, hey, you know, Android Studio has this really cool capability, which we all know as the layout inspector. And it turns out there's a little module embedded in the IDE that provides that functionality. So... maybe we can do something with it and turn it into a tool. And the need for that tool, we're currently in one of our many redesigns of Cash App. We have, you know, not only do we have to keep ourselves very up to date with the latest engineering Android technologies, but also our design team is always constantly iterating and evolving. we found that it can become challenging to keep up and not necessarily regress on some of the designs. And we definitely don't want to always have to apologize to designers when we just regress on a UI element due to some design change. And so having the need for something like snapshot testing was very desirable. We had been using other tools at the time, but those tools required us to build an APK and deploy it to an emulator, and then configure the environment in such a way that we can then take a snapshot. And it worked. We did those on the really happy path important screens, but we really kind of wanted to get more coverage. And so a library like this, being able to do this, and then also the main takeaway from this library is that you could do it on the JVM. removing the need to build an APK, I think was the big selling point.
+
+[SPEAKER_01]
+So there's a couple of really interesting things you mentioned there, right? Like first is running it in the JVM, you know, and without the need of an APK, that's the one that's like almost, that was mind blowing to me. But even before we jump in there, right, it may be worth reiterating some of the challenges because snapshot testing, as you mentioned, is... you know an excellent way to sort of make sure that you you have some level of regression testing on your ui and the idea is like you just take pictures and those pictures you match against the golden data as to what you would expect right so that's the concept of snapshot testing But you could technically still do that. You mentioned that you wanted to make sure that you wouldn't make your designers upset, especially as you add more features and things change around. You could theoretically have done that with the existing tools that you had. So it's still possible to spin up emulators. It's still possible to write all those tests. create the apk but it part of it was the speed too right and even like spinning up emulators if you're trying this across different screen sizes then that adds that many more permutations do you think that's a fair way to summarize that 100 i i would even dig in a little more it's like first of all we had
+
+[SPEAKER_00]
+tried out emulator-based testing. And to a certain extent, we still do with the Espresso UI test suite. But as you mentioned, build speeds, you have to run through the entire Android tool chain and crunch resources through APT, DEXing, and all that. And on top of that, once you deploy the APK to your device... what screen you want a snapshot of may not necessarily be your launch screen. So now you have to kind of find the screen. If it's a screen that's not publicly visible, you'll have to maybe turn a feature flag on. And so there's all these extra considerations that you need. And, you know, then if you want light mode and dark mode, you're going to know how to go to your settings and toggle that. And so just like... The permutations, well, you change your accessibility font size. So now you can see how it looks in 2x or half x. There's just so many considerations that the combinatorics don't scale well, at least manually. And to try to then do that in something that requires an APK, usually then you'll have to mess around with dependency injection if you're using Dagger, maybe you're using something else. to kind of get your environment into a state to populate the data. If you're hitting against staging, then you'll have network flakiness. And so there's just so many challenges to doing it in the incumbent way.
+
+[SPEAKER_01]
+Yeah, that's such a good point. I didn't necessarily think about it, but even getting your screen to a state like traversal, sometimes just in order to get to a screen, you have to potentially launch another one and then land in there to have the right sort of data. Yeah, no, that's a fair point.
+
+[SPEAKER_02]
+I wanted to, and this is going to sound really rudimentary to you guys, but I think it's important to just kind of rehash it for, there's a lot of beginners that listen to the show. From a beginner standpoint, people who have not ever been exposed to snapshot testing or anything like that, what is the, to explain it to them, why would they be interested in screenshot testing? What benefit does it, or snapshot testing, what benefit does it give them?
+
+[SPEAKER_00]
+at the end of the day so when they they see this tutor it's like oh wow this is something i want to learn more about if you could explain to them in like an elevator what would you say to them sure um so imagine a designer uh gives you a figma spreadsheet updating so a figma rather design of uh the latest uh designs that they they want to work on on the upcoming feature and There's a new design template, line heights of fonts. What else? Just if you're working in a scrolling view, you want to make sure that the margins and paddings are just pixel perfect. And also things like form factors, like does your view render well on a pixel five versus a pixel two or a Samsung device? And there's just so many considerations to play around with. Yeah. Having just a source of truth that you can validate every time you make a code change without worrying that you're accidentally going to break all the things, I think is the motivating factor for snapshot testing.
+
+[SPEAKER_02]
+Okay. So it allows you to know that, Hey, if I, like you said, maybe it's pixel perfect. And for some, whatever reason I've adjusted the padding somewhere unknowingly, or maybe not thinking it's a big deal. And all of a sudden it, that then maybe I check it in. And when these snapshot tests run, it kind of compare, I guess, you know, we'll get into how it works, but maybe it compares what we expect versus what came in and says, Hey, these snapshots don't match. And then we can kind of go investigate why that happened. Is that a correct assumption?
+
+[SPEAKER_00]
+Yeah, that's a great way to put it.
+
+[SPEAKER_01]
+I can actually give a very specific example that I ran into where it became so important to have that snapshot test, right? Yeah. There was a point where we built a feature at Instacart, right? And there was an orientation screen. So this is a screen that tells you, hey, this is what's about to happen. Especially if you're introducing a new feature, we like to sort of add that intro tutorial-like screen. What we noticed is there were a certain set of devices. If some of our shoppers had a screen font size that's slightly bigger and smaller screen, a part of the orientation would just not be visible, right? It would be there, but you had to scroll down and it almost changed the way that that functionality worked, right? Because an important part of the orientation was below the fold, as we used to say in the web days, right? And that's, so technically most of our tests, like we didn't anticipate that. So like, you know, your Espresso test, you would scroll down, check, all of that would look... fine right like so our tests would pass but it's only when you bring up the snapshots and you look at the snapshots because the other advantage with snapshots is it's easy to just visually take a look at it right so when our designers took a look at it they were like wait what like how is this this is like the most important part of that orientation right or even if our product folks look at it that's something where we're like oh this needs to actually be visible and having that snapshot and we want it to be visible in this fashion It's so useful having a snapshot test because then you can just have that matching be precise versus any manipulation of the screen and then testing. So that's a very easy example to point out where having that snapshot tests work.
+
+[SPEAKER_02]
+Yeah, I think it's pretty cool that this is, we talked about this already, but a lot of these things that have, there's been kind of some, I've worked with some snapshot testing before in different libraries, but it's always been through one of the challenges that people have not done this is, and J-Rod and you covered it, Kaushik, is that... you have to a lot of times fire up an emulator and you have to kind of go through the whole crazy long build process and just to get this one snapshot. And paparazzi to me, which was interesting and just looking right at the webpage, which we'll link in the show notes here, right after the title of it says, an Android library to render your application screens without a physical device or emulator. As soon as I read those last few words without a physical device or emulator, my eyes perked up, which kind of gets us to the next question, which is, and Kaushik wrote in our notes here, like, what is this black magic? And how do you, how do you, how does this work?
+
+[SPEAKER_00]
+Well, so which parts exactly the, like the paparazzi snapshot comparison, or do you, or is the question more about how does this work about an emulator or device?
+
+[SPEAKER_01]
+I think, yeah, it was the emulator piece that we were definitely curious about because historically, you either need a real device or an emulator.
+
+[SPEAKER_00]
+Yeah.
+
+[SPEAKER_01]
+And you hinted a little at it at the start, but I am curious. You mentioned that Android Studio has a jar that you noted that was used for the layout inspector. Can you talk to us about that? I'm also curious. Yeah. More so because, and how this is played in practice, right? Because the layout inspector, like how do you get that to render data that you provide, right? Do you like, just yeah, talk to us about that. Cause I think that's the mind blowing bit. And maybe if you can also touch on, so what happens if I just run a unit test, do you run this, spin it up and then spin it down? Like that's the piece that I'm like, whoa, mind blown. So if you can talk through that.
+
+[SPEAKER_00]
+For sure. So the lib is called layout lib. It's layoutlib.jar. It previously was a pure Java jar, but now it uses JNI to work on... Well, I'll explain that in a bit. But layoutlib is what... It contains Android.jar, the entire Android platform, but with some creative bytecode hacks. The reason for this is there are just some things that Android needs from the device from a native level. Think of like sensor data. So what layoutlib essentially does, it takes Android.jar and does some bytecode magic to fake out intercept method calls that otherwise would have necessarily needed to hit device native. code and provides fakes, fake implementations for some of those things. There's one magic class of layout live called bridge, which is essentially the initializer. And so things like the context, things like layout inflator, those all have to be sort of faked out in order to, for example, on an APK on a device, layout inflator would be inflating binary resources or layouts. Yeah. that were compressed into the APK. But in Layout Inspector, it will read your layouts from the file system in a pretty crunched world. And so it's still parsing layouts, XMLs, but instead of the binary form, it's a flat file text version. And so those are still the entry points, the hooks into the Android platform, but with different implementations. Things like the system services, like the keyboard service or input method manager, etc. Those also have to be faked out since there will not be a device equivalent in managing some of those things.
+
+[SPEAKER_02]
+How did you folks find this? It seems so obscure almost. How did you even know this existed?
+
+[SPEAKER_00]
+Kudos to Jesse Wilson on that and his digging in the repo. I think that... His digging there and then just bringing this up as a Hack Week idea is where I joined forces. Awesome.
+
+[SPEAKER_01]
+And you mentioned Layout Lib. Is this something that is a jar that Google already has or is this something that you folks made?
+
+[SPEAKER_00]
+No, no, it's a Google. In fact, it's on the AOSP repo. The sources, everything is on there and they publish also the pre-built binaries. Every version of Android Studio and the Android Gradle plugin comes with a new version of LayoutLib.
+
+[SPEAKER_01]
+Ah, interesting. And part of why I was asking that is because I remember, as you were describing how the LayoutLib functionality exists, historically, that was one of the dings against RoboElectric, right? Because RoboElectric is also an extremely popular UI testing. It isn't snapshot testing, so I know there's some differences there. But they attempted something similar, right? And they would have shadow classes. So for all the things you mentioned, where you needed an Android context or you at least need some kind of resource config file. All of those things were sort of re-implemented, so to speak, in the RoboElectric library.
+
+[SPEAKER_00]
+Yeah. And to be completely fair, Paparazzi has some cases where it does similar. At the end of the day, because the Android platform that's packaged into LayoutLib is, I don't know, 95% complete, 90% complete. There are some gaps. One interesting bug that I realized in paparazzi when we were trying to render our cash card graphics, like we work with artists to come out with special renditions of cash card. And one of our... or vector drawables wasn't rendering appropriately. And it turns out that it was because layout lib had not provided the matrix multiplication function. So matrix operations on Android results in native calls. And some of those things are faked out by layout lib, but apparently not multiplication. And so paparazzi, basically there was code in robo-electric shadows that had to do something similar and... And it's open source. So we crypted it and it solved the problem for us. And so over time, I guess we could upstream the fix to Layout Lib and make that part of the platform. But RoboElectric, I think maybe took a step further instead of maybe using the Android platform tools that are baked into Layout Lib, I think. And this could just be because of history and timelines. I'm not sure how mature the Layout Lib versions might have been back when roboelectric became a thing but they had to do a lot of hard work to recreate the android platform environment i think uh just because of timelines paparazzi got to benefit from a more mature version of layout yeah and i could have sworn there was like a pr on roboelectric at one point where they attempted it this is some time back so i don't actually recall but i remember it was closed for some reason so yeah no that's that's a fair point
+
+[SPEAKER_01]
+And can you tell me a little about how the underlying tech works in terms of... So this lib... Oh, actually, I have a two-part question. How does the lib in itself within Android Studio work? So does that mean every time I have my layout inspector up and running on the side, are there PNG or JPEG images that are being rendered in real time and that's what we use? Or was that image generation piece something that you had to add separately? Just, yeah. Can you walk us through that?
+
+[SPEAKER_00]
+So yeah, sure. So one of the things that LayoutLib provides is this idea of a render session. And so Bridge, as I mentioned earlier, is the initializer. That is what sets up the Android platform and just class loads all the things. You do have to provide it certain points, like where you have to provide a file path to certain bits that it needs, like fonts, for example. But otherwise, Bridge is the initializer. And then you create a render session. You pass it the view that you want to take a snapshot on, and then it renders an image that we then write to the file system. But in the case of layout inspector, it renders it right there. For those who might be curious and like to source dig on AOSP, there's a class called render task. It's just an async job that Android Studio uses to render the layout inspector image. And paparazzi is essentially just an analog to render task. It's bundled in a JUnit role for JUnit test purposes, but it does that computation.
+
+[SPEAKER_01]
+Nice. That is pretty fascinating. It's such an interesting, cool idea, I must say. So that's the piece that really gets me excited. And how exactly do you run these tests? So is there a mechanism of us, you run a command, generate the snapshots, use that as your golden data to use the snapshot testing terminology? Yeah, how is that?
+
+[SPEAKER_00]
+Yeah, so there are three modes. There's what's currently called the test mode, but we've been going back and forth on maybe we should rename that to development mode. The idea is that think of what composable previews bring today to the IDE. but in a legacy view form where if you wanted to iterate on a UI and it's not quite there yet, but you would run the test and you would see a snapshot in real time. And so what paparazzi does in test mode or development mode, if we want to call it that, is it renders an HTML page. Admittedly, it's a little basic right now. We'd like to double down on that in the next iterations and make it better. But it's an image, it's a webpage right now that will show a series of all the snapshots that you've taken. So every time you run tests, It records a new snapshot. And so you see a time series of the evolution of your page. And it's a quick way to just either check progress or catch regressions while developing. Once you are satisfied, you would then enter the second mode. You would record it. And... The main difference there is you were recording in the development phase, but you didn't necessarily think that would be the golden value. It was just a transient stage. But in record mode, now you're going to save it to a path that you want to persist in some source control. Like probably Git LFS is the most common way. That's what we use. And the reason for LFS is because storing binary objects that can change often in Git would... probably not scale well over time. So we decided to use Git LFS to store the snapshots. But now it becomes part of the repository as a golden value. And then either locally or on CI, you'd run the verify task. And that'll essentially run the same thing, but now do a comparison of actual versus expected, where the expected was the previously recorded snapshot.
+
+[SPEAKER_01]
+Nice, nice. And this is just more for my curiosity. For the actual comparison of the images, do you folks write something on your own or did you use like one of the existing libs? I'm just out of curiosity.
+
+[SPEAKER_00]
+We wrote something on our own. It's right now... Okay. I know that we noticed some differences on a multi-platform. We get these, the more interesting cases like the Intel Max versus the M1 Max currently has like a 99.99% accuracy. We suspect it's due to anti-aliasing pixels in a class called hardware renderer. But yeah, that's something we're digging into at the moment. But that's the idea is that we will compare a previous snapshot.
+
+[SPEAKER_02]
+I ran, before this call, I ran the sample app, which outputs the HTML file. And it has, I was just looking at it when you were talking. And it's kind of cool because you've run a bunch of different environments to see how each of the screens are going to look. And when you mouse over the screenshot... It'll tell you like, hey, I'm looking at one right here. It's called Pixel 3, different themes, light, no action bar. So you can see what it looks like. And then the white next to it is like this one has an action bar. And then further down, this is what it looks like when it's in landscape mode. There's all different types of configurations, which is really cool to actually see how each of these screens renders in all these different environments. Are all these options configurable to say, hey, I only care about these four configurations or I want all the permutations or what?
+
+[SPEAKER_00]
+Yeah, exactly. So similar to the dropdown menu that exists or existed in Android Studio where you could pick your device frame, we essentially use those same classes... to provide resolution or landscape information. We're also exploring locale settings and other things that might be configurable. But yeah, so what you would do is you'd either explicitly refer to those device configs in your paparazzi rule. You'll create your rule for paparazzi, and one of the things you can provide is a device config. I'd highly recommend considering if you're not already using the Google test parameter injector, because then you can run a variety of device configs. And so you can, without having to change your test substantially, you can run it over all the pixels or landscape and portrait if you'd like. So it's a really cool addition to just testing in general.
+
+[SPEAKER_01]
+Interesting. Okay, got it. Test parameter injector.
+
+[SPEAKER_02]
+Yeah, that's for Google, right?
+
+[SPEAKER_00]
+That's Google's, yeah. People may be familiar with Square Burst, which was a thing, but the test parameter injector is a lot more flexible. And so we're really big fans of it.
+
+[SPEAKER_02]
+So you can then provide your configurations that way a little more dynamically then?
+
+[SPEAKER_00]
+Yep. You can just run all the combinatorics, whether it's locale or device config or accessibility size. So you could say, okay, I want to run it across these four devices. with these three font sizes. And so you'll get 12 snapshots as a result because four times three, assuming I did my math right.
+
+[SPEAKER_01]
+Oh, interesting. There used to be, I was trying to, I was like, wait, isn't this already built in? But when I thought about it, it's like, yeah, JUnit has this mechanism of doing this and it's parameterized, right? Like that's what it used to be called. Oh, very nice. Very nice.
+
+[SPEAKER_00]
+Yep, that also exists. I think... We have used Parameterize as well, and it works perfectly fine. I think there was just a little less configuration in the TPI version, the test parameter injector version, but similar purposes.
+
+[SPEAKER_02]
+And I'm looking for folks that are listening, if you want to see that in use, it looks like you're actually using the test parameter injector inside of the sample app in the paparazzi library itself. So that's pretty cool to see it and see it in use there if people are wondering how to use it or if they've never seen it, which I haven't.
+
+[SPEAKER_00]
+Yeah. Also, I think Alex Vanyo from Google recently tweeted a more production usage of TPI and paparazzi. So I could link you the tweet later, but it was a really cool example to see in the wild.
+
+[SPEAKER_02]
+That's pretty cool. Yeah. You can see that I'm looking at the config right now, uh, for the test parameter injector and you've have different devices set up and, you know, you have light themes and no action bars and, uh, and all that gets injected. That's pretty cool. Cool. Awesome.
+
+[SPEAKER_01]
+Thanks for sharing. Back in episode 52 of fragmented is when we talked about this and yeah, yeah. Wow. And I've never heard of TPI. And I'm looking at this and I'm like, oh, this looks so much more nicer and cleaner. So thank you. I did not even know about this. I had another quick question that popped up, J-Rod. How does this work with Jetpack Compose? Is something different? Or internally, is Google using the same layout infrastructure? Because I know, obviously, Jetpack Compose is the rage these days. Yeah. If I write my tests now, do I have to change something when I move to Jetpack Compose, or does it all remain the same?
+
+[SPEAKER_00]
+No. So in the recent release of Paparazzi, we added Compose support. Now, when you snapshot your composable, it has a lambda method signature so that it just feels more natural to just inline your composable in the snapshot method. Under the covers, it wraps it in an Android view and does the safe state and lifecycle owner wiring that's needed for composables. But otherwise, it uses the same infrastructure as layoutlib. And part of that is because Choreographer, at the end of the day, is kind of the trick to figuring out how these views are being rendered in terms of frame counts. And in Jetpack Compose, I believe, I'm still... in beginner mode on Jetpack Compose. But the atomic frame clock that backs how Jetpack Compose renders frames is ultimately implemented using Choreographer. And so Choreographer is still the root of how things get rendered on Android. And so I think just providing that. And fun fact is LayoutLiv actually fakes out Choreographer.
+
+[SPEAKER_01]
+Nice. Yeah, that's super cool stuff.
+
+[SPEAKER_02]
+I did have a question. And I don't even know if this is even related at all. So if it's not, we can disregard. But years ago, I used another snapshot testing tool from Facebook called Facebook Snapshot Testing. How does this compare to that? Or does it not? Or is it in a different ballpark or what?
+
+[SPEAKER_00]
+So this is what we were using before. And it was a really... It's a great tool. I think just the necessity to have an APK on device and all the... The emulators and the build speeds and all that was what ultimately decided, led us to kind of use a different implementation or kind of even work on paparazzi. But otherwise, yeah, that was the incumbent tool at the time that we were using and it works great.
+
+[SPEAKER_01]
+Yeah, especially when you move into this world where like most people are with the whole unidirectional MBI. Yeah. world, it just makes this so much more compelling having something like paparazzi, right? Because you can just dump your view state and say, okay, here's the view state, test all kinds of configurations, right? And that makes it pretty compelling.
+
+[SPEAKER_00]
+And we also have another feature coming soon. It's technically available now, but I wouldn't call it supported. But we have a video mode where you can... So right now, if you take a snapshot, you may encounter subtle bugs. If, for example, you miss a frame, like everything has to be drawn in the first frame or paparazzi will not catch it at the moment. This can cause some problems. If, for example, you're using do on next layout. where you first need to get the size of a parent view group or in a compose world if you need to recompose before you can finally render a subview or subcomposable. And so we've kind of gone back and forth on do we maybe provide hooks into paparazzi to... to in certain cases jump to a second frame. But I think ultimately what we've decided is that would be a good case to use the same thing that you would use for an animation snapshot test where you just record a video and persist that. And I know we've started to use it internally, but we want to like clean up a few things before we make it a public supported API.
+
+[SPEAKER_02]
+Would you be able to compare? I mean, can you compare videos or is that something has to be more manual?
+
+[SPEAKER_00]
+So literally, that's one of the things under consideration. We spiked out something where we would do, yes, frame by frame, diffing, and maybe have a cool... Think of when you record a video on your iPhone and you scrub through the frames and you maybe even can crop out sort of things. It'd be nice to kind of see, play around with the animation after the fact. But that's still a work in progress. Okay.
+
+[SPEAKER_02]
+Is there, I know when I used to run a lot of these snapshot tests at a previous client, we ran into a lot of false positives. Is there a way to, and I think you'd said before there's like a, like a 99% like barrier that you would hit in certain like aliasing or something like that. Is there a way to kind of set a threshold saying, Hey, if this matches this percentage, or is that even, I don't even know if that's even possible. Yeah.
+
+[SPEAKER_00]
+Yeah, that's one of the configuration options in paparazzi right now. It's max percent difference, and I believe internally we've been setting that to 0.01. Yeah. It works. It works. I will admit, though, you may sometimes, some things may fall through the cracks as a result. Like if you have a really small icon difference, then it would not detect that if you do not ask for the 100% pixel perfect comparison. That's also something we're looking into. Maybe considering how to ignore anti-aliasing effects would be the approach we'd take there. Okay.
+
+[SPEAKER_01]
+You mentioned about like, I was curious because I think you mentioned one of the advantages over using something like Facebook snapshot testing library before was, you know, just the build times. How does that work in reality? Like, have you found that your build times, I imagine just spinning up the emulator, you shave a massive amount just there. But in general, do these tests run fast? You know, what have you observed like in practice?
+
+[SPEAKER_00]
+So tests were running, I think on a... two to four second cadence, which if you have thousands of them is still very slow. And in the most recent release, we shaved that significantly down to, I don't have exact numbers, but I know that from anecdotal data, one of our CI shards went from around, I want to say 25 minutes to I think eight.
+
+[SPEAKER_01]
+Oh wow. Okay. That's good. Yeah. And so, and so the reason for that is because J unit rules, they're instantiated before every test method.
+
+[SPEAKER_00]
+And the paparazzi was previously loading the entire Android platform and loading the resources on the file system and doing some what we call method interceptors. Those are the analog to roboelectric shadows, again, to kind of fill the gap in some areas. So it was doing all of that, taking your snapshot and destroying it, only to then go on to the next test. And so it was a very heavy loading process. So we statically cache it now. And that's what accounts for the big drop-off in runtime.
+
+[SPEAKER_01]
+Got it.
+
+[SPEAKER_00]
+That makes a lot of sense.
+
+[SPEAKER_01]
+Along those lines, what are some of the other cons that you can think of? Is there a time you would not suggest anyone use Paparazzi or are there things that they should be a little extra cautious about in terms of... For example, you mentioned small icons. Yeah, that's a good reason to keep in mind. What are some other things that you think we should keep a closer eye on?
+
+[SPEAKER_00]
+Sure. So one of the things that I... I've noticed is a lot of bugs in paparazzi, and this is not to throw any shade on Google, they are inherited from Layout Lib. It's actually a great opportunity to allow us to maybe contribute to the repo as well and try to be more collaborative on this, which is something we're intending to do. But up until now, we've been kind of working around it with the method interceptors. And so it's just... It's 100% accurate to the extent that Layout Inspector is accurate. There have been times that, for example, before Layout Lib went to use the native Skia graphics pipeline that actually works on device. And so what do I mean by that? So before Layout Lib went native... it was essentially recreating the graphics pipeline using Java, AWT toolkit stuff. And it turns out that things like font metrics were JDK specific. And so like you're... Your font metrics for ascenders and descenders on JDK 8 Oracle versus JDK 11 Adopt OpenJDK would possibly result in different font renderings because of the AWT limitations. That's gone away now that Google's decided to do away with that in LayoutLib and instead run the same graphics pipeline that Android has. devices use. And that's what sort of accounted for some of that slowness. So it's gotten better, but it's still, because of the nature that it's still faking out Android, it's still prone to some bugs. So loading on a device is like... 100% accurate. We're 99.999 and trying to get as close to 100 as possible. But that does involve improving LayoutLib as things evolve.
+
+[SPEAKER_01]
+Is there a concern that you work on this and you're like, because you mentioned one of the positives is you can contribute back possibly based on the bugs you observe to LayoutLib. And as more of the community works on this, I imagine Google would be thrilled, right? Because this is almost like free bug reporting and improvements. But just to play devil's advocate, is there a concern that Google might come swap this whole thing out and say, just kidding, we're changing something? Have you guys thought about it? Not that I know that there's too much you can do about it, but I'm just curious if you thought through that.
+
+[SPEAKER_00]
+No concern. If, for example, they implemented a paparazzi feature native to Android Studio, I think the community would really accept that and enjoy that. It would definitely alleviate some of the work that we've been doing. But I don't think there's a concern at the moment. In fact, at the moment, there are several Google Teams that are using or exploring the use of paparazzi internally, which I really enjoy. I know we have AndroidX and Google Wear Teams. interested in using paparazzi for some of their testing. So that's exciting.
+
+[SPEAKER_01]
+Yeah. No, that sounds great. I should have rephrased my question. Do you think that, well, I guess the answer is no, because they use it in Android studio, which is one of the advantages over something like roboelectric, right? Like my question is, do you think, you know, they might move away from layout lab or they might replace it with something else. And that leaves it sort of, but I guess I kind of answered my own question given that is used.
+
+[UNKNOWN]
+Yeah.
+
+[SPEAKER_00]
+Yeah, maybe. I doubt it, though, because especially now with composable previews being such a huge value add, that's, from my understanding, poking around the sources, it's built on top of that. It still works with layout lib. I've actually been digging recently into how preview elements are parsed and then passed down to layout lib under the covers. So there'd be a lot of what would it be replaced with on certain. So I think it has some legs on it.
+
+[SPEAKER_01]
+No, that makes perfect sense. And especially that's why I was asking it, Jetpack Compose, right? It seems it's in the same direction, which means we're not going to see another change, at least in our UI stack for some time.
+
+[SPEAKER_02]
+We did talk about some of the challenges and limitations, but is there anything that paparazzi can't do if I'm approaching this as someone who just wants to start using it that maybe I should be aware of? Yeah.
+
+[SPEAKER_00]
+Yeah. So, I mean, other than the limitations of layout lib under the covers, it wouldn't do like screen navigations. We've talked about whether something like that could be done in the future. It would impose a bit of an architectural change, both not only in the library itself, but also how one architects their own apps. But yeah. So if you really do care about the transitions between screens that currently is not handled, And again, if something that really is device specific that you could only get from running on a device, we tend to fake a lot of those things out. And we have a very opinionated architecture on cache apps. So those tend to be abstracted away. But if you happen to currently work in an app where there is a lot more coupling, it may be challenging. For example, we've recently been working on... an internal project that decouples views and presenters. And it's really made our views as simple as possible. It's just pass it a view model, not like an Android view model, but like a model that describes all the metadata that a view would need and just call setters and getters. Your view should not have any references to business logic at all. It really should only have references to AndroidX or Android or custom view logic. And if one can strive to reach that architecture, paparazzi becomes a lot more of a value add. I know, for example, we've had to do some workarounds with... Inflation injection, because not all of our views have necessarily migrated to this new architecture, can you still use paparazzi in a view that uses inflation injection? Sure, you can, but you'll have to recreate that inflation injection dagger graph now in your test. It's not insurmountable, but it's how much more test setup now do you want to work on in order to accomplish that? I like to think that...
+
+[SPEAKER_01]
+adopting something like paparazzi forces you into a cleaner architecture so it's a win-win no that makes perfect sense and a quick follow-up the other thing obviously is like and this might to wait we might have to wait until like you know the direction for video is set but i guess animations if you want to test animations that is also obviously something that isn't necessarily supported right like there isn't like a freeze frame at this point of the animation and then test
+
+[SPEAKER_00]
+So there is a way right now to provide offsets in the, well, I think that's in the video method actually. So not in the current snapshot method. That would be actually an interesting use case if we just provided an offset to the snapshot method and then it still only takes one frame, but only a frame that's not at time zero is essentially what you're suggesting. Yeah, I could totally see that. Yeah, I'd be open to it if someone wants to send a PR to that. I think the video would be more compelling because it would, Otherwise, I don't know if the context is, you know, a five second into the animation frame shot. Yeah.
+
+[SPEAKER_01]
+How valuable is that? You're right. I think the video aspect seems more compelling in many ways. I'm loving what I'm hearing so far. This is amazing.
+
+[SPEAKER_02]
+I want to use this stat on one of my projects right now. I think I'm probably going to be implementing it this week. So thank you for putting this library together. It's amazing. I'm still amazed that there's no need for an emulator. I'm so used to, after what, 2022, over 12 years of Android development. I'm so used to needing an emulator for this kind of stuff. So to finally have it to where I don't need it, that's just, it's mind blowing.
+
+[SPEAKER_00]
+So it's amazing. We've been finding it really helpful in our migration from legacy views to compose if we have existing. Yeah, because now, because paparazzi supports both, you can take a lot more liberty in terms of like, as we're all learning composables and figuring out how to use remembered, immutable state of, properly, we can at least migrate and see, oh, OK, I clearly messed this up. I didn't add the right modifier. And the snapshots will tell you. And then to a certain extent, if things are like a pixel off just because like constraint layout and legacy view versus how Compose renders its hierarchy, then it's a judgment call. If it's like aligned one pixel up and you're like, that's good enough, then just rerecord a new snapshot and that's fine. But it just enables you to make that decision without worrying about regressing too far.
+
+[SPEAKER_01]
+Great tool to help you in that transition. I'm glad you brought that up. Yeah. When you mentioned the Compose, I was thinking, oh, this is great because now you don't even have to worry about running actual QA cycles. At least with 80% to 90% confidence, you can just run the whole suite of things. And if the snapshots look the same, then great. Ship that Compose framework. So to Don's question, he wants to start adding this on a side project this week. Where does one start? Can you point us, if I want to go in and add it to my app at Instacart, what would the steps be? How would you suggest someone walk through that process?
+
+[SPEAKER_00]
+Sure. So it's a few lines. There's samples, which we should probably create a few more. Okay. But on the readme, it'll explain that you add it to your Gradle configuration, assuming you use Gradle, and then apply it as a Gradle plugin that you apply the plugin. Under the covers, it'll also add the paparazzi module to your test dependencies. So that's what kind of, I mean, the plugin does some other things, but one of the things that it does also adds that it'll download all the layout lib stuff from Maven Central. You write a test, a few lines of code, and boom, that should be it.
+
+[SPEAKER_01]
+That sounds fantastic.
+
+[SPEAKER_02]
+Almost sounds too easy.
+
+[SPEAKER_00]
+Yeah, I mean, we've thought hard about it, like how to make this work and make it as simple as possible. And we've had... Some feedback from like Chris Baines from Twitter, for example, said, yeah, it was pretty straightforward. It was pleasantly surprised. So that was very exciting to hear. We designed the plug. So we're Gradle users. And so we have a Gradle plugin. We have designed the JUnit rule to allow for other plugins. For example, if you use Bazel, we're not in... developing a Bazel plug-in internally because we are currently Gradle consumers on the Android side. But if someone wanted to provide and maintain a Bazel plug-in, that would be interesting. Really, the Gradle plug-in, besides doing all the Gradle task wiring, is it spits out a resources file. If you remember RoboElectric, how there was a RoboElectric properties file, it's kind of similar to that. But instead of you having to manage that properties file yourself, The Gradle plugin just reads the environment information and spits out this file that then bootstraps the actual JUnit rule. So it's conceivably someone could write a Bazel plugin that just spits out that same text file and it would, quote unquote, just work.
+
+[SPEAKER_01]
+Very cool.
+
+[SPEAKER_00]
+Yeah. So please try it out. It should be a very quick addition.
+
+[SPEAKER_01]
+Oh, we will. Definitely. I'm going to be honest. So if folks want to reach out to you and maybe follow up with any questions that they have, what's a good way to do it, John?
+
+[SPEAKER_00]
+Yeah, sure. So you can tweet me at J-R-O-D-B-X, J-R-O-D-B-X, for questions. And if you have any issues, we have the paparazzi GitHub repo where we have issues and discussions enabled.
+
+[SPEAKER_01]
+Thank you so much. And Don, once folks, once you have your side project up and going on paparazzi and people want to reach out to you to see how your experience was, what's a good way to reach out to you?
+
+[SPEAKER_02]
+They can find me on Twitter or Instagram under the same handle, which is just at Don Felker. Same for you, Kaushik. How do folks get a hold of you to ask about your process in implementing it?
+
+[SPEAKER_01]
+I am Kaushik Gopal on Twitter and Instagram and all the other places. John, thank you so much for chatting with us. Before we wind it down, do you want to give us what is your vision for this project? Where do you see it going? And you can wind it down with that?
+
+[SPEAKER_00]
+Yeah, sure. So one of the thoughts that we've been thinking over lately is this works great as a JUnit rule. What else can we apply it to? And so we've been thinking as like now that we've released 1.0 and we're not constantly supporting the issues that come in. But if we can extract the core of paparazzi and make it into a rendering utility for other purposes, one vision that we've had internally is we have a lot of server-driven UI flows, which I think the community is going to be hearing a lot more about that we've been working over the last year on Cash App to be doing. We have a couple of internal tools that we want to open source. But the tailed DR on that is that server engineers constantly want to test out Android flows. And it can be a bit cumbersome for... someone who's mostly doing server work all day to then learn how to onboard as an Android dev for the sole purpose of checking the one screen. It's like basically the reasoning why snapshot testing on the JVM was better than physical device. Now add the additional step of getting your environment set up for Android as someone who's not an Android engineer by trade can be a very huge hurdle or barrier. And we do it today. Yeah. So what if we can provide like a desktop app, let's say a Jetpack composed desktop app that renders a paparazzi screenshot based on some configuration, maybe drag and drop a protocol definition, protocol buffer definition. Those are some ideas we're kicking around. We could probably do some more with the project. So definitely if you have ideas, again, please reach out to me. I'd love to chat. But yeah, basically taking it from a JNR and extending the... the powers of layout lib, I think would be a great, uh, future project.
+
+[SPEAKER_01]
+I love it. Thank you so much for joining us, John. We really appreciate it. This is like a wealth of information and, you know, it's got us pumped up.
+
+[SPEAKER_00]
+Awesome. Thank you for having me.
+
+[SPEAKER_01]
+Thank you all for listening. And thanks again. We will catch you all in the next episode. That's it for the show, folks. Fragmented is hosted by Don Felker and me, Kaushik Gopal. We edit and produce all the episodes here on Fragmented. You can find more Fragmented episodes at fragmentedpodcast.com. Thanks for listening.
