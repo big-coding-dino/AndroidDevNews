@@ -52,14 +52,22 @@ with conn:
         else:
             rows = all_rows[OFFSET:OFFSET + LIMIT]
 
+        # URLs from these domains are handled by dedicated pipelines
+        SKIP_DOMAINS = {"fragmentedpodcast.com"}
+
         inserted = 0
         skipped = 0
         for r in rows:
+            from urllib.parse import urlparse
+            if urlparse(r["url"]).hostname in SKIP_DOMAINS:
+                skipped += 1
+                continue
             cur.execute(
                 """
-                INSERT INTO resources (source_id, url, title, description, rough_date)
+                INSERT INTO resources (source_id, url, title, description, published_at)
                 VALUES (%s, %s, %s, %s, %s)
                 ON CONFLICT (url) DO NOTHING
+                RETURNING id
                 """,
                 (
                     source_id,
@@ -69,7 +77,15 @@ with conn:
                     r["rough_date"] or None,
                 ),
             )
-            if cur.rowcount:
+            row = cur.fetchone()
+            if row:
+                cur.execute(
+                    """
+                    INSERT INTO article_details (resource_id, rough_date)
+                    VALUES (%s, %s)
+                    """,
+                    (row[0], r["rough_date"] or None),
+                )
                 inserted += 1
             else:
                 skipped += 1

@@ -22,9 +22,12 @@ conn = psycopg2.connect(
 )
 
 with conn.cursor() as cur:
-    cur.execute(
-        "SELECT id, clean_content FROM resources WHERE clean_content IS NOT NULL AND embedding IS NULL"
-    )
+    cur.execute("""
+        SELECT r.id, ad.clean_content
+        FROM resources r
+        JOIN article_details ad ON ad.resource_id = r.id
+        WHERE ad.clean_content IS NOT NULL AND r.embedding IS NULL
+    """)
     rows = cur.fetchall()
 
 print(f"Loading model {MODEL_NAME}...")

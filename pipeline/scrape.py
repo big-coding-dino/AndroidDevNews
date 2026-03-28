@@ -100,7 +100,13 @@ async def main():
     )
 
     with conn.cursor() as cur:
-        cur.execute("SELECT id, url FROM resources WHERE clean_content IS NULL AND fetch_error IS NULL ORDER BY rough_date DESC NULLS LAST")
+        cur.execute("""
+            SELECT r.id, r.url
+            FROM resources r
+            JOIN article_details ad ON ad.resource_id = r.id
+            WHERE ad.clean_content IS NULL AND ad.fetch_error IS NULL
+            ORDER BY ad.rough_date DESC NULLS LAST
+        """)
         rows = cur.fetchall()
 
     print(f"Enriching {len(rows)} resources...\n")
@@ -118,15 +124,20 @@ async def main():
             for r in enrich_results:
                 cur.execute(
                     """
-                    UPDATE resources
-                    SET clean_content = %s,
-                        scraped_date  = %s,
+                    UPDATE article_details
+                    SET clean_content       = %s,
+                        scraped_date        = %s,
                         readability_content = %s,
-                        fetch_error   = %s
-                    WHERE id = %s
+                        fetch_error         = %s
+                    WHERE resource_id = %s
                     """,
                     (r.clean_content, r.scraped_date, r.readability_content, r.fetch_error, r.resource_id),
                 )
+                if r.scraped_date:
+                    cur.execute(
+                        "UPDATE resources SET published_at = %s WHERE id = %s",
+                        (r.scraped_date, r.resource_id),
+                    )
 
     ok = sum(1 for r in enrich_results if not r.fetch_error)
     errors = sum(1 for r in enrich_results if r.fetch_error) + len(exceptions)

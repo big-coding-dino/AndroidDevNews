@@ -28,19 +28,34 @@ INSERT INTO tags (slug, name) VALUES
 ON CONFLICT (slug) DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS resources (
-    id          SERIAL PRIMARY KEY,
-    source_id   INTEGER REFERENCES sources(id),
-    url         TEXT UNIQUE NOT NULL,
-    title       TEXT,
-    description TEXT,
-    clean_content      TEXT,
+    id            SERIAL PRIMARY KEY,
+    source_id     INTEGER REFERENCES sources(id),
+    url           TEXT UNIQUE NOT NULL,
+    title         TEXT,
+    description   TEXT,
+    resource_type TEXT NOT NULL DEFAULT 'article',
+    embedding     vector(384),
+    published_at  DATE,
+    created_at    TIMESTAMPTZ DEFAULT NOW(),
+    summary       TEXT,
+    background    TEXT
+);
+
+CREATE TABLE IF NOT EXISTS article_details (
+    resource_id         INTEGER PRIMARY KEY REFERENCES resources(id) ON DELETE CASCADE,
+    clean_content       TEXT,
     readability_content TEXT,
-    embedding    vector(384),
-    fetch_error  TEXT,
-    rough_date   DATE,
-    scraped_date DATE,
-    published_at DATE GENERATED ALWAYS AS (COALESCE(scraped_date, rough_date)) STORED,
-    created_at   TIMESTAMPTZ DEFAULT NOW()
+    fetch_error         TEXT,
+    rough_date          DATE,
+    scraped_date        DATE
+);
+
+CREATE TABLE IF NOT EXISTS podcast_episode_details (
+    resource_id      INTEGER PRIMARY KEY REFERENCES resources(id) ON DELETE CASCADE,
+    episode_number   INTEGER,
+    duration_seconds INTEGER,
+    audio_url        TEXT,
+    transcript       TEXT
 );
 
 CREATE TABLE IF NOT EXISTS digests (

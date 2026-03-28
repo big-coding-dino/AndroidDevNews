@@ -33,7 +33,7 @@ with conn.cursor() as cur:
     cur.execute("""
         SELECT TO_CHAR(published_at, 'YYYY-MM') AS month, COUNT(*) AS article_count
         FROM resources
-        WHERE embedding IS NOT NULL AND published_at IS NOT NULL
+        WHERE embedding IS NOT NULL AND published_at IS NOT NULL AND resource_type = 'article'
         GROUP BY 1
         ORDER BY 1
     """)

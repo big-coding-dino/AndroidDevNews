@@ -127,12 +127,13 @@ def fetch_articles(conn, model, topic, date_from, date_to=None):
         with conn.cursor() as cur:
             cur.execute(
                 f"""
-                SELECT id, title, url, published_at, description, clean_content,
-                       1 - (embedding <=> %s::vector) AS score
-                FROM resources
-                WHERE embedding IS NOT NULL
+                SELECT r.id, r.title, r.url, r.published_at, r.description, ad.clean_content,
+                       1 - (r.embedding <=> %s::vector) AS score
+                FROM resources r
+                JOIN article_details ad ON ad.resource_id = r.id
+                WHERE r.embedding IS NOT NULL
                   {date_filter}
-                ORDER BY embedding <=> %s::vector
+                ORDER BY r.embedding <=> %s::vector
                 LIMIT %s
                 """,
                 params,
