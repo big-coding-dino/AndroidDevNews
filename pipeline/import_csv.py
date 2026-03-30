@@ -81,7 +81,7 @@ with conn:
             if row:
                 cur.execute(
                     """
-                    INSERT INTO article_details (resource_id, rough_date)
+                    INSERT INTO articles (resource_id, rough_date)
                     VALUES (%s, %s)
                     """,
                     (row[0], r["rough_date"] or None),

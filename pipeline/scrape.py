@@ -103,7 +103,7 @@ async def main():
         cur.execute("""
             SELECT r.id, r.url
             FROM resources r
-            JOIN article_details ad ON ad.resource_id = r.id
+            JOIN articles ad ON ad.resource_id = r.id
             WHERE ad.clean_content IS NULL AND ad.fetch_error IS NULL
             ORDER BY ad.rough_date DESC NULLS LAST
         """)
@@ -124,7 +124,7 @@ async def main():
             for r in enrich_results:
                 cur.execute(
                     """
-                    UPDATE article_details
+                    UPDATE articles
                     SET clean_content       = %s,
                         scraped_date        = %s,
                         readability_content = %s,

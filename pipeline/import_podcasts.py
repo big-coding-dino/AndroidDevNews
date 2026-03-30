@@ -2,7 +2,7 @@
 Import transcribed podcast episodes from podcast/ into the database.
 
 Reads podcast/episodes.csv, finds each episode directory, and upserts into
-resources + podcast_episode_details. Only imports episodes where a diarized
+resources + podcast_episodes. Only imports episodes where a diarized
 transcript file exists on disk.
 
 Usage:
@@ -150,7 +150,7 @@ def main():
 
                 cur.execute(
                     """
-                    INSERT INTO podcast_episode_details
+                    INSERT INTO podcast_episodes
                         (resource_id, episode_number, duration_seconds, audio_url, transcript)
                     VALUES (%s, %s, %s, %s, %s)
                     ON CONFLICT (resource_id) DO UPDATE

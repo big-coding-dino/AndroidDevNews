@@ -130,7 +130,7 @@ def fetch_articles(conn, model, topic, date_from, date_to=None):
                 SELECT r.id, r.title, r.url, r.published_at, r.description, ad.clean_content,
                        1 - (r.embedding <=> %s::vector) AS score
                 FROM resources r
-                JOIN article_details ad ON ad.resource_id = r.id
+                JOIN articles ad ON ad.resource_id = r.id
                 WHERE r.embedding IS NOT NULL
                   {date_filter}
                 ORDER BY r.embedding <=> %s::vector

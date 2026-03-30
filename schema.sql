@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS resources (
     background    TEXT
 );
 
-CREATE TABLE IF NOT EXISTS article_details (
+CREATE TABLE IF NOT EXISTS articles (
     resource_id         INTEGER PRIMARY KEY REFERENCES resources(id) ON DELETE CASCADE,
     clean_content       TEXT,
     readability_content TEXT,
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS article_details (
     scraped_date        DATE
 );
 
-CREATE TABLE IF NOT EXISTS podcast_episode_details (
+CREATE TABLE IF NOT EXISTS podcast_episodes (
     resource_id      INTEGER PRIMARY KEY REFERENCES resources(id) ON DELETE CASCADE,
     episode_number   INTEGER,
     duration_seconds INTEGER,

@@ -25,7 +25,7 @@ with conn.cursor() as cur:
     cur.execute("""
         SELECT r.id, ad.clean_content
         FROM resources r
-        JOIN article_details ad ON ad.resource_id = r.id
+        JOIN articles ad ON ad.resource_id = r.id
         WHERE ad.clean_content IS NOT NULL AND r.embedding IS NULL
     """)
     rows = cur.fetchall()

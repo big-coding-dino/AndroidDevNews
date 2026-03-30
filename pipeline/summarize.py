@@ -67,7 +67,7 @@ def fetch_articles(conn, tag=None, limit=None, force=False):
     query = f"""
         SELECT DISTINCT r.id, r.title, r.url, ad.clean_content
         FROM resources r
-        JOIN article_details ad ON ad.resource_id = r.id
+        JOIN articles ad ON ad.resource_id = r.id
         {extra_join}
         WHERE {where}
         ORDER BY r.id
@@ -144,7 +144,7 @@ def print_progress(conn):
                 COUNT(*) FILTER (WHERE ad.clean_content IS NOT NULL) AS total,
                 COUNT(*) FILTER (WHERE ad.clean_content IS NOT NULL AND r.summary IS NOT NULL) AS done
             FROM resources r
-            JOIN article_details ad ON ad.resource_id = r.id
+            JOIN articles ad ON ad.resource_id = r.id
         """)
         total, done = cur.fetchone()
         remaining = total - done
