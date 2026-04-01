@@ -99,7 +99,7 @@ def main():
             # Upsert source row for Fragmented Podcast
             cur.execute(
                 """
-                INSERT INTO sources (slug, name, feed_url)
+                INSERT INTO feeds (slug, name, feed_url)
                 VALUES (%s, %s, %s)
                 ON CONFLICT (slug) DO NOTHING
                 RETURNING id
@@ -110,7 +110,7 @@ def main():
             if row:
                 source_id = row[0]
             else:
-                cur.execute("SELECT id FROM sources WHERE slug = %s", (FRAGMENTED_SLUG,))
+                cur.execute("SELECT id FROM feeds WHERE slug = %s", (FRAGMENTED_SLUG,))
                 source_id = cur.fetchone()[0]
 
     inserted = skipped = missing = 0

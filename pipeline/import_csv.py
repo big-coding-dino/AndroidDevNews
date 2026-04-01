@@ -1,9 +1,11 @@
 """
-Bulk insert first 30 rows from androidweekly.csv into the resources table.
+Bulk insert rows from androidweekly.csv into the database.
 Run: uv run pipeline/import_csv.py
 """
 import csv
 import os
+from datetime import date
+from urllib.parse import urlparse
 
 import psycopg2
 from dotenv import load_dotenv
@@ -13,6 +15,13 @@ load_dotenv()
 CSV_PATH = "androidweekly.csv"
 LIMIT = 600
 OFFSET = 4714  # first row with rough_date >= 2025-01-01
+
+ISSUE_1_DATE = date(2011, 10, 2)
+
+def rough_date_to_issue(rough_date_str: str) -> tuple[int, date]:
+    d = date.fromisoformat(rough_date_str)
+    issue_number = (d - ISSUE_1_DATE).days // 7 + 1
+    return issue_number, d
 
 conn = psycopg2.connect(
     host=os.environ["POSTGRES_HOST"],
@@ -24,10 +33,10 @@ conn = psycopg2.connect(
 
 with conn:
     with conn.cursor() as cur:
-        # Upsert source row
+        # Upsert feed row
         cur.execute(
             """
-            INSERT INTO sources (slug, name, feed_url)
+            INSERT INTO feeds (slug, name, feed_url)
             VALUES (%s, %s, %s)
             ON CONFLICT (slug) DO NOTHING
             RETURNING id
@@ -36,14 +45,14 @@ with conn:
         )
         row = cur.fetchone()
         if row:
-            source_id = row[0]
+            feed_id = row[0]
         else:
-            cur.execute("SELECT id FROM sources WHERE slug = 'androidweekly'")
-            source_id = cur.fetchone()[0]
+            cur.execute("SELECT id FROM feeds WHERE slug = 'androidweekly'")
+            feed_id = cur.fetchone()[0]
 
-        print(f"Source id: {source_id}")
+        print(f"Feed id: {feed_id}")
 
-        # Read CSV and insert first LIMIT rows
+        # Read CSV
         with open(CSV_PATH, newline="", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             all_rows = list(reader)
@@ -58,10 +67,36 @@ with conn:
         inserted = 0
         skipped = 0
         for r in rows:
-            from urllib.parse import urlparse
+            if not r.get("rough_date"):
+                skipped += 1
+                continue
             if urlparse(r["url"]).hostname in SKIP_DOMAINS:
                 skipped += 1
                 continue
+
+            issue_number, issue_date = rough_date_to_issue(r["rough_date"])
+
+            # Upsert newsletter_issues
+            cur.execute(
+                """
+                INSERT INTO newsletter_issues (feed_id, issue_number, published_at)
+                VALUES (%s, %s, %s)
+                ON CONFLICT (feed_id, issue_number) DO NOTHING
+                RETURNING id
+                """,
+                (feed_id, issue_number, issue_date),
+            )
+            issue_row = cur.fetchone()
+            if issue_row:
+                issue_id = issue_row[0]
+            else:
+                cur.execute(
+                    "SELECT id FROM newsletter_issues WHERE feed_id = %s AND issue_number = %s",
+                    (feed_id, issue_number),
+                )
+                issue_id = cur.fetchone()[0]
+
+            # Insert resource
             cur.execute(
                 """
                 INSERT INTO resources (source_id, url, title, description, published_at)
@@ -70,21 +105,27 @@ with conn:
                 RETURNING id
                 """,
                 (
-                    source_id,
+                    feed_id,
                     r["url"],
                     r["title"] or None,
                     r["description"] or None,
-                    r["rough_date"] or None,
+                    issue_date,
                 ),
             )
-            row = cur.fetchone()
-            if row:
+            resource_row = cur.fetchone()
+            if resource_row:
+                resource_id = resource_row[0]
+                cur.execute(
+                    "INSERT INTO articles (resource_id) VALUES (%s)",
+                    (resource_id,),
+                )
                 cur.execute(
                     """
-                    INSERT INTO articles (resource_id, rough_date)
+                    INSERT INTO newsletter_issue_resources (issue_id, resource_id)
                     VALUES (%s, %s)
+                    ON CONFLICT DO NOTHING
                     """,
-                    (row[0], r["rough_date"] or None),
+                    (issue_id, resource_id),
                 )
                 inserted += 1
             else:
