@@ -26,7 +26,7 @@ def _current_issue_number() -> int:
     return int(match.group(1))
 
 
-def _extract_links(html: str, rough_date: date) -> list[Resource]:
+def _extract_links(html: str, rough_date: date, issue_number: int) -> list[Resource]:
     soup = BeautifulSoup(html, "html.parser")
     resources = []
 
@@ -47,7 +47,7 @@ def _extract_links(html: str, rough_date: date) -> list[Resource]:
         else:
             description = None
 
-        resources.append(Resource(url=url, title=title, description=description, rough_date=rough_date))
+        resources.append(Resource(url=url, title=title, description=description, rough_date=rough_date, issue_number=issue_number))
 
     return resources
 
@@ -57,9 +57,15 @@ class AndroidWeeklyScraper(BaseScraper):
     SOURCE_NAME = "Android Weekly"
     FEED_URL = MAIN_FEED
 
-    def fetch(self, count: int = 1):
+    def current_issue(self) -> int:
+        return _current_issue_number()
+
+    def fetch(self, count: int = 1, from_issue: int | None = None):
         current = _current_issue_number()
-        start = max(1, current - count + 1)
+        if from_issue is not None:
+            start = from_issue
+        else:
+            start = max(1, current - count + 1)
 
         for n in range(start, current + 1):
             url = ISSUE_FEED.format(n=n)
@@ -70,7 +76,7 @@ class AndroidWeeklyScraper(BaseScraper):
                 continue
 
             html = feed.entries[0].get("summary", "")
-            resources = _extract_links(html, rough_date=_issue_to_date(n))
+            resources = _extract_links(html, rough_date=_issue_to_date(n), issue_number=n)
             print(f"  issue-{n}: {len(resources)} resources")
 
             yield from resources

@@ -1,16 +1,20 @@
 """
-Step 1 probe: scrape 1 episode and print results to stdout.
+Probe: scrape the latest Android Weekly issue and print results to stdout.
 Run: uv run probe_androidweekly.py
 """
 from scrapers.androidweekly import AndroidWeeklyScraper
 
 scraper = AndroidWeeklyScraper()
-resources = list(scraper.fetch(count=50))
+current = scraper.current_issue()
+print(f"Current issue: {current}\n")
 
-print(f"\nTotal resources from 1 episode: {len(resources)}")
+resources = list(scraper.fetch(from_issue=current))
+
+print(f"\nTotal resources: {len(resources)}")
 print()
 for r in resources[:5]:
-    print(f"  title: {r.title}")
-    print(f"  url:   {r.url}")
-    print(f"  desc:  {(r.description or '')[:120]}")
+    print(f"  issue:  {r.issue_number}")
+    print(f"  title:  {r.title}")
+    print(f"  url:    {r.url}")
+    print(f"  desc:   {(r.description or '')[:120]}")
     print()
