@@ -14,4 +14,6 @@ dependencies = [
     "whisperx>=3.8.2",
     "pyannote-audio>=4.0.4",
     "alembic>=1.18.4",
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
 ]

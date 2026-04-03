@@ -3,7 +3,8 @@ Run the full ingestion pipeline in sequence:
   1. sync_androidweekly  — fetch new issues from RSS → DB
   2. scrape              — fetch article content
   3. embed               — generate embeddings
-  4. summarize           — generate summaries via Claude
+  4. tag                 — assign tags to newly embedded articles
+  5. summarize           — generate summaries via Claude
 
 Usage:
   uv run pipeline/run_pipeline.py
@@ -19,6 +20,7 @@ STEPS = [
     ("sync",      ["uv", "run", "pipeline/sync_androidweekly.py"]),
     ("scrape",    ["uv", "run", "pipeline/scrape.py"]),
     ("embed",     ["uv", "run", "pipeline/embed.py"]),
+    ("tag",       ["uv", "run", "pipeline/tag_articles.py", "--only-untagged"]),
     ("summarize", ["uv", "run", "pipeline/summarize.py"]),
 ]
 
@@ -28,6 +30,7 @@ def main():
     parser.add_argument("--skip-sync",      action="store_true", help="Skip sync_androidweekly step")
     parser.add_argument("--skip-scrape",    action="store_true", help="Skip scrape step")
     parser.add_argument("--skip-embed",     action="store_true", help="Skip embed step")
+    parser.add_argument("--skip-tag",       action="store_true", help="Skip tag step")
     parser.add_argument("--skip-summarize", action="store_true", help="Skip summarize step")
     args = parser.parse_args()
 
@@ -35,6 +38,7 @@ def main():
         "sync":      args.skip_sync,
         "scrape":    args.skip_scrape,
         "embed":     args.skip_embed,
+        "tag":       args.skip_tag,
         "summarize": args.skip_summarize,
     }
 
