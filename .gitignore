@@ -4,3 +4,14 @@ __pycache__/
 *.pyc
 .venv/
 *.mp3
+
+# APK builds
+*.apk
+
+# Logs
+*.log
+
+# Kotlin/Gradle build artifacts
+kmp/.gradle/
+kmp/build/
+kmp/*/build/
