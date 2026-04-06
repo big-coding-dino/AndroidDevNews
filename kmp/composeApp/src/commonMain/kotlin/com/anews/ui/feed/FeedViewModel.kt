@@ -8,7 +8,6 @@ import com.anews.model.Category
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class FeedViewModel(
@@ -23,26 +22,24 @@ class FeedViewModel(
     }
 
     fun selectCategory(category: Category) {
-        val current = _uiState.value as? FeedUiState.Success ?: return
-        _uiState.update {
-            current.copy(
-                selectedCategory = category,
-                groupedArticles  = groupArticles(current.articles, category),
-            )
-        }
+        loadArticles(category)
     }
 
-    fun refresh() = loadArticles()
+    fun refresh() {
+        val current = _uiState.value as? FeedUiState.Success
+        loadArticles(current?.selectedCategory ?: Category.All)
+    }
 
-    private fun loadArticles() {
+    private fun loadArticles(category: Category = Category.All) {
+        val slug = if (category == Category.All) null else category.slug
         viewModelScope.launch {
             _uiState.value = FeedUiState.Loading
-            repository.getArticles()
+            repository.getArticles(slug)
                 .onSuccess { articles ->
                     _uiState.value = FeedUiState.Success(
                         articles         = articles,
-                        selectedCategory = Category.All,
-                        groupedArticles  = groupArticles(articles, Category.All),
+                        selectedCategory = category,
+                        groupedArticles  = groupArticles(articles),
                         filterCategories = Category.entries.filter { it.showInFilter },
                     )
                 }
@@ -54,13 +51,8 @@ class FeedViewModel(
         }
     }
 
-    private fun groupArticles(
-        articles: List<Article>,
-        category: Category,
-    ): List<Pair<Int, List<Article>>> {
-        val filtered = if (category == Category.All) articles
-                       else articles.filter { it.category == category }
-        return filtered
+    private fun groupArticles(articles: List<Article>): List<Pair<Int, List<Article>>> {
+        return articles
             .groupBy { it.date.year * 100 + it.date.monthNumber }
             .entries
             .sortedByDescending { it.key }

@@ -7,7 +7,7 @@ Every article embedding is compared against each tag centroid; if cosine similar
 
 Run:
   uv run pipeline/tag_articles.py
-  uv run pipeline/tag_articles.py --threshold 0.35
+  uv run pipeline/tag_articles.py --threshold 0.40    # override all per-tag thresholds
   uv run pipeline/tag_articles.py --tags ai compose   # only re-tag specific tags
   uv run pipeline/tag_articles.py --only-untagged     # only articles not yet in resource_tags
   uv run pipeline/tag_articles.py --dry-run
@@ -26,8 +26,8 @@ SCORE_THRESHOLD = 0.35
 MODEL_NAME = "all-MiniLM-L6-v2"
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--threshold", type=float, default=SCORE_THRESHOLD,
-                    help=f"Minimum cosine similarity to assign a tag (default {SCORE_THRESHOLD})")
+parser.add_argument("--threshold", type=float, default=None,
+                    help="Override per-tag threshold for all tags")
 parser.add_argument("--tags", nargs="+", metavar="SLUG",
                     help="Only process these tag slugs (default: all)")
 parser.add_argument("--only-untagged", action="store_true",
@@ -44,13 +44,13 @@ conn = psycopg2.connect(
     password=os.environ["POSTGRES_PASSWORD"],
 )
 
-# Load tag queries from DB
+# Load tag queries and thresholds from DB
 with conn.cursor() as cur:
     if args.tags:
         placeholders = ",".join(["%s"] * len(args.tags))
         cur.execute(
             f"""
-            SELECT t.id, t.slug, tq.query
+            SELECT t.id, t.slug, t.threshold, tq.query
             FROM tag_queries tq
             JOIN tags t ON t.id = tq.tag_id
             WHERE t.slug IN ({placeholders})
@@ -60,7 +60,7 @@ with conn.cursor() as cur:
         )
     else:
         cur.execute("""
-            SELECT t.id, t.slug, tq.query
+            SELECT t.id, t.slug, t.threshold, tq.query
             FROM tag_queries tq
             JOIN tags t ON t.id = tq.tag_id
             ORDER BY t.id
@@ -69,9 +69,9 @@ with conn.cursor() as cur:
 
 # Group queries by tag
 tags: dict[int, dict] = {}
-for tag_id, slug, query in rows:
+for tag_id, slug, threshold, query in rows:
     if tag_id not in tags:
-        tags[tag_id] = {"slug": slug, "queries": []}
+        tags[tag_id] = {"slug": slug, "threshold": threshold, "queries": []}
     tags[tag_id]["queries"].append(query)
 
 if not tags:
@@ -131,30 +131,32 @@ with conn:
             slug = tag_info["slug"]
             queries = tag_info["queries"]
 
-            # Encode all queries and average into a centroid
+            # Encode all queries; score = max cosine similarity across all queries
             query_vecs = model.encode(queries, show_progress_bar=False)
-            centroid = query_vecs.mean(axis=0)
-            centroid_norm = centroid / (np.linalg.norm(centroid) or 1)
+            query_vecs_norm = query_vecs / np.linalg.norm(query_vecs, axis=1, keepdims=True)
 
-            # Cosine similarity = dot product of normalized vectors
-            scores = article_embeddings_norm @ centroid_norm
+            # Shape: (n_articles, n_queries) → take max per article
+            per_query_scores = article_embeddings_norm @ query_vecs_norm.T
+            scores = per_query_scores.max(axis=1)
 
+            threshold = args.threshold if args.threshold is not None else tag_info["threshold"]
             matches = [(article_ids[i], float(scores[i]))
                        for i in range(len(article_ids))
-                       if scores[i] >= args.threshold]
+                       if scores[i] >= threshold]
 
-            print(f"  {slug}: {len(matches)} articles >= {args.threshold}")
+            print(f"  {slug}: {len(matches)} articles >= {threshold}")
             total_assigned += len(matches)
 
-            if not args.dry_run and matches:
-                cur.executemany(
-                    """
-                    INSERT INTO resource_tags (resource_id, tag_id, score)
-                    VALUES (%s, %s, %s)
-                    ON CONFLICT (resource_id, tag_id) DO UPDATE SET score = EXCLUDED.score
-                    """,
-                    [(rid, tag_id, score) for rid, score in matches],
-                )
+            if not args.dry_run:
+                cur.execute("DELETE FROM resource_tags WHERE tag_id = %s", (tag_id,))
+                if matches:
+                    cur.executemany(
+                        """
+                        INSERT INTO resource_tags (resource_id, tag_id, score)
+                        VALUES (%s, %s, %s)
+                        """,
+                        [(rid, tag_id, score) for rid, score in matches],
+                    )
 
 conn.close()
 

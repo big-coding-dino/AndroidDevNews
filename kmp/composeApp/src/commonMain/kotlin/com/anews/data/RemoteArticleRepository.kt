@@ -8,8 +8,8 @@ import com.anews.model.Article
 class RemoteArticleRepository(
     private val apiClient: ArticleApiClient,
 ) : ArticleRepository {
-    override suspend fun getArticles(): Result<List<Article>> =
+    override suspend fun getArticles(category: String?): Result<List<Article>> =
         runCatching {
-            apiClient.fetchArticles().map { it.toDomain() }
+            apiClient.fetchArticles(category).map { it.toDomain() }
         }
 }

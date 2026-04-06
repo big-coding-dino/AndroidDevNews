@@ -5,6 +5,6 @@ import com.anews.model.Article
 import com.anews.model.mockArticles
 
 class MockArticleRepository : ArticleRepository {
-    override suspend fun getArticles(): Result<List<Article>> =
+    override suspend fun getArticles(category: String?): Result<List<Article>> =
         Result.success(mockArticles)
 }
