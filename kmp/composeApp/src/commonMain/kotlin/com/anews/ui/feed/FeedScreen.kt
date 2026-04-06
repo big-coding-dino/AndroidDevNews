@@ -18,7 +18,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anews.ds.DsTheme
-import com.anews.model.Category
 import com.anews.ui.components.DsAppHeader
 import com.anews.ui.components.DsArticleCard
 import com.anews.ui.components.DsDateHeader
@@ -28,46 +27,11 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun FeedScreen(viewModel: FeedViewModel = koinViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-    when (val state = uiState) {
-        is FeedUiState.Loading -> FeedLoading()
-        is FeedUiState.Error   -> FeedError(state.message)
-        is FeedUiState.Success -> FeedContent(
-            state            = state,
-            onSelectCategory = viewModel::selectCategory,
-        )
-    }
-}
-
-@Composable
-private fun FeedLoading() {
-    val colors = DsTheme.colors
-    Box(
-        modifier = Modifier.fillMaxSize().background(colors.backgroundScreen),
-        contentAlignment = Alignment.Center,
-    ) {
-        CircularProgressIndicator(color = colors.accentPrimary)
-    }
-}
-
-@Composable
-private fun FeedError(message: String) {
-    val colors = DsTheme.colors
-    Box(
-        modifier = Modifier.fillMaxSize().background(colors.backgroundScreen),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(text = "Error: $message", color = colors.textSecondary)
-    }
-}
-
-@Composable
-private fun FeedContent(
-    state: FeedUiState.Success,
-    onSelectCategory: (Category) -> Unit,
-) {
     val colors  = DsTheme.colors
     val spacing = DsTheme.spacing
+
+    val filterCategories = (uiState as? FeedUiState.Success)?.filterCategories ?: emptyList()
+    val selectedCategory = (uiState as? FeedUiState.Success)?.selectedCategory
 
     Column(
         modifier = Modifier
@@ -79,29 +43,64 @@ private fun FeedContent(
 
         Spacer(Modifier.height(spacing.sm))
 
-        DsFilterChipRow(
-            categories = state.filterCategories,
-            selected   = state.selectedCategory,
-            onSelect   = onSelectCategory,
-        )
+        if (filterCategories.isNotEmpty() && selectedCategory != null) {
+            DsFilterChipRow(
+                categories = filterCategories,
+                selected   = selectedCategory,
+                onSelect   = viewModel::selectCategory,
+            )
+            Spacer(Modifier.height(spacing.md))
+        }
 
-        Spacer(Modifier.height(spacing.md))
+        when (val state = uiState) {
+            is FeedUiState.Loading -> FeedLoading()
+            is FeedUiState.Error   -> FeedError(state.message)
+            is FeedUiState.Success -> FeedArticleList(state = state, spacing = spacing)
+        }
+    }
+}
 
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(spacing.cardGap),
-        ) {
-            state.groupedArticles.forEach { (_, articles) ->
-                item {
-                    DsDateHeader(date = articles.first().date)
-                }
-                items(articles) { article ->
-                    DsArticleCard(
-                        article       = article,
-                        onOpenArticle = { /* wire URL opening next */ },
-                    )
-                }
-                item { Spacer(Modifier.height(spacing.sm)) }
+@Composable
+private fun FeedLoading() {
+    val colors = DsTheme.colors
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        CircularProgressIndicator(color = colors.accentPrimary)
+    }
+}
+
+@Composable
+private fun FeedError(message: String) {
+    val colors = DsTheme.colors
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(text = "Error: $message", color = colors.textSecondary)
+    }
+}
+
+@Composable
+private fun FeedArticleList(
+    state: FeedUiState.Success,
+    spacing: com.anews.ds.DsSpacing,
+) {
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(spacing.cardGap),
+    ) {
+        state.groupedArticles.forEach { (_, articles) ->
+            item {
+                DsDateHeader(date = articles.first().date)
             }
+            items(articles) { article ->
+                DsArticleCard(
+                    article       = article,
+                    onOpenArticle = { /* wire URL opening next */ },
+                )
+            }
+            item { Spacer(Modifier.height(spacing.sm)) }
         }
     }
 }
