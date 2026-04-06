@@ -1,0 +1,10 @@
+**Ep. 236 — A Terminal for Android?**
+*Fragmented Podcast · Don Felker & Kaushik Gopal · 38 min · 2022-10-25*
+
+Kaushik sparked this conversation after working on CI shell scripts and noticing a stark asymmetry: on a Mac, you can spin up a cron job in an hour with no friction — no project templates, no dependency debates, just a shell script and curl calls. On Android, that same casual programmability simply doesn't exist. His ask is narrow but pointed: a terminal app for Android where he can drop Kotlin scripts, pull in sensor data (gyroscope, GPS), and log it to a file — no UI, no app store, no review process.
+
+Don shares the same frustration and adds a practical angle: he's often needed to SSH into servers from his phone and the experience is universally terrible. Both hosts find the security argument from Google and Apple unconvincing — macOS sandboxing tightened over time but the terminal remained. Android is built on Linux, which means the shell infrastructure is almost certainly there; it's just not exposed. ADB shell exists but can't run arbitrary programs or cron jobs. Historical precedents like SL4A (a Python runtime for Android, now discontinued) showed this was technically feasible, just abandoned. Chrome OS has a terminal app, which makes the omission on Android feel more like a deliberate product decision than an architectural impossibility.
+
+The hosts speculate that the security model has evolved in a direction that's now hard to unwind, and that the target audience — developers who want to script their own devices — is simply too niche to justify the investment. Both have made peace with the limitation: Kaushik routes through Raspberry Pi and Arduino for IoT sensor work; Don uses Zapier for recurring automations. The workarounds work, but the gap is real.
+
+**Why it's worth your time:** A sharp 38-minute discussion on a problem Android developers rarely name explicitly — the phone is the most sensor-rich computer you own, and you can't script it. If you've ever felt this friction and wondered why, this episode will at least confirm you're not alone and frame exactly why the problem is harder to fix than it looks.

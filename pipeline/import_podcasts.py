@@ -46,13 +46,10 @@ def find_file(ep_dir: Path, pattern: str) -> Path | None:
     return matches[0] if matches else None
 
 
-def clean_transcript(text: str) -> str:
-    # Strip diarization header (lines before and including the "---" divider)
+def load_diarization(text: str) -> str:
+    # Strip file header (lines before and including the "---" divider), keep speaker labels
     parts = text.split("---\n\n", 1)
-    body = parts[1] if len(parts) == 2 else text
-    # Remove [SPEAKER_XX] labels and blank lines around them
-    body = re.sub(r"\[SPEAKER_\d+\]\n", "", body)
-    return body.strip()
+    return (parts[1] if len(parts) == 2 else text).strip()
 
 
 def load_episode(ep_num: int) -> dict | None:
@@ -60,19 +57,19 @@ def load_episode(ep_num: int) -> dict | None:
     if not ep_dir.exists():
         return None
 
-    transcript_path = find_file(ep_dir, "*.diarized.txt")
-    if not transcript_path:
+    diarization_path = find_file(ep_dir, "*.diarized.txt")
+    if not diarization_path:
         return None  # not yet transcribed
 
     meta_path = find_file(ep_dir, "*_meta.json") or find_file(ep_dir, "*.meta.json")
     shownotes_path = find_file(ep_dir, "*_shownotes.txt") or find_file(ep_dir, "*.shownotes.txt")
 
     meta = json.loads(meta_path.read_text()) if meta_path else {}
-    transcript = clean_transcript(transcript_path.read_text())
+    diarization = load_diarization(diarization_path.read_text())
     description = shownotes_path.read_text().strip() if shownotes_path else None
 
     return {
-        "transcript": transcript,
+        "diarization": diarization,
         "description": description,
         "duration_seconds": meta.get("duration_seconds"),
         "audio_url": meta.get("audio_url"),
@@ -127,7 +124,7 @@ def main():
         published_at = parse_published(ep["published"])
 
         if args.dry_run:
-            print(f"  [dry-run] ep{ep_num}: {ep['title'][:60]}  published={published_at}  transcript={len(data['transcript'])}ch")
+            print(f"  [dry-run] ep{ep_num}: {ep['title'][:60]}  published={published_at}  diarization={len(data['diarization'])}ch")
             inserted += 1
             continue
 
@@ -151,22 +148,22 @@ def main():
                 cur.execute(
                     """
                     INSERT INTO podcast_episodes
-                        (resource_id, episode_number, duration_seconds, audio_url, transcript)
+                        (resource_id, episode_number, duration_seconds, audio_url, diarization)
                     VALUES (%s, %s, %s, %s, %s)
                     ON CONFLICT (resource_id) DO UPDATE
                         SET episode_number   = EXCLUDED.episode_number,
                             duration_seconds = EXCLUDED.duration_seconds,
                             audio_url        = EXCLUDED.audio_url,
-                            transcript       = EXCLUDED.transcript
+                            diarization      = EXCLUDED.diarization
                     """,
-                    (resource_id, ep_num, data["duration_seconds"], data["audio_url"], data["transcript"]),
+                    (resource_id, ep_num, data["duration_seconds"], data["audio_url"], data["diarization"]),
                 )
 
         print(f"  [ok] ep{ep_num}: {ep['title'][:60]}")
         inserted += 1
 
     conn.close()
-    print(f"\nDone. imported={inserted}  missing_transcript={missing}")
+    print(f"\nDone. imported={inserted}  missing_diarization={missing}")
 
 
 if __name__ == "__main__":

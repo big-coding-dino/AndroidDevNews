@@ -1,0 +1,10 @@
+**Ep. 251 — There's a new king in DI town**
+*Fragmented · Kaushik · 18 min · Nov 12, 2024*
+
+Kaushik traces the Android DI timeline from Dagger 1's reflection-based approach through Dagger 2's compile-time codegen, dagger-android's failed simplification, Koin's service locator tradeoffs, Hilt's improvements, and Square's Anvil — then makes the case that **Kotlin Inject + Kotlin Inject Anvil** is the new default. Kotlin Inject strips away modules entirely (components only, constructor injection only), resulting in a much smaller API surface. It also supports KMP natively, unlike Dagger 2 which cannot run on iOS. The Anvil layer automates the wiring of component supertypes — the boilerplate that grows every time you add a new provider in a multi-module setup.
+
+Ralph, principal engineer at Amazon and primary maintainer of Kotlin Inject Anvil, explains how Amazon's shift to KMP forced the migration: they briefly ran Dagger 2 and Kotlin Inject in parallel, bridging two object graphs at runtime, which became unsustainable. The team built Kotlin Inject Anvil to replicate the DX wins from the original Anvil (for Dagger 2) in a KMP-compatible stack. On performance: runtime overhead versus Dagger 2 is minimal and rarely the actual bottleneck; build times actually improve because Kotlin Inject uses KSP instead of Java annotation processing. A significant practical note — the original Anvil currently blocks Kotlin 2.0/K2 adoption, while Kotlin Inject Anvil was K2-compatible from day one.
+
+For new projects: if you're Android-only and not planning KMP, Dagger 2 + (original) Anvil is still viable. If you're on KMP or want K2 compiler support, Kotlin Inject + Kotlin Inject Anvil is the clear recommendation.
+
+**Why it's worth your time:** Tight 18-minute history of Android DI that builds real context for why Kotlin Inject Anvil exists, capped with a direct technical Q&A from the library's maintainer — concrete enough to inform your next architecture decision.

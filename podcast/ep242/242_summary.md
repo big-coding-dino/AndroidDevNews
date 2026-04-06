@@ -1,0 +1,10 @@
+**Ep. 242 — Kotlin Code Formatting with ktfmt and spotless**
+*Fragmented Podcast · Don Felker & Kaushik Gopal · 40 min · 2023-03-20*
+
+Don and Kaushik dig into ktfmt — Meta's answer to "Google Java Format but for Kotlin." The frustration with ktlint is the framing: it tries to do too much, mixing formatting with linting in ways that are hard to configure cleanly. ktfmt is intentionally narrow — deterministic formatting only, no static analysis, no configuration debates. For static analysis, Detekt handles that separately, and the two tools don't step on each other.
+
+Getting ktfmt working well as a team requires a multi-pronged setup. The IntelliJ/Android Studio plugin (available in the plugins marketplace) hooks into the standard format-code shortcut (⌘⌥L / Ctrl+Alt+L) but won't auto-format as you type. The ktfmt jar can be run from the command line across an entire codebase. For enforcement, Kaushik wraps it in a pre-commit hook that only runs against the diff — keeping commits fast — and flags the pre-push hook as an alternative worth exploring, since you push less often than you commit and the networking I/O masks the latency anyway.
+
+The second tool, Spotless, is the CI layer. It's a language-agnostic Gradle plugin that lets you wire different formatters per language: ktfmt for Kotlin, Google Java Format for Java, Rubocop for Ruby, etc. For Android projects it integrates cleanly with Gradle, handles downloading the right formatter version, and can fail the build if unformatted code is pushed — closing the loop for anyone who skips local tooling.
+
+**Why it's worth your time:** If you've been tolerating ktlint friction or inconsistent formatting in code review, this episode gives you a concrete, layered setup — IDE plugin + pre-commit hook + Spotless CI check — that enforces ktfmt without requiring discipline from every contributor.

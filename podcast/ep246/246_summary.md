@@ -1,0 +1,10 @@
+**Ep. 246 — Dependency Injection: Kotlin Inject with Fred Porciúncula**
+*Fragmented Podcast · Don Felker & Kaushik Gopal · 56 min · 2023-05-29*
+
+Fred Porciúncula (GDE, Climate Labs) joins to walk through Kotlin Inject — a compile-time safe DI library for Kotlin Multiplatform — and explain why it's the closest thing to Dagger that KMP developers currently have.
+
+The core problem: Dagger doesn't support KMP. Koin does, but it's runtime-safe. Kotlin Inject, written by Evant (also behind Gradle Retro Lambda), gives you compile-time safety with a Dagger-like API surface that works across Android and iOS. Fred's team at Planet Wild chose it precisely because their Android-heavy team already valued compile-time safety and felt uncomfortable trading it away for multiplatform support.
+
+The most interesting architectural insight is using DI as a replacement for the `expect`/`actual` mechanism in KMP. The pattern: define an interface in common code (e.g., `PermissionResolver`), write platform-specific implementations in each platform source set, then use each platform's DI module to bind the concrete implementation to the interface. This avoids the verbosity of expect/actual while keeping your common code clean — no platform-specific code bleeds into shared modules. Fred's team still uses expect/actual for truly trivial cases like global formatting functions where spinning up a DI-managed object would be overkill, but for anything with real behavior, the interface-plus-DI pattern wins.
+
+**Why it's worth your time:** If you're moving a Dagger-based Android codebase to KMP and don't want to give up compile-time safety or learn a completely different DI paradigm, this episode makes the case for Kotlin Inject clearly. The expect/actual-vs-DI discussion alone is a useful mental model shift for structuring KMP projects.

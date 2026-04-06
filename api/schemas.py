@@ -6,7 +6,8 @@ class ArticleResponse(BaseModel):
     title: str
     url: str
     date: str               # YYYY-MM-DD
-    summary: str
+    tldr: str               # 2-3 sentence feed card blurb
+    summary: str            # full structured markdown digest
     source_label: str
     source_domain: str
     category: str           # tag slug, e.g. "kotlin"

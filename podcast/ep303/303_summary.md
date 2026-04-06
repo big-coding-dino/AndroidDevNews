@@ -1,0 +1,12 @@
+**Ep. 303 — How LLMs Work - the 20 minute explainer**
+*Fragmented Podcast · Kaushik & Yuri · 26 min · Feb 2, 2026*
+
+A ground-up walkthrough of how large language models turn raw text into predictions — useful for understanding why LLMs behave the way they do, not just how to prompt them.
+
+The pipeline starts with **tokenization**: text is split into the smallest semantic units (words, subwords, characters, symbols) and each token is assigned an integer ID via a vocabulary lookup table. The vocabulary is model-specific and fixed at training time. But raw integer IDs carry no relational meaning — apple gets ID 10, house gets ID 5000, and those numbers tell you nothing about proximity of concept.
+
+That's where **embeddings** come in. Each token ID is mapped to a high-dimensional vector — think of it like an RGB pixel value, but instead of three color intensities you have hundreds or thousands of abstract semantic dimensions. The classic Word2Vec example makes this concrete: represent king, queen, man, woman in a 3D space of gender/age/royalty, and you can literally do `king − man + woman = queen`. Related words cluster in this space; distance between vectors encodes meaning. These vectors aren't hand-crafted — they emerge from **pre-training**, where the model reads billions of sentences and iteratively adjusts vectors via tiny gradient nudges whenever it mispredicts a masked word. After enough nudges across enough data, semantically related tokens pull together into neighborhoods.
+
+**Inference** is the final step. Given an input sequence, the model outputs a probability distribution over its entire vocabulary — every possible next token gets a score. You sample from the top candidates (controlled by parameters like `top_k`, `top_p`, and `temperature`) and repeat token by token. The hosts note this describes a base LLM; production models like ChatGPT or Gemini layer significantly more on top (RLHF, system prompts, tool use), but the tokenize → embed → predict loop is the foundation.
+
+**Why it's worth your time:** If you've been treating LLMs as black boxes, this episode gives you the mental model to reason about token limits, why rephrasing a prompt changes output, and what "temperature" is actually doing — all in under 30 minutes.

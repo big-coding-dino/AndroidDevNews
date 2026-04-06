@@ -1,0 +1,10 @@
+**Ep. 302 — MCPs Explained: What They Are and When to Use Them**
+*Fragmented Podcast · Kaushik & Yuri · 19 min · Jan 26, 2026*
+
+MCPs (Model Context Protocol) are a standardized protocol for connecting external tools and data sources to AI clients — think USB ports for LLMs. An MCP server exposes tools (e.g. "fetch PR", "search Slack") described in a standard JSON format with names, descriptions, inputs, and outputs. Servers can run locally as a spawned process or remotely over HTTP. Clients — Cursor, Claude, ChatGPT, etc. — consume these tool definitions automatically. Anthropic created the spec, which is now an open standard under the Linux Foundation's Agentic AI Foundation.
+
+The core tradeoffs: every MCP you add loads all its tool definitions into your context window upfront, burning tokens before you've typed a word. Stack five MCPs with 20 tools each and you may start a session with only 40–50% of your context budget left — a direct path to hallucinations. There's also tool confusion: the more tools an agent sees, the less precisely it picks the right one. Contrast this with CLI tools, where only the command output hits your context, not the tool definitions. That said, MCPs win on discoverability and standardization — models already know the protocol from training data, setup is a single JSON paste, and you can ask the agent to configure an MCP for you.
+
+Practical picks mentioned: the **GitHub MCP** for PR review without pasting diffs; **Playwright MCP** for full browser control (navigation, screenshots, clicking — one host used it for grocery shopping); and **Context7 MCP**, a lean two-tool server for pulling current library docs into context when the model's training data is stale. On the horizon: Anthropic's **MCP tool search** feature does lazy-loading of tool definitions — only pulling them when actually needed — which directly addresses the context bloat problem.
+
+**Why it's worth your time:** Cuts through the MCP hype with an honest cost/benefit breakdown. The token bloat and tool confusion arguments are concrete and actionable, and the specific MCP recommendations give you a short list of high-signal starting points.

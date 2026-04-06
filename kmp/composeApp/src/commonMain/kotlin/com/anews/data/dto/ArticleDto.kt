@@ -12,7 +12,7 @@ data class ArticleDto(
     val title: String,
     val url: String,
     val date: String,
-    val description: String = "",
+    val tldr: String,
     val summary: String,
     @SerialName("source_label")      val sourceLabel: String,
     @SerialName("source_domain")     val sourceDomain: String,
@@ -23,6 +23,7 @@ data class ArticleDto(
 fun ArticleDto.toDomain(): Article = Article(
     id              = id.toString(),
     title           = title,
+    tldr            = tldr,
     summary         = summary,
     url             = url,
     sourceLabel     = sourceLabel,

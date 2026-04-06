@@ -1,0 +1,10 @@
+**Ep. 235 — Pair programming with Ben Orenstein & Tuple**
+*Fragmented Podcast · Kaushik Gopal · 54 min · 2022-09-20*
+
+Ben Orenstein, co-founder and CEO of Tuple, joins to talk pair programming — what it actually is, when to reach for it, and why it's undersold as a general collaboration tool. Ben's path to this topic is winding: kicked out of college, bartending jobs, self-taught Ruby developer, junior Rails hire, then Thoughtbot, where he gave the well-known "Refactoring from Good to Great" live-coding talk. His first real exposure to pairing came at his first Ruby job, where months of daily pairing with his boss compressed years of learning into weeks.
+
+On the merits of pairing: it raises average code quality to the *max* of both developers' ability, makes design mistakes catchable in-the-moment (rather than after a 1000-line PR lands), and is one of the most effective onboarding tools available. The tradeoff is energy — pairing is categorically more draining than solo work because it removes the micro-breaks (checking email, waiting for builds) that let you recover mid-session. Ben recommends treating it as a tool, not a mandate: a few sessions a week is entirely reasonable, especially for introverts.
+
+The more surprising angle is how Tuple's own team applies pairing beyond code — to sales deals, marketing copy, and design reviews in Figma. Ben's framing strips away the ceremony: pairing is just two people looking at the same work product with two brains engaged in real time. The driver/navigator ritual is optional overhead; the core value is shared attention.
+
+**Why it's worth your time:** If you've ever felt pairing was too exhausting to sustain or too ritualistic to adopt casually, Ben makes a practical case for a lighter version of it — and the extension to non-code work is immediately actionable for anyone leading or collaborating on a small team.

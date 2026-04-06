@@ -100,11 +100,11 @@ def fetch_episodes(conn, limit=None, force=False):
     where = "r.resource_type = 'podcast_episode'"
     if not force:
         where += " AND r.summary IS NULL"
-    where += " AND ped.transcript IS NOT NULL AND length(ped.transcript) > 100"
+    where += " AND ped.diarization IS NOT NULL AND length(ped.diarization) > 100"
     limit_clause = f"LIMIT {int(limit)}" if limit else ""
     query = f"""
         SELECT r.id, r.title, r.url, r.published_at,
-               ped.episode_number, ped.duration_seconds, ped.transcript
+               ped.episode_number, ped.duration_seconds, ped.diarization
         FROM resources r
         JOIN podcast_episodes ped ON ped.resource_id = r.id
         WHERE {where}
@@ -170,7 +170,7 @@ def print_progress(conn):
                 COUNT(*) FILTER (WHERE r.summary IS NOT NULL) AS done
             FROM resources r
             JOIN podcast_episodes ped ON ped.resource_id = r.id
-            WHERE ped.transcript IS NOT NULL AND length(ped.transcript) > 100
+            WHERE ped.diarization IS NOT NULL AND length(ped.diarization) > 100
         """)
         total, done = cur.fetchone()
         remaining = total - done
@@ -201,21 +201,21 @@ def main():
         conn.close()
         return
 
-    for i, (rid, title, url, published_at, ep_num, duration_secs, transcript) in enumerate(episodes, 1):
+    for i, (rid, title, url, published_at, ep_num, duration_secs, diarization) in enumerate(episodes, 1):
         print(f"\n[{i}/{len(episodes)}] ep{ep_num} id={rid} — {title}")
 
-        # Fall back to file if transcript not in DB
-        if not transcript:
-            transcript = find_transcript(ep_num)
-            if not transcript:
-                print("  SKIP: no transcript found")
+        # Fall back to file if diarization not in DB
+        if not diarization:
+            diarization = find_transcript(ep_num)
+            if not diarization:
+                print("  SKIP: no diarization found")
                 continue
 
         duration_min = round(duration_secs / 60) if duration_secs else "?"
         published = published_at.isoformat() if published_at else "unknown"
 
         try:
-            summary = generate_summary(title, url or "", duration_min, published, transcript)
+            summary = generate_summary(title, url or "", duration_min, published, diarization)
         except RuntimeError as e:
             print(f"  ERROR: {e}", file=sys.stderr)
             continue

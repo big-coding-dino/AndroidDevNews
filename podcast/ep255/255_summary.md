@@ -1,0 +1,10 @@
+**Ep. 255 — Data Oriented Programming**
+*Fragmented · Kaushik Gopal · 32 min · Feb 18, 2025*
+
+Data-Oriented Programming (DOP) is a paradigm focused on making data representation the top priority — not objects, not functions, but the shape and expressiveness of the data itself. It doesn't replace OOP or FP; it's a complementary tool that encourages you to invest more upfront thinking into how data is modeled so you write less defensive logic downstream.
+
+The core idea: a naively typed field like `id: String` forces you to scatter validation logic everywhere — uniqueness checks, format guards, generation constraints. Swap it for `id: UUID` and the type itself encodes all of that. Same pattern applies at larger scales: instead of a generic `Response` object with nullable fields you interrogate defensively, model your network results as a sealed interface with explicit subtypes — `Success`, `Failure`, `Timeout`, `Interrupted`. Or a search result as `NoMatch`, `ExactMatch`, `FuzzyMatch`, `FuzzyMatches` — each carrying only the data that makes sense for that case. When every state is explicitly represented, unhandled states become impossible, and your business logic collapses into straightforward `when` expressions.
+
+The tradeoff is front-loaded effort: you need deep domain knowledge before you can model well, which often means talking to teammates and gathering institutional knowledge before writing a line of code. But the payoff is programs that are more descriptive, simpler to reason about, and structurally incapable of representing incorrect states.
+
+**Why it's worth your time:** If you've ever traced a bug back to an unhandled null or an ambiguous response object, this episode reframes that as a data modeling failure rather than a logic bug. The examples are Kotlin-flavored and concrete enough to apply immediately.

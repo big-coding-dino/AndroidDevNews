@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, Query
+from urllib.parse import urlparse
 
 from api.db import get_conn
 from api.schemas import ArticleResponse
@@ -14,6 +15,11 @@ def _read_time(clean_content: str | None) -> int:
     return max(1, len(clean_content.split()) // WORDS_PER_MINUTE)
 
 
+def _source_domain(url: str) -> str:
+    host = urlparse(url).netloc or url
+    return host.removeprefix("www.")
+
+
 @router.get("/articles", response_model=list[ArticleResponse])
 def get_articles(
     category: str | None = Query(default=None, description="Tag slug to filter by"),
@@ -23,7 +29,6 @@ def get_articles(
     with get_conn() as conn:
         with conn.cursor() as cur:
             if category:
-                # Filter to a specific tag; category comes from that tag
                 cur.execute(
                     """
                     SELECT
@@ -31,6 +36,7 @@ def get_articles(
                         r.title,
                         r.url,
                         r.published_at,
+                        r.tldr,
                         r.summary,
                         f.name        AS source_label,
                         f.slug        AS source_domain,
@@ -42,7 +48,7 @@ def get_articles(
                     JOIN resource_tags rt ON rt.resource_id = r.id
                     JOIN tags t      ON t.id = rt.tag_id
                     WHERE r.resource_type = 'article'
-                      AND r.summary IS NOT NULL
+                      AND r.tldr IS NOT NULL
                       AND r.published_at IS NOT NULL
                       AND t.slug = %s
                     ORDER BY r.published_at DESC, rt.score DESC
@@ -51,7 +57,6 @@ def get_articles(
                     (category, limit, offset),
                 )
             else:
-                # No filter: pick the highest-scoring tag per article via lateral join
                 cur.execute(
                     """
                     SELECT
@@ -59,6 +64,7 @@ def get_articles(
                         r.title,
                         r.url,
                         r.published_at,
+                        r.tldr,
                         r.summary,
                         f.name        AS source_label,
                         f.slug        AS source_domain,
@@ -76,7 +82,7 @@ def get_articles(
                         LIMIT 1
                     ) best ON true
                     WHERE r.resource_type = 'article'
-                      AND r.summary IS NOT NULL
+                      AND r.tldr IS NOT NULL
                       AND r.published_at IS NOT NULL
                     ORDER BY r.published_at DESC
                     LIMIT %s OFFSET %s
@@ -100,11 +106,12 @@ def get_articles(
             title=row[1] or "",
             url=row[2],
             date=row[3].isoformat(),
-            summary=row[4] or "",
-            source_label=row[5] or "",
-            source_domain=row[6] or "",
-            category=row[7],
-            read_time_minutes=_read_time(row[8]),
+            tldr=row[4] or "",
+            summary=row[5] or "",
+            source_label=row[6] or "",
+            source_domain=_source_domain(row[2]),
+            category=row[8],
+            read_time_minutes=_read_time(row[9]),
         )
         for row in rows
     ]

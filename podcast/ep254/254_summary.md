@@ -1,0 +1,10 @@
+**Ep. 254 — 8× faster 5× memory savings with Dan Rusu's Immutable Arrays**
+*Fragmented · 49 min · Dec 24, 2024*
+
+Dan Rusu, a backend Kotlin engineer who drove Kotlin adoption at Oracle and then FAIR, presents his `immutable-arrays` library, which benchmarks at 2–8× faster and ~5× lower memory usage than standard Kotlin lists.
+
+The core problem is autoboxing. Kotlin's `List` is generic, so every primitive stored in it gets wrapped in an object — an `Int` becomes an `Integer` with a 12–16 byte object header, the actual value, and alignment padding to a multiple of 8 bytes. That's a 5× memory hit over a raw primitive array even with JVM pointer compression, 8× without it, and up to 32× for `Boolean` constructed via the constructor path. `IntArray`, `FloatArray`, and the other specialized array types store values contiguously with no boxing at all.
+
+Beyond boxing, `ArrayList`-backed lists carry operational overhead that most developers don't think about. A `takeWhile` call appends results one element at a time, triggering a capacity check on every insert and potentially reallocating the backing array multiple times. Immutable arrays scan to find the cutoff index first, then do a single direct copy — no growth, no per-element checks, no intermediate garbage. Even a `map` operation, where the output size is known upfront, still pays that per-element capacity check on an `ArrayList`. Immutable arrays skip it entirely. The "immutable" part also closes a real gap in Kotlin: `List` is only read-only by interface, not actually immutable — cast it to `ArrayList` and you can mutate it freely. Immutable arrays provide a compile-time guarantee that's currently impossible with the standard library.
+
+**Why it's worth your time:** If you've ever wondered why functional-style collection operations feel slower than they should, this episode pins down the exact JVM mechanics behind the numbers — object headers, backing array growth strategy, capacity checks — rather than just citing benchmarks. It's a concrete case for when reaching for a primitive-aware data structure isn't premature optimization.

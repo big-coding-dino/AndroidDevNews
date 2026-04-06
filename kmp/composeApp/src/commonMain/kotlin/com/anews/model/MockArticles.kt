@@ -6,6 +6,7 @@ val mockArticles = listOf(
     Article(
         id = "1",
         title = "Android Bench: Google's Public LLM Leaderboard",
+        tldr = "Google launched Android Bench, the first public benchmark scoring LLMs on Android tasks. It covers resolving breaking API changes, Wear OS challenges, and real developer workflows.",
         summary = "Google launched Android Bench, the first public benchmark that scores LLMs specifically on Android tasks: resolving breaking API changes, domain-specific Wear OS challenges, and real-world developer workflows across the Android ecosystem.",
         url = "https://android-developers.googleblog.com",
         sourceLabel = "android-developers.googleblog",
@@ -17,6 +18,7 @@ val mockArticles = listOf(
     Article(
         id = "2",
         title = "Android Studio Panda 2: Prompt → Deployed App",
+        tldr = "Android Studio Panda 2 ships a 'Create with AI' flow that turns a text description into a full runnable app. Also includes a redesigned device manager and faster build cache invalidation.",
         summary = "The new 'Create with AI' flow takes a text description plus optional screenshots, produces a full project plan to review, then generates a complete runnable app. Panda 2 also ships a redesigned device manager and faster build cache invalidation.",
         url = "https://android-developers.googleblog.com",
         sourceLabel = "android-developers.googleblog",
@@ -28,6 +30,7 @@ val mockArticles = listOf(
     Article(
         id = "3",
         title = "Compose Multiplatform for Web Goes Beta",
+        tldr = "Compose Multiplatform 1.9.0 promotes the web (Wasm) target to Beta with Material 3, adaptive layouts, and browser navigation. The canvas renderer now matches desktop fidelity.",
         summary = "Compose Multiplatform 1.9.0 moves web (Wasm) from Alpha to Beta. The web target now ships Material 3, adaptive layouts, browser navigation (back/forward, deep links, history), and a canvas renderer that matches desktop fidelity.",
         url = "https://blog.jetbrains.com",
         sourceLabel = "blog.jetbrains",
@@ -39,6 +42,7 @@ val mockArticles = listOf(
     Article(
         id = "4",
         title = "Compose Multiplatform 1.10.0: Navigation 3 + Stable Hot Reload",
+        tldr = "Navigation 3 lands as stable with type-safe routes and shared-element transitions. Hot reload is now stable on all JVM targets — change a composable and see it update without restarting.",
         summary = "Navigation 3 lands as stable API with type-safe routes, nested graphs, and a shared-element transition system. Hot reload is now stable on all JVM targets — change a composable and see it update without restarting the process.",
         url = "https://blog.jetbrains.com",
         sourceLabel = "blog.jetbrains",
@@ -50,6 +54,7 @@ val mockArticles = listOf(
     Article(
         id = "5",
         title = "Update Your Kotlin Projects for Android Gradle Plugin 9.0",
+        tldr = "AGP 9.0 drops Groovy script support, requires Kotlin 2.0+, and enforces strict variant-aware dependency resolution. The new declarative Gradle DSL replaces most imperative configuration blocks.",
         summary = "AGP 9.0 drops support for Groovy build scripts, requires Kotlin 2.0+, and enforces strict variant-aware dependency resolution. The migration guide covers the most common breakages and how the new declarative Gradle DSL replaces imperative configuration blocks.",
         url = "https://kotlinlang.org",
         sourceLabel = "kotlinlang.org",
@@ -61,6 +66,7 @@ val mockArticles = listOf(
     Article(
         id = "6",
         title = "Kotlin 2.2 Brings Context Parameters and Guard Conditions",
+        tldr = "Context parameters are now stable in Kotlin 2.2, replacing the old context receivers experiment. The new IR backend also cuts compile times by up to 30% on large projects.",
         summary = "Context parameters replace the old context receivers experiment and are now stable. Guard conditions in when expressions allow complex pattern matching without nesting. The compiler also ships a new default IR backend that cuts compile times by up to 30% on large projects.",
         url = "https://kotlinlang.org",
         sourceLabel = "kotlinlang.org",

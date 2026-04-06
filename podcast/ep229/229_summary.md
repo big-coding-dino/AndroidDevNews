@@ -1,0 +1,10 @@
+**Ep. 229 — Native Where You Need It with Turbo (Launch Your Side Projects Faster)**
+*Fragmented Podcast · Don Felker & Kashuk · 63 min · May 23, 2022*
+
+Kashuk joins to walk through Hotwire and Turbo Native — the Basecamp/37signals hybrid approach that lets a tiny team ship real native Android and iOS apps backed by a single Rails web app.
+
+The core idea: Hotwire (HTML Over The Wire) lets you build a fast, SPA-like web app, and Turbo Native wraps it into a proper mobile app. On Android, Turbo Native sits on top of the Google Navigation Library. You register URL path patterns, and for each pattern you decide: render this in a WebView, or swap in a native Fragment. `/feed` can be a native RecyclerView for performance; `/settings` or `/about` can just be a WebView that you update server-side without shipping an app update. You can also mix within a screen — a web-powered feed can launch a native barcode scanner fragment on button tap. Web views maintain their own Turbo session (cookies, auth); native screens call your backend over a regular API.
+
+The tradeoffs are honest: this shines for indie hackers and early-stage teams who need both iOS and Android without doubling headcount. Hey.com runs the full stack with roughly 2–3 engineers per platform plus ~5–6 Rails engineers — a much smaller team than comparable email clients. The model gets messy at enterprise scale when you need cross-boundary A/B testing or complex analytics funnels that span native and web; the bridges exist but feel inelegant. Most large orgs eventually go all-native for that reason. The recommendation isn't to avoid native forever — it's to defer that investment until you actually need it.
+
+**Why it's worth your time:** If you're building a side project or early-stage product and want a single backend that powers real native apps — not a pure WebView wrapper, but something with actual native screens where they matter — this episode gives you a clear mental model for where Turbo Native fits and a frank assessment of where it breaks down.

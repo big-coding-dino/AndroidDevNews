@@ -1,0 +1,10 @@
+**Ep. 228 — Expo Development with Konstantin Liakhovskii**
+*Fragmented Podcast · Don Felker & Kaushik Gopal · 57 min · 2022-04-18*
+
+Konstantin Liakhovskii, staff engineer at Brex and veteran of both native Android and iOS development, breaks down Expo — what it actually is and why it's become the default starting point for React Native apps.
+
+Expo is best understood through an analogy Konstantin offers: it's the Jetpack + Firebase of React Native. Just as Google's support library abstracted away Android version fragmentation and Firebase layered on infrastructure services, Expo sits on top of React Native and handles the complexity that makes cross-platform development painful in practice. That complexity is real — vanilla React Native projects expose Android Manifest files, Gradle configs, Xcode projects, and P-list files to developers who often have no context for them. Expo collapses all of that into a single config file where you declare your app's name, icon, and permissions, and the toolchain handles the rest.
+
+A key piece of this is the Expo Go app, a pre-built native shell available on the App Store and Google Play that runs your JavaScript bundle directly on device during development — no Android Studio or Xcode required. For production builds, Expo's cloud infrastructure handles the native compilation, meaning you don't even need a Mac for iOS builds. Brex uses this managed Expo workflow at scale, and Konstantin notes that while there are paid tiers, even the free tier is sufficient for most indie or small-team projects (~$30/month at Brex's scale).
+
+**Why it's worth your time:** If you dismissed React Native after the Airbnb post-mortem, this episode is a useful reset. Konstantin's native-first background makes his endorsement credible, and the Jetpack analogy is the clearest framing of what Expo actually does that you're likely to hear.

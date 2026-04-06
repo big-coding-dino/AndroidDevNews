@@ -1,0 +1,10 @@
+**Ep. 304 — Agent Skills: When to Use Them and Why They Matter**
+*Fragmented · Kaushik & Yuri · 27 min · Feb 9, 2026*
+
+Agent skills are folder-based packages — a `skill.md` plus optional `scripts/`, `references/`, and `assets/` directories — that equip an agent with reusable, domain-specific capabilities. The only required piece is the `skill.md` file with a YAML front matter block containing `name` and `description` fields; everything else is optional. Scripts let you bake deterministic behavior directly into a skill (same input, same output), while the assets folder is where you stash output examples to steer LLM generation reliably.
+
+The key innovation over CLAUDE.md or slash commands is **progressive disclosure**: only the name and description are tokenized and loaded into the context window at session start. The full instruction body — potentially hundreds of lines — is lazy-loaded only when the agent determines the skill is relevant. This directly tackles context window bloat, a known pain point with MCPs where all tool definitions load unconditionally. Anthropic recently merged slash commands and skills under a unified model, with a single flag distinguishing *user-invokable* (you trigger it) from *agent-invokable* (the agent decides when to use it). Skills are a superset of slash commands and now also adopt progressive disclosure.
+
+Advanced front matter fields go beyond name/description: a `model` field lets you target a smaller, cheaper model for lightweight retrieval tasks, and a `context: fork` field runs the skill in an isolated context so it doesn't pollute the main conversation thread. To bootstrap a skill without hand-writing YAML, use the `skill-creator` skill from the `anthropics/skills` GitHub repo (Claude Code doesn't ship it built-in; Codex CLI does).
+
+**Why it's worth your time:** If you're copy-pasting the same prompts repeatedly — or your team is — skills are the right abstraction. The progressive disclosure mechanism is the non-obvious part that makes skills strictly better than dumping instructions into CLAUDE.md, and this episode explains exactly why with enough technical detail to act on immediately.

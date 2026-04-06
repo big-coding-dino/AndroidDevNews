@@ -26,7 +26,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-PROMPT_TEMPLATE = """You are summarizing a technical article for an audience of Android/Kotlin developers.
+SUMMARY_PROMPT = """You are summarizing a technical article for an audience of Android/Kotlin developers.
 
 Title: {title}
 URL: {url}
@@ -37,18 +37,37 @@ Article content:
 Write a summary that:
 - Explains what the article is about, preserving the original meaning and narrative
 - Includes specific technical details: APIs, library names, version numbers, metrics
-- Ends with a "Why it matters" paragraph explaining the real-world significance for developers
+- Ends with a "**Why it matters:**" paragraph explaining the real-world significance for developers
 - Has no strict word limit — cover what needs to be covered
 - Uses direct, developer-to-developer tone with no hype or filler
 - Does not start with "This article..." or any preamble
+- Uses markdown for structure: bold for key terms, inline code for APIs/classes
 
-Output only the summary text, no headings, no metadata."""
+Output only the summary text, no top-level heading, no metadata."""
+
+TLDR_PROMPT = """You are writing a feed card blurb for an Android/Kotlin developer news app.
+
+Title: {title}
+URL: {url}
+
+Article content:
+{content}
+
+Write a tldr of exactly 2-3 sentences that:
+- Opens with the core insight or problem being solved — no preamble, no "This article..."
+- Names the specific technology, API, or pattern involved
+- Ends with one punchy sentence on why a developer should care
+
+Plain text only, no markdown, no bullet points."""
 
 
-def fetch_articles(conn, tag=None, limit=None, force=False):
+def fetch_articles(conn, tag=None, limit=None, force=False, tldr_only=False):
     where_clauses = ["ad.clean_content IS NOT NULL", "length(ad.clean_content) > 200"]
     if not force:
-        where_clauses.append("r.summary IS NULL")
+        if tldr_only:
+            where_clauses.append("r.tldr IS NULL")
+        else:
+            where_clauses.append("(r.summary IS NULL OR r.tldr IS NULL)")
 
     params = []
     extra_join = ""
@@ -102,12 +121,8 @@ def is_rate_limit_error(error_text):
     return any(kw in error_text.lower() for kw in ("rate limit", "rate_limit", "429", "too many requests"))
 
 
-def generate_summary(title, url, content):
-    prompt = PROMPT_TEMPLATE.format(
-        title=title,
-        url=url,
-        content=content,
-    )
+def call_claude(prompt):
+    """Call claude -p with retry on rate limit. Returns output string."""
     while True:
         result = subprocess.run(
             ["claude", "-p", prompt],
@@ -128,12 +143,20 @@ def generate_summary(title, url, content):
             raise RuntimeError(f"claude -p failed: {error}")
 
 
-def save_summary(conn, resource_id, summary):
+def generate_summary(title, url, content):
+    return call_claude(SUMMARY_PROMPT.format(title=title, url=url, content=content))
+
+
+def generate_tldr(title, url, content):
+    return call_claude(TLDR_PROMPT.format(title=title, url=url, content=content))
+
+
+def save_fields(conn, resource_id, summary, tldr):
     with conn:
         with conn.cursor() as cur:
             cur.execute(
-                "UPDATE resources SET summary = %s WHERE id = %s",
-                (summary, resource_id),
+                "UPDATE resources SET summary = %s, tldr = %s WHERE id = %s",
+                (summary, tldr, resource_id),
             )
 
 
@@ -142,7 +165,7 @@ def print_progress(conn):
         cur.execute("""
             SELECT
                 COUNT(*) FILTER (WHERE ad.clean_content IS NOT NULL) AS total,
-                COUNT(*) FILTER (WHERE ad.clean_content IS NOT NULL AND r.summary IS NOT NULL) AS done
+                COUNT(*) FILTER (WHERE ad.clean_content IS NOT NULL AND r.summary IS NOT NULL AND r.tldr IS NOT NULL) AS done
             FROM resources r
             JOIN articles ad ON ad.resource_id = r.id
         """)
@@ -156,8 +179,10 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--tag", help="Filter by tag slug (e.g. ai, compose, kotlin)")
     parser.add_argument("--limit", type=int, help="Max number of articles to process")
-    parser.add_argument("--dry-run", action="store_true", help="Print summaries without saving")
-    parser.add_argument("--force", action="store_true", help="Re-generate even if summary already exists")
+    parser.add_argument("--dry-run", action="store_true", help="Print output without saving")
+    parser.add_argument("--force", action="store_true", help="Re-generate even if fields already exist")
+    parser.add_argument("--tldr-only", action="store_true", help="Only generate tldr, skip summary")
+    parser.add_argument("--delay", type=float, default=10.0, help="Seconds to wait between articles (default 10)")
     args = parser.parse_args()
 
     conn = psycopg2.connect(
@@ -168,7 +193,7 @@ def main():
         password=os.environ["POSTGRES_PASSWORD"],
     )
 
-    articles = fetch_articles(conn, tag=args.tag, limit=args.limit, force=args.force)
+    articles = fetch_articles(conn, tag=args.tag, limit=args.limit, force=args.force, tldr_only=args.tldr_only)
     print(f"Found {len(articles)} articles to summarize")
     print_progress(conn)
 
@@ -179,17 +204,36 @@ def main():
     for i, (rid, title, url, content) in enumerate(articles, 1):
         print(f"\n[{i}/{len(articles)}] id={rid} — {title}")
         try:
-            summary = generate_summary(title, url, content)
+            if args.tldr_only:
+                print("  Generating tldr...")
+                tldr = generate_tldr(title, url, content)
+                summary = None
+            else:
+                print("  Generating summary...")
+                summary = generate_summary(title, url, content)
+                print("  Generating tldr...")
+                tldr = generate_tldr(title, url, content)
         except RuntimeError as e:
             print(f"  ERROR: {e}", file=sys.stderr)
             continue
 
         if args.dry_run:
-            print(f"  [dry-run] Summary preview:\n{summary[:300]}...")
+            print(f"  [dry-run] tldr: {tldr}")
+            if summary:
+                print(f"  [dry-run] summary preview: {summary[:200]}...")
         else:
-            save_summary(conn, rid, summary)
-            print(f"  Saved ({len(summary)} chars)")
+            if args.tldr_only:
+                with conn:
+                    with conn.cursor() as cur:
+                        cur.execute("UPDATE resources SET tldr = %s WHERE id = %s", (tldr, rid))
+                print(f"  Saved tldr ({len(tldr)}c)")
+            else:
+                save_fields(conn, rid, summary, tldr)
+                print(f"  Saved (summary={len(summary)}c, tldr={len(tldr)}c)")
             print_progress(conn)
+
+        if i < len(articles) and args.delay > 0:
+            time.sleep(args.delay)
 
     conn.close()
     print("\nDone.")

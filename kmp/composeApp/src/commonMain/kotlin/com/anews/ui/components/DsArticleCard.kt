@@ -65,9 +65,9 @@ fun DsArticleCard(
                 color = colors.textPrimary,
             )
 
-            // Summary — collapses to 3 lines, expands on tap
+            // tldr — collapses to 3 lines, expands on tap
             Text(
-                text = article.summary,
+                text = article.tldr,
                 style = DsTheme.typography.articleBody,
                 color = colors.textSecondary,
                 maxLines = if (expanded) Int.MAX_VALUE else 3,

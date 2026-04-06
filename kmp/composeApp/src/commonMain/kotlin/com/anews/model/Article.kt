@@ -5,6 +5,7 @@ import kotlinx.datetime.LocalDate
 data class Article(
     val id: String,
     val title: String,
+    val tldr: String,
     val summary: String,
     val url: String,
     val sourceLabel: String,
