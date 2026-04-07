@@ -1,5 +1,7 @@
 node_modules/
 .env
+local.properties
+**/local.properties
 __pycache__/
 *.pyc
 .venv/
@@ -15,8 +17,3 @@ __pycache__/
 kmp/.gradle/
 kmp/build/
 kmp/*/build/
-
-kmp/.gradle/
-kmp/build/
-kmp/*/build/
-kmp/**/designSystem/
