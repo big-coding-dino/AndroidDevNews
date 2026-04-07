@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>droidpulse — mobile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#0A0C12;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;font-family:'DM Sans',sans-serif;}
+:root{
+  --green:#3DDC84;--gdim:rgba(61,220,132,0.10);--gbdr:rgba(61,220,132,0.35);
+  --bg:#0F1117;--surf:#181B25;--card:#1D2030;--card2:#232638;--card3:#272B40;
+  --bdr:rgba(255,255,255,0.07);--bdr2:rgba(255,255,255,0.13);
+  --t1:#E8EAF0;--t2:#8890A8;--t3:#454B62;--t4:#2E3248;
+  --ai-bg:rgba(160,120,255,0.13);--ai-t:#B89FFF;
+  --kt-bg:rgba(80,140,255,0.13);--kt-t:#7AABFF;
+  --gr-bg:rgba(240,170,50,0.13);--gr-t:#F5C04A;
+  --ts-bg:rgba(255,90,90,0.13);--ts-t:#FF7575;
+  --cm-bg:rgba(61,220,132,0.13);--cm-t:#3DDC84;
+  --ar-bg:rgba(240,140,80,0.13);--ar-t:#FFAA66;
+}
+.frame{font-family:'DM Sans',sans-serif;background:var(--bg);border-radius:36px;max-width:390px;width:100%;margin:0 auto;border:1.5px solid rgba(255,255,255,0.09);overflow:hidden;height:840px;display:flex;flex-direction:column;position:relative;}
+.sb{background:var(--bg);padding:12px 24px 4px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
+.sb-time{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;color:var(--t1);}
+.sb-icons{display:flex;gap:5px;align-items:center;}
+.bat{width:18px;height:10px;border:1.5px solid var(--t2);border-radius:2px;position:relative;}
+.bat::after{content:'';position:absolute;right:-4px;top:2px;width:3px;height:5px;background:var(--t2);border-radius:0 1px 1px 0;}
+.bat-f{position:absolute;left:1px;top:1px;bottom:1px;width:72%;background:var(--green);border-radius:1px;}
+.hdr{background:var(--bg);padding:4px 18px 12px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--bdr);}
+.app-name{font-size:21px;font-weight:600;color:var(--t1);letter-spacing:-0.5px;display:flex;align-items:center;gap:7px;}
+.brand-dot{width:7px;height:7px;background:var(--green);border-radius:50%;}
+.accent{color:var(--green);}
+.content{flex:1;overflow:hidden;display:flex;flex-direction:column;}
+.tab-pane{display:none;flex:1;flex-direction:column;overflow:hidden;}
+.tab-pane.active{display:flex;}
+.cat-bar{display:flex;gap:5px;padding:10px 14px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--bdr);flex-shrink:0;background:var(--bg);}
+.cat-bar::-webkit-scrollbar{display:none;}
+.pill{padding:5px 12px;border-radius:100px;font-size:11.5px;font-weight:500;cursor:pointer;white-space:nowrap;border:1px solid var(--bdr);color:var(--t2);background:var(--surf);transition:all .15s;flex-shrink:0;}
+.pill.on{background:var(--gdim);border-color:var(--gbdr);color:var(--green);}
+.scroll-body{flex:1;overflow-y:auto;scrollbar-width:none;}
+.scroll-body::-webkit-scrollbar{display:none;}
+
+/* ── DIGEST TAB — newsletter format ── */
+.digest-outer{padding:14px 14px 28px;}
+.digest-issue{background:var(--card);border:1px solid var(--bdr);border-radius:14px;margin-bottom:14px;overflow:hidden;}
+.di-header{padding:13px 14px 11px;border-bottom:1px solid var(--bdr);}
+.di-cat-row{display:flex;align-items:center;gap:7px;margin-bottom:6px;}
+.di-cat-tag{font-size:10px;font-weight:500;padding:3px 9px;border-radius:100px;}
+.di-date{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);}
+.di-title{font-size:15px;font-weight:600;color:var(--t1);letter-spacing:-0.2px;margin-bottom:5px;line-height:1.3;}
+.di-meta{display:flex;align-items:center;gap:5px;}
+.di-written{font-size:11px;color:var(--t3);}
+.di-source-pill{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--green);background:var(--gdim);border:1px solid var(--gbdr);padding:2px 7px;border-radius:100px;}
+.di-entries{}
+.di-entry{padding:12px 14px;}
+.di-sep{height:1px;background:var(--bdr);margin:0 14px;}
+.di-sep-txt{display:flex;align-items:center;gap:8px;padding:0 14px;}
+.di-sep-line{flex:1;height:1px;background:var(--bdr);}
+.di-sep-dash{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t4);letter-spacing:2px;}
+.di-url{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--green);opacity:.8;line-height:1.5;margin-bottom:7px;word-break:break-all;cursor:pointer;}
+.di-url:hover{opacity:1;}
+.di-summary{font-size:12.5px;color:var(--t2);line-height:1.65;}
+.di-footer{padding:10px 14px;background:var(--card2);border-top:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;cursor:pointer;}
+.di-footer-count{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);}
+.di-footer-expand{font-size:11px;color:var(--t2);display:flex;align-items:center;gap:4px;}
+.di-extra{display:none;}
+.di-extra.open{display:block;}
+
+/* ── FEED TAB — old entry cards ── */
+.feed-body{padding:14px 14px 24px;}
+.mo-row{display:flex;align-items:center;gap:8px;margin:16px 0 12px;}
+.mo-row:first-child{margin-top:4px;}
+.mo-lbl{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:500;color:var(--green);letter-spacing:1.5px;text-transform:uppercase;white-space:nowrap;}
+.mo-line{flex:1;height:1px;background:var(--bdr);}
+.entry-card{background:var(--card);border:1px solid var(--bdr);border-radius:14px;margin-bottom:10px;overflow:hidden;cursor:pointer;transition:border-color .15s;}
+.entry-card:hover{border-color:var(--gbdr);}
+.ec-top{padding:13px 14px 11px;}
+.ec-tag-row{display:flex;align-items:center;gap:6px;margin-bottom:8px;}
+.ec-tag{font-size:10.5px;font-weight:500;padding:3px 9px;border-radius:100px;}
+.ec-ext{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);}
+.ec-title{font-size:14.5px;font-weight:500;color:var(--t1);line-height:1.38;margin-bottom:9px;}
+.ec-summary{font-size:12.5px;color:var(--t2);line-height:1.65;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.ec-expanded .ec-summary{-webkit-line-clamp:unset;}
+.ec-footer{background:var(--card2);border-top:1px solid var(--bdr);padding:9px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;}
+.ec-src-domain{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--green);opacity:.8;}
+.ec-arrow{font-size:13px;color:var(--t3);}
+.expand-btn{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--t3);padding:8px 14px;border-top:1px solid var(--bdr);cursor:pointer;}
+.expand-chevron{display:inline-block;transition:transform .2s;}
+.ec-expanded .expand-chevron{transform:rotate(90deg);}
+
+/* ── PODCAST TAB ── */
+.pod-outer{padding:14px 14px 28px;}
+.pod-card{background:var(--card);border:1px solid var(--bdr);border-radius:14px;margin-bottom:12px;overflow:hidden;}
+.pod-top{padding:13px 14px 12px;}
+.pod-show-row{display:flex;align-items:center;gap:8px;margin-bottom:9px;}
+.pod-art{width:36px;height:36px;border-radius:8px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.pod-show-info{flex:1;min-width:0;}
+.pod-show-name{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--t3);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pod-ep-meta{display:flex;align-items:center;gap:6px;}
+.pod-dur{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--t3);}
+.pod-date{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--t3);}
+.pod-ep-title{font-size:13.5px;font-weight:500;color:var(--t1);line-height:1.38;margin-bottom:10px;}
+.pod-tldr-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;}
+.pod-tldr-txt{font-size:12px;color:var(--t2);line-height:1.6;}
+.pod-footer{background:var(--card2);border-top:1px solid var(--bdr);padding:9px 14px;display:flex;align-items:center;gap:8px;}
+.pod-footer-tag{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3);background:var(--card3);padding:3px 7px;border-radius:4px;}
+
+/* ── bottom nav ── */
+.bot-nav{background:var(--surf);border-top:1px solid var(--bdr);display:flex;padding:8px 0 18px;flex-shrink:0;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:3px 0;}
+.nav-ind{width:28px;height:2px;border-radius:2px;background:transparent;margin-bottom:1px;}
+.nav-item.on .nav-ind{background:var(--green);}
+.nav-lbl{font-size:10px;font-weight:500;color:var(--t3);font-family:'JetBrains Mono',monospace;}
+.nav-item.on .nav-lbl{color:var(--green);}
+
+/* ══ ARTICLE VIEW ══ */
+.art-view{display:none;position:absolute;inset:0;background:var(--bg);z-index:20;flex-direction:column;}
+.art-view.open{display:flex;}
+.art-topbar{padding:10px 14px 0;display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.art-back{width:32px;height:32px;background:var(--card);border-radius:9px;border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t1);font-size:19px;flex-shrink:0;line-height:1;}
+.art-domain-pill{flex:1;background:var(--card);border:1px solid var(--bdr);border-radius:9px;padding:6px 11px;display:flex;align-items:center;gap:6px;min-width:0;}
+.art-domain-dot{width:5px;height:5px;background:var(--green);border-radius:50%;flex-shrink:0;}
+.art-domain-txt{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.art-share{width:32px;height:32px;background:var(--card);border-radius:9px;border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+.art-mode-bar{padding:10px 14px 0;flex-shrink:0;}
+.mode-seg{display:flex;background:var(--surf);border-radius:11px;padding:3px;border:1px solid var(--bdr);gap:2px;}
+.mseg{flex:1;padding:8px 0;text-align:center;border-radius:9px;cursor:pointer;font-size:11.5px;font-weight:500;color:var(--t3);transition:all .15s;display:flex;align-items:center;justify-content:center;gap:5px;}
+.mseg.on{background:var(--card);}
+.mseg.on.m-tldr{color:var(--ai-t);}
+.mseg.on.m-read{color:var(--green);}
+.mseg.on.m-web{color:var(--t2);}
+.art-scroll{flex:1;overflow-y:auto;scrollbar-width:none;}
+.art-scroll::-webkit-scrollbar{display:none;}
+/* tldr */
+.tldr-wrap{padding:16px 14px 36px;}
+.tldr-header{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+.tldr-badge{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--ai-t);background:var(--ai-bg);padding:4px 9px;border-radius:100px;border:1px solid rgba(160,120,255,0.22);}
+.tldr-time{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);}
+.tldr-title{font-size:17px;font-weight:600;color:var(--t1);line-height:1.35;margin-bottom:14px;}
+.tldr-oneliner{font-size:13.5px;color:var(--t2);line-height:1.65;margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--bdr);}
+.tldr-sec{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;}
+.tldr-bullets{margin-bottom:18px;}
+.tldr-bullet{display:flex;gap:10px;align-items:flex-start;margin-bottom:11px;}
+.tldr-bdot{width:5px;height:5px;border-radius:50%;background:var(--green);flex-shrink:0;margin-top:6px;}
+.tldr-btxt{font-size:13px;color:var(--t2);line-height:1.62;}
+.tldr-btxt strong{color:var(--t1);font-weight:500;}
+.tldr-btxt code{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--card2);padding:1px 5px;border-radius:3px;color:var(--green);}
+.tldr-callout{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:12px 14px;margin-bottom:16px;}
+.tldr-callout-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--gr-t);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
+.tldr-callout-txt{font-size:12.5px;color:var(--t2);line-height:1.6;}
+.tldr-callout-txt code{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--card2);padding:1px 5px;border-radius:3px;color:var(--green);}
+.tldr-verdict{background:var(--gdim);border:1px solid var(--gbdr);border-radius:12px;padding:12px 14px;margin-bottom:18px;display:flex;gap:10px;align-items:flex-start;}
+.tldr-vicon{width:20px;height:20px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.tldr-vtxt{font-size:12.5px;color:var(--t2);line-height:1.6;}
+.tldr-vtxt strong{color:var(--green);font-weight:500;}
+.tldr-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px;}
+.tldr-tag{font-size:10px;font-weight:500;padding:4px 10px;border-radius:100px;}
+.tldr-next{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;background:var(--card);border:1px solid var(--bdr);border-radius:12px;cursor:pointer;font-size:13px;color:var(--t2);transition:border-color .15s;}
+.tldr-next:hover{border-color:var(--gbdr);}
+.tldr-next-acc{color:var(--green);}
+/* reader */
+.read-wrap{padding:20px 16px 36px;}
+.read-origin{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--green);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;}
+.read-title{font-size:20px;font-weight:600;color:var(--t1);line-height:1.32;margin-bottom:10px;}
+.read-byline{display:flex;align-items:center;gap:8px;padding-bottom:16px;border-bottom:1px solid var(--bdr);margin-bottom:18px;flex-wrap:wrap;}
+.read-bdot{width:4px;height:4px;background:var(--t3);border-radius:50%;}
+.read-btxt{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);}
+.read-body{font-size:14px;color:var(--t2);line-height:1.82;}
+.read-body p{margin-bottom:16px;}
+.read-body h3{font-size:15px;font-weight:500;color:var(--t1);margin:22px 0 9px;line-height:1.35;}
+.read-body code{font-family:'JetBrains Mono',monospace;font-size:11.5px;background:var(--card2);padding:2px 5px;border-radius:4px;color:var(--green);}
+.read-body pre{background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:12px 14px;margin:12px 0;overflow-x:auto;}
+.read-body pre code{background:none;padding:0;color:#B89FFF;font-size:11.5px;line-height:1.75;display:block;}
+.read-body blockquote{border-left:3px solid var(--green);border-radius:0 8px 8px 0;background:var(--card);padding:10px 13px;margin:14px 0;font-size:13px;color:var(--t2);line-height:1.6;font-style:italic;}
+.read-body .img-ph{width:100%;height:120px;background:var(--card);border:1px solid var(--bdr);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:16px 0;}
+.read-body .img-ph span{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3);letter-spacing:2px;text-transform:uppercase;}
+.read-actions{margin-top:28px;padding-top:16px;border-top:1px solid var(--bdr);}
+.read-actions-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;}
+.read-actions-row{display:flex;gap:8px;}
+.read-act-btn{flex:1;padding:10px 0;background:var(--card);border:1px solid var(--bdr);border-radius:10px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;color:var(--t2);cursor:pointer;transition:border-color .15s;}
+.read-act-btn:hover{border-color:var(--gbdr);}
+.read-act-btn.primary{background:var(--gdim);border-color:var(--gbdr);color:var(--green);}
+/* web */
+.web-wrap{display:flex;flex-direction:column;height:100%;}
+.web-urlbar{margin:10px 14px 0;background:var(--card);border:1px solid var(--bdr);border-radius:9px;padding:7px 12px;display:flex;align-items:center;gap:7px;}
+.web-urlbar-txt{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--t2);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.web-tools{margin:0 14px;padding:7px 0;display:flex;gap:6px;border-bottom:1px solid var(--bdr);}
+.web-tbtn{width:30px;height:26px;background:var(--card);border:1px solid var(--bdr);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.web-tbtn.dim{opacity:.3;cursor:default;}
+.web-tbtn.reader-pill{width:auto;padding:0 10px;gap:5px;color:var(--green);font-size:10px;font-family:'JetBrains Mono',monospace;font-weight:500;background:var(--gdim);border-color:var(--gbdr);}
+.web-viewport{flex:1;overflow-y:auto;scrollbar-width:none;padding:0 14px 20px;}
+.web-viewport::-webkit-scrollbar{display:none;}
+.web-site-bar{background:var(--card2);border-radius:9px;padding:9px 13px;margin:12px 0;display:flex;align-items:center;gap:8px;}
+.web-site-name{font-size:12px;font-weight:500;color:var(--t1);}
+.web-site-nav{display:flex;gap:12px;margin-left:auto;}
+.web-site-nav span{font-size:10.5px;color:var(--t3);}
+.web-art-title{font-size:15px;font-weight:600;color:var(--t1);line-height:1.35;margin-bottom:8px;}
+.web-art-meta{font-size:11px;color:var(--t3);margin-bottom:12px;font-family:'JetBrains Mono',monospace;}
+.web-art-body{font-size:12.5px;color:var(--t2);line-height:1.7;}
+.web-art-body p{margin-bottom:10px;}
+.web-ad{background:var(--card2);border:1px dashed var(--bdr2);border-radius:8px;padding:9px;margin:12px 0;text-align:center;}
+.web-ad-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3);letter-spacing:1px;}
+.web-related-lbl{font-size:11px;font-weight:500;color:var(--t2);margin:14px 0 8px;padding-top:12px;border-top:1px solid var(--bdr);}
+.web-rel-item{display:flex;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--bdr);}
+.web-rel-thumb{width:36px;height:36px;background:var(--card2);border-radius:5px;flex-shrink:0;}
+.web-rel-txt{font-size:11.5px;color:var(--t2);line-height:1.38;}
+</style>
+</head>
+<body>
+<div class="frame" id="app">
+
+  <div class="sb">
+    <span class="sb-time">09:41</span>
+    <div class="sb-icons">
+      <svg width="16" height="10" viewBox="0 0 16 10"><rect x="0" y="5" width="3" height="5" rx="1" fill="#8890A8"/><rect x="4.5" y="3" width="3" height="7" rx="1" fill="#8890A8"/><rect x="9" y="1" width="3" height="9" rx="1" fill="#8890A8"/><rect x="13.5" y="0" width="2.5" height="10" rx="1" fill="#3DDC84"/></svg>
+      <svg width="13" height="10" viewBox="0 0 13 10"><path d="M6.5 2C8.5 2 10.3 2.8 11.6 4.1L13 2.7C11.3 1 9 0 6.5 0S1.7 1 0 2.7L1.4 4.1C2.7 2.8 4.5 2 6.5 2Z" fill="#8890A8"/><path d="M6.5 5C7.7 5 8.8 5.5 9.6 6.3L11 4.9C9.8 3.7 8.2 3 6.5 3S3.2 3.7 2 4.9L3.4 6.3C4.2 5.5 5.3 5 6.5 5Z" fill="#8890A8"/><circle cx="6.5" cy="9" r="1.5" fill="#3DDC84"/></svg>
+      <div class="bat"><div class="bat-f"></div></div>
+    </div>
+  </div>
+
+  <div class="hdr">
+    <div class="app-name"><div class="brand-dot"></div>droid<span class="accent">pulse</span></div>
+    <div style="width:30px;height:30px;background:var(--surf);border-radius:8px;border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="#8890A8" stroke-width="1.3"/><path d="M9.5 9.5L13 13" stroke="#8890A8" stroke-width="1.3" stroke-linecap="round"/></svg>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ═══ DIGEST TAB ═══ -->
+    <div class="tab-pane active" id="pane-digest">
+      <div class="cat-bar" id="cat-d">
+        <div class="pill on" onclick="catClick('d',this,'all')">All</div>
+        <div class="pill" onclick="catClick('d',this,'ai')">AI</div>
+        <div class="pill" onclick="catClick('d',this,'kotlin')">Kotlin</div>
+        <div class="pill" onclick="catClick('d',this,'compose')">Compose</div>
+        <div class="pill" onclick="catClick('d',this,'gradle')">Gradle</div>
+        <div class="pill" onclick="catClick('d',this,'testing')">Testing</div>
+      </div>
+      <div class="scroll-body"><div class="digest-outer" id="digest-outer"></div></div>
+    </div>
+
+    <!-- ═══ FEED TAB ═══ -->
+    <div class="tab-pane" id="pane-feed">
+      <div class="cat-bar" id="cat-f">
+        <div class="pill on" onclick="catClick('f',this,'all')">All</div>
+        <div class="pill" onclick="catClick('f',this,'ai')">AI</div>
+        <div class="pill" onclick="catClick('f',this,'kotlin')">Kotlin</div>
+        <div class="pill" onclick="catClick('f',this,'compose')">Compose</div>
+        <div class="pill" onclick="catClick('f',this,'gradle')">Gradle</div>
+        <div class="pill" onclick="catClick('f',this,'testing')">Testing</div>
+        <div class="pill" onclick="catClick('f',this,'architecture')">Architecture</div>
+      </div>
+      <div class="scroll-body"><div class="feed-body" id="feed-body"></div></div>
+    </div>
+
+    <!-- ═══ PODCAST TAB ═══ -->
+    <div class="tab-pane" id="pane-podcast">
+      <div class="scroll-body"><div class="pod-outer" id="pod-outer"></div></div>
+    </div>
+
+  </div>
+
+  <div class="bot-nav">
+    <div class="nav-item on" onclick="navClick(this,'digest')">
+      <div class="nav-ind"></div>
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <rect x="3" y="3" width="7" height="7" rx="2" fill="#3DDC84"/>
+        <rect x="12" y="3" width="7" height="7" rx="2" fill="#3DDC84" opacity=".45"/>
+        <rect x="3" y="12" width="7" height="7" rx="2" fill="#3DDC84" opacity=".45"/>
+        <rect x="12" y="12" width="7" height="7" rx="2" fill="#3DDC84" opacity=".2"/>
+      </svg>
+      <div class="nav-lbl">Digest</div>
+    </div>
+    <div class="nav-item" onclick="navClick(this,'feed')">
+      <div class="nav-ind"></div>
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <path d="M5 6h12M5 11h12M5 16h8" stroke="#454B62" stroke-width="1.4" stroke-linecap="round"/>
+        <circle cx="3" cy="6" r="1.3" fill="#454B62"/>
+        <circle cx="3" cy="11" r="1.3" fill="#454B62"/>
+        <circle cx="3" cy="16" r="1.3" fill="#454B62"/>
+      </svg>
+      <div class="nav-lbl">Feed</div>
+    </div>
+    <div class="nav-item" onclick="navClick(this,'podcast')">
+      <div class="nav-ind"></div>
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <circle cx="11" cy="10" r="5" stroke="#454B62" stroke-width="1.4"/>
+        <circle cx="11" cy="10" r="2" fill="#454B62"/>
+        <path d="M4 16c1.5-2 4-3.5 7-3.5s5.5 1.5 7 3.5" stroke="#454B62" stroke-width="1.4" stroke-linecap="round"/>
+        <path d="M11 15v3" stroke="#454B62" stroke-width="1.4" stroke-linecap="round"/>
+        <path d="M8.5 18h5" stroke="#454B62" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+      <div class="nav-lbl">Podcast</div>
+    </div>
+  </div>
+
+  <!-- ═══ ARTICLE OVERLAY ═══ -->
+  <div class="art-view" id="art-view">
+    <div class="art-topbar">
+      <div class="art-back" onclick="closeArt()">&#8249;</div>
+      <div class="art-domain-pill">
+        <div class="art-domain-dot"></div>
+        <div class="art-domain-txt" id="art-domain">blog.jetbrains.com</div>
+      </div>
+      <div class="art-share">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="11" cy="2.5" r="1.5" stroke="#8890A8" stroke-width="1.2"/><circle cx="11" cy="11.5" r="1.5" stroke="#8890A8" stroke-width="1.2"/><circle cx="3" cy="7" r="1.5" stroke="#8890A8" stroke-width="1.2"/><path d="M9.5 3.3L4.5 6.2M9.5 10.7L4.5 7.8" stroke="#8890A8" stroke-width="1.2"/></svg>
+      </div>
+    </div>
+    <div class="art-mode-bar">
+      <div class="mode-seg">
+        <div class="mseg m-tldr on" id="mseg-tldr" onclick="setMode('tldr')">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1.5 3h9M1.5 6h6M1.5 9h7.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          TL;DR
+        </div>
+        <div class="mseg m-read" id="mseg-read" onclick="setMode('read')">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 2h8M2 4.5h8M2 7h8M2 9.5h5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          Reader
+        </div>
+        <div class="mseg m-web" id="mseg-web" onclick="setMode('web')">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M1.5 6h9M6 1.5C5 3 4.5 4.5 4.5 6S5 9 6 10.5M6 1.5C7 3 7.5 4.5 7.5 6S7 9 6 10.5" stroke="currentColor" stroke-width="1.2"/></svg>
+          Web
+        </div>
+      </div>
+    </div>
+    <div class="art-scroll" id="art-scroll"></div>
+  </div>
+
+</div>
+<script>
+const TAG={ai:['var(--ai-bg)','var(--ai-t)','AI'],kotlin:['var(--kt-bg)','var(--kt-t)','Kotlin'],compose:['var(--cm-bg)','var(--cm-t)','Compose'],gradle:['var(--gr-bg)','var(--gr-t)','Gradle'],testing:['var(--ts-bg)','var(--ts-t)','Testing'],architecture:['var(--ar-bg)','var(--ar-t)','Architecture']};
+
+/* ── DIGEST DATA (newsletter format) ── */
+const DIGESTS=[
+  {
+    cat:'kotlin',month:'March 2026',source:'Android Weekly',
+    entries:[
+      {url:'https://blog.jetbrains.com/kotlin/2026/03/agp-9-0-kotlin-migration/',
+       summary:'AGP 9.0 introduces two breaking changes for Kotlin projects. First, the Kotlin Android plugin (kotlin("android")) is replaced by AGP\'s built-in Kotlin support — remove the separate plugin from build.gradle.kts and let AGP handle compilation. Second, KMP projects targeting Android must migrate to the new Android KMP library plugin (com.android.kotlin.multiplatform.library). Both changes require Gradle and AGP 9.0+ and affect all existing Android Kotlin projects; the post links to the official migration guides.'},
+      {url:'https://touchlab.co/kotlinconf-2026-talks/',
+       summary:'Touchlab\'s picks from the KotlinConf 2026 schedule (Munich, May 21–22). Highlights include sessions on multi-binary KMP performance, Compose Multiplatform animation tradeoffs, and Amazon\'s App Platform (v0.0.8) for KMP iOS state management and DI. Useful if you\'re deciding which sessions to prioritize.'},
+      {url:'https://android-developers.googleblog.com/2026/03/room-3-0-alpha.html',
+       summary:'Room 3.0 alpha is a major breaking version focused on KMP, adding JS and WASM targets. Breaking changes include @Database KMP config, platform-specific drivers, and a suspend-function-first query API. Migration guide linked; existing Room 2.x projects are not automatically compatible.'},
+    ]
+  },
+  {
+    cat:'ai',month:'March 2026',source:'Android Weekly',
+    entries:[
+      {url:'https://android-developers.googleblog.com/2026/03/elevating-ai-assisted-android.html',
+       summary:'Google launched Android Bench, the first public benchmark scoring LLMs specifically on Android tasks: resolving AGP breaking changes, Wear OS networking, and Compose migrations. Models are measured against real public GitHub Android repos, verified by tests — not synthetic evals. Current spread: 16%–72%, Gemini 3.1 Pro leading, Claude Opus 4.6 close behind.'},
+      {url:'https://android-developers.googleblog.com/2026/05/go-from-prompt-to-working-prototype.html',
+       summary:'Android Studio Panda 2 ships "Create with AI" — describe your app, approve a project plan, then an autonomous loop generates code, builds, reads compile errors, self-corrects, and deploys to the emulator. Kotlin + Compose + latest stable libraries by default. Also adds a Version Upgrade Assistant that resolves dependency conflicts iteratively.'},
+      {url:'https://android-developers.googleblog.com/2026/02/the-intelligent-os-making-ai-agents.html',
+       summary:'AppFunctions is Android\'s on-device MCP equivalent. Apps declare capabilities via Jetpack AppFunctions; Gemini discovers and invokes them without the user opening the app. Galaxy S26 demo: "show me photos of my cat" → Gemini calls Gallery\'s AppFunction → results appear inside Gemini\'s UI. Calendar, Notes, and Tasks are already wired up.'},
+    ]
+  },
+  {
+    cat:'kotlin',month:'February 2026',source:'Kotlin Weekly',
+    entries:[
+      {url:'https://blog.jetbrains.com/kotlin/2025/09/compose-multiplatform-1-9-0-compose-for-web-beta/',
+       summary:'Compose Multiplatform 1.9.0 moves web (Wasm) from Alpha to Beta. Ships Material 3, adaptive layouts, browser back/forward navigation, deep links, and dark mode out of the box. HTML interop allows mixing Compose UI with native web elements. Still Beta — production use on non-critical surfaces is reasonable, but wait for stable before betting core flows on it.'},
+      {url:'https://www.zacsweers.dev/re-dependency-injection-vs-service-locators/',
+       summary:'Zac Sweers clarifies the DI vs. service locator split in the Kotlin ecosystem. Metro, Dagger, Hilt, kotlin-inject, and Anvil perform compile-time graph validation — if it compiles, it works at runtime. Koin is a service locator: simpler setup, but graph errors surface at runtime. For mobile, compile-time safety matters more than in backend/web because you can\'t hotfix production at the same velocity.'},
+      {url:'https://www.pamelaahill.com/post/do-i-need-an-umbrella-framework',
+       summary:'Practical answer: yes, if you\'re targeting Apple in a multi-module KMP project. Without an umbrella framework, each exported module bundles its own Kotlin stdlib copy, bloating the iOS binary and creating type mismatch errors at the Swift layer. The umbrella aggregates all modules into a single binary, deduplicating stdlib and ensuring type identity.'},
+    ]
+  },
+  {
+    cat:'compose',month:'January 2026',source:'Android Weekly',
+    entries:[
+      {url:'https://blog.jetbrains.com/kotlin/2026/01/compose-multiplatform-1-10-0/',
+       summary:'Compose Multiplatform 1.10.0: Navigation 3 reaches stable (declarative back stack as a list, no NavController, just state). Hot Reload also stable — reliably reflects code changes without restarting. Improved iOS scroll performance. Material 3 adaptive components for Wasm. iOS interop views API (embed UIKit in Compose and vice versa) is now stable.'},
+      {url:'https://developer.android.com/develop/ui/compose/performance',
+       summary:'Updated guide on Compose performance profiling. Key additions: new recomposition count overlay in Android Studio, guidance on using @Stable and @Immutable correctly, and a section on skippability in the compiler report. Covers LazyColumn item key strategies and derivedStateOf patterns for reducing unnecessary recompositions.'},
+    ]
+  },
+];
+
+/* ── FEED DATA (entry cards with article view) ── */
+const ENTRIES=[
+  {id:0,month:'March 2026',cat:'ai',title:"Android Bench: Google's Public LLM Leaderboard for Android Dev",domain:'android-developers.googleblog.com',
+   tldr:{oneliner:"Google's first public benchmark scoring LLMs on Android tasks — real GitHub repo issues verified by tests, not synthetic evals.",bullets:[{t:"<strong>16%–72% completion spread</strong> across tested models. Gemini 3.1 Pro leads, Claude Opus 4.6 close behind."},{t:"Tasks grounded in <strong>real GitHub Android repos</strong> — pass/fail determined by unit or instrumentation tests."},{t:"Covers AGP migrations, <strong>Wear OS networking</strong>, Compose refactors — specifics general benchmarks miss."},{t:"Methodology and dataset are <strong>public on GitHub</strong>. Canary strings to detect training contamination."}],callout:{lbl:'key stat',txt:'Most models cluster around 40–55%. The gap at the Android-specific tail is larger than general benchmarks suggest.'},verdict:"Use this to pick your AI assistant based on Android-specific data — not just HumanEval scores.",tags:['ai']},
+   read:`<div class="read-origin">android-developers.googleblog.com</div><div class="read-title">Android Bench: Google's Public LLM Leaderboard</div><div class="read-byline"><span class="read-btxt">Android Developers Blog</span><div class="read-bdot"></div><span class="read-btxt">March 2026</span><div class="read-bdot"></div><span class="read-btxt">5 min read</span></div><div class="read-body"><p>Google launched Android Bench, the first public benchmark scoring LLMs specifically on Android tasks — resolving breaking API changes, Wear OS challenges, and Jetpack Compose migrations. Models are measured against real GitHub Android repos, verified by unit or instrumentation tests.</p><h3>The leaderboard</h3><p>Completion rates ranged from 16% to 72%. Gemini 3.1 Pro topped the leaderboard, Claude Opus 4.6 close behind. Most models clustered around 40–55%, with significant drop-off on Wear OS–specific tasks.</p><blockquote>The gap between top and bottom performers is substantially larger on Android-specific tasks than on general coding benchmarks.</blockquote><p>The methodology and full dataset are open on GitHub. Canary strings are embedded to detect training contamination.</p></div>`},
+  {id:1,month:'March 2026',cat:'kotlin',title:'Update Your Kotlin Projects for Android Gradle Plugin 9.0',domain:'blog.jetbrains.com',
+   tldr:{oneliner:"AGP 9.0 has two breaking changes for every Kotlin Android project. No automatic codemods — manual but straightforward.",bullets:[{t:"<strong>Remove <code>org.jetbrains.kotlin.android</code></strong> — Kotlin support is now built into AGP."},{t:"<strong>KMP Android modules</strong> → <code>com.android.kotlin.multiplatform.library</code> plugin."},{t:"Opt-out via <code>android.builtInKotlin=false</code> — <strong>removed in AGP 10.0</strong>."},{t:"Minimum IDE: <strong>Android Studio Otter 3 Feature Drop</strong>."}],callout:{lbl:'quick fix',txt:"Remove kotlin.android plugin, delete kotlinOptions { } blocks, update kapt → ksp while you're in there."},verdict:"Migrate before AGP 10.0 drops the opt-out. Start with leaf modules.",tags:['kotlin','gradle']},
+   read:`<div class="read-origin">blog.jetbrains.com</div><div class="read-title">Update Your Kotlin Projects for AGP 9.0</div><div class="read-byline"><span class="read-btxt">JetBrains Kotlin Blog</span><div class="read-bdot"></div><span class="read-btxt">March 2026</span><div class="read-bdot"></div><span class="read-btxt">4 min read</span></div><div class="read-body"><p>AGP 9.0 ships two breaking changes for every Kotlin Android project.</p><h3>Change 1: built-in Kotlin support</h3><p>Remove <code>org.jetbrains.kotlin.android</code> from your plugins block. Remove any <code>kotlinOptions</code> blocks that relied on it.</p><pre><code>// Remove from every module
+plugins {
+    id("org.jetbrains.kotlin.android") // delete
+}</code></pre><h3>Change 2: KMP Android module plugin</h3><p>KMP modules targeting Android must migrate:</p><pre><code>plugins {
+    id("com.android.kotlin.multiplatform.library")
+}</code></pre><p>Opt-out: <code>android.builtInKotlin=false</code> in <code>gradle.properties</code>. Removed in AGP 10.0.</p><blockquote>Minimum IDE: Android Studio Otter 3 Feature Drop. Running AGP 9.0 on older builds fails at sync.</blockquote></div>`},
+  {id:2,month:'February 2026',cat:'ai',title:"AppFunctions: Your App's Interface to AI Agents",domain:'android-developers.googleblog.com',
+   tldr:{oneliner:"Android's on-device answer to MCP: agent-discoverable app capabilities that let Gemini complete tasks without opening your app.",bullets:[{t:"Apps declare capabilities via <strong>Jetpack AppFunctions library</strong>. Agents invoke them locally — no cloud server."},{t:"Galaxy S26 demo: 'show me photos of my cat' → Gemini calls Gallery's AppFunction → results appear in Gemini's UI."},{t:"<strong>Calendar, Notes, Tasks</strong> already wired. Broader API docs coming later in 2026."},{t:"New success metric: <strong>agent completes the task</strong>, not 'user opens your app.'"}],callout:{lbl:'paradigm shift',txt:"This is the on-device equivalent of MCP. The agent-first OS shipped on Galaxy S26 — not a future concept."},verdict:"Model your app's core tasks as AppFunctions now, before being bypassed becomes the default.",tags:['ai']},
+   read:`<div class="read-origin">android-developers.googleblog.com</div><div class="read-title">AppFunctions: Your App's Interface to AI Agents</div><div class="read-byline"><span class="read-btxt">Android Developers Blog</span><div class="read-bdot"></div><span class="read-btxt">February 2026</span><div class="read-bdot"></div><span class="read-btxt">6 min read</span></div><div class="read-body"><p>AppFunctions lets apps declare self-describing capabilities via the Jetpack AppFunctions library — Android's version of MCP, executed locally on-device.</p><h3>How it works</h3><p>AI agents discover these functions, invoke them, and return results without the user ever opening the app. Galaxy S26 demo: say "show me photos of my cat from Samsung Gallery," Gemini identifies the Gallery's AppFunction and retrieves the results inside Gemini's interface.</p><div class="img-ph"><span>AppFunctions architecture</span></div><blockquote>The paradigm shift: success is no longer "user launches your app," it's "agent completes the task on behalf of the user."</blockquote><p>Google has Calendar, Notes, and Tasks wired up. Broader AppFunctions docs are promised later in 2026. The library is available in alpha — watch the Jetpack release notes.</p></div>`},
+  {id:3,month:'January 2026',cat:'kotlin',title:'Kotlin 2.3.0 Released',domain:'blog.jetbrains.com',
+   tldr:{oneliner:"Stable release with unused return value checker, explicit backing fields approaching stable, and Java 25 + Gradle 9.0 compatibility.",bullets:[{t:"<strong>Unused return value checker</strong> — flags discarded returns. Opt-in via <code>@MustUseReturnValue</code>."},{t:"<strong>Explicit backing fields</strong> approaching stable — private backing with different type/visibility without workarounds."},{t:"<strong>Swift export improvements</strong> for iOS interop. Wasm gets Latin-1 storage + new exception handling by default."},{t:"Standard library: stable <code>Duration</code>, <code>TimeSource</code>, improved UUID generation."}],callout:{lbl:'how to update',txt:'Set kotlinVersion = "2.3.0" in your version catalog. Gradle 9.0 compatibility included.'},verdict:"No breaking changes for most projects. Safe to adopt immediately.",tags:['kotlin']},
+   read:`<div class="read-origin">blog.jetbrains.com</div><div class="read-title">Kotlin 2.3.0 Released</div><div class="read-byline"><span class="read-btxt">JetBrains Kotlin Blog</span><div class="read-bdot"></div><span class="read-btxt">January 2026</span><div class="read-bdot"></div><span class="read-btxt">7 min read</span></div><div class="read-body"><p>Kotlin 2.3.0 is a stable release focused on language progression, platform improvements, and standard library stabilization.</p><h3>Unused return value checker</h3><p>Flags calls where the return value is discarded but likely meaningful. Annotate with <code>@MustUseReturnValue</code> to opt functions in.</p><h3>Explicit backing fields</h3><pre><code>var items: List&lt;Item&gt;
+    field = mutableListOf&lt;Item&gt;()
+    get() = field.toList()</code></pre><h3>Platform updates</h3><p>Java 25 supported. Faster Native release builds. Swift export improvements. Wasm: compact Latin-1 storage, new exception handling proposal enabled by default. Gradle 9.0 compatible.</p><blockquote>If upgrading both Kotlin and AGP, 2.3.0 pairs cleanly with AGP 9.0 — do them together.</blockquote></div>`},
+];
+
+/* ── PODCAST DATA ── */
+const PODCASTS=[
+  {art:'🎙',show:'ANDROID BACKSTAGE',ep:'Ep. 221 — AppFunctions and the agent-first OS',dur:'1h 08m',date:'Mar 18, 2026',
+   guests:'Chet Haase, Romain Guy, and two members of the AppFunctions product team',
+   tldr:'Chet and Romain walk through the AppFunctions API design decisions with the product team — why on-device over cloud, how agent discovery works under the hood, and what the Galaxy S26 demo actually took to ship. Second half covers how to structure AppFunction declarations in a multi-module project and what the IDE tooling looks like today.',
+   tags:['ai','architecture']},
+  {art:'🎧',show:'FRAGMENTED',ep:'Ep. 302 — KMP in production at RevenueCat: 18 months later',dur:'1h 02m',date:'Mar 14, 2026',
+   guests:'Donn Felker, Kaushik Gopal, and RevenueCat engineers',
+   tldr:'RevenueCat\'s iOS and Android engineers share what actually broke at scale after 18 months of shipping the KMP SDK to millions of devices. Topics: the native SDK wrapper pattern vs. reimplementation tradeoffs, type conversion overhead on hot paths, SKIE in practice (sealed classes as Swift enums, suspend as async throws), and the umbrella framework decision. Very concrete — less theory, more production war stories.',
+   tags:['kotlin']},
+  {art:'📻',show:'TALKING KOTLIN',ep:"Ep. 145 — Kotlin 2.3, context parameters, and what's next for K2",dur:'44m',date:'Mar 10, 2026',
+   guests:'Hadi Hariri and the Kotlin language team',
+   tldr:'Deep dive into Kotlin 2.3\'s unused return value checker and explicit backing fields with the language team. The second half is about context parameters (the successor to context receivers) — why they redesigned the feature, what Beta means in practice, and the realistic timeline toward stable. Brief K2 roadmap update: what\'s left before context parameters can stabilize.',
+   tags:['kotlin']},
+  {art:'🎙',show:'THE CONTEXT',ep:'Ep. 28 — Compose hot reload stable: what it means for your workflow',dur:'51m',date:'Mar 6, 2026',
+   guests:'Nick Butcher and Florina Muntenescu',
+   tldr:'Nick and Florina go through what it took to make Compose hot reload reliable across all KMP targets — the technical challenges were different on iOS (no JVM) vs desktop vs Android. Practical segment: how to structure your Compose code so hot reload covers more of your edit loop without full restarts. Also covers new recomposition tooling in Android Studio Panda 2.',
+   tags:['compose']},
+  {art:'🎧',show:'ANDROID DEVELOPERS BACKSTAGE',ep:'Ep. 219 — AGP 9.0 and the future of build tooling',dur:'58m',date:'Feb 28, 2026',
+   guests:'Jerome Dochez, Aurimas Liutikas',
+   tldr:'Jerome and Aurimas explain the two Kotlin breaking changes in AGP 9.0 and why built-in Kotlin support was the right long-term move. Main discussion: isolated projects (now out of alpha), what configuration caching means for the KMP build graph, and a preview of the dependency management improvements planned for AGP 10.0. Useful background if you\'re doing the AGP 9.0 migration.',
+   tags:['gradle','kotlin']},
+];
+
+/* ── helpers ── */
+function th(cat,sz){const t=TAG[cat]||TAG.ai;return `<span style="background:${t[0]};color:${t[1]};font-size:${sz||'10.5px'};font-weight:500;padding:3px 9px;border-radius:100px">${t[2]}</span>`;}
+function sd(d){return d.replace('www.','').replace('.com','').replace('.dev','').replace('.co','');}
+
+/* ── BUILD DIGEST ── */
+function buildDigest(cat){
+  const items=DIGESTS.filter(d=>cat==='all'||d.cat===cat);
+  const t=TAG[items[0]?.cat]||TAG.kotlin;
+  let h='';
+  items.forEach((d,di)=>{
+    const tc=TAG[d.cat]||TAG.kotlin;
+    const catLabel=d.cat.charAt(0).toUpperCase()+d.cat.slice(1);
+    const previewEntries=d.entries.slice(0,2);
+    const extraEntries=d.entries.slice(2);
+    const id='di'+di;
+    let entriesHtml='';
+    previewEntries.forEach((e,ei)=>{
+      if(ei>0) entriesHtml+=`<div class="di-sep-txt"><div class="di-sep-line"></div><div class="di-sep-dash">———</div><div class="di-sep-line"></div></div>`;
+      entriesHtml+=`<div class="di-entry"><div class="di-url" onclick="openArt(null,'read','${e.url.replace(/https?:\/\//,'').split('/')[0]}','${e.url}')">${e.url}</div><div class="di-summary">${e.summary}</div></div>`;
+    });
+    let extraHtml='';
+    extraEntries.forEach((e,ei)=>{
+      extraHtml+=`<div class="di-sep-txt"><div class="di-sep-line"></div><div class="di-sep-dash">———</div><div class="di-sep-line"></div></div>`;
+      extraHtml+=`<div class="di-entry"><div class="di-url" onclick="openArt(null,'read','${e.url.replace(/https?:\/\//,'').split('/')[0]}','${e.url}')">${e.url}</div><div class="di-summary">${e.summary}</div></div>`;
+    });
+    h+=`<div class="digest-issue">
+      <div class="di-header">
+        <div class="di-cat-row"><span class="di-cat-tag" style="background:${tc[0]};color:${tc[1]}">${catLabel}</span><span class="di-date">${d.month}</span></div>
+        <div class="di-title">${catLabel} — ${d.month} Digest</div>
+        <div class="di-meta">
+          <span class="di-written">Written by Claude · Source:</span>
+          <span class="di-source-pill">${d.source}</span>
+        </div>
+      </div>
+      <div class="di-entries">${entriesHtml}</div>
+      ${extraEntries.length?`
+        <div class="di-extra" id="${id}-extra">${extraHtml}</div>
+        <div class="di-footer" onclick="toggleExtra('${id}')">
+          <span class="di-footer-count" id="${id}-count">${d.entries.length} articles</span>
+          <span class="di-footer-expand" id="${id}-expand-lbl">Show ${extraEntries.length} more <span style="font-size:14px;margin-left:2px" id="${id}-chev">›</span></span>
+        </div>
+      `:`<div class="di-footer" style="cursor:default">
+        <span class="di-footer-count">${d.entries.length} articles</span>
+        <span class="di-footer-expand" style="color:var(--t3)">${d.month}</span>
+      </div>`}
+    </div>`;
+  });
+  document.getElementById('digest-outer').innerHTML=h||'<p style="color:var(--t3);font-size:13px;padding:4px 0;">No digests for this category yet.</p>';
+}
+
+function toggleExtra(id){
+  const ex=document.getElementById(id+'-extra');
+  const chev=document.getElementById(id+'-chev');
+  const lbl=document.getElementById(id+'-expand-lbl');
+  const open=ex.classList.toggle('open');
+  chev.style.transform=open?'rotate(90deg)':'';
+  const txt=lbl.textContent;
+  if(open){lbl.innerHTML=`Show less <span style="font-size:14px;margin-left:2px;display:inline-block;transform:rotate(90deg)" id="${id}-chev">›</span>`;}
+  else{const n=document.getElementById(id+'-extra').querySelectorAll('.di-entry').length;lbl.innerHTML=`Show ${n} more <span style="font-size:14px;margin-left:2px" id="${id}-chev">›</span>`;}
+}
+
+/* ── BUILD FEED ── */
+function buildFeed(cat){
+  const items=ENTRIES.filter(e=>cat==='all'||e.cat===cat);
+  const months=[...new Set(items.map(e=>e.month))];
+  let h='';
+  months.forEach(mo=>{
+    h+=`<div class="mo-row"><span class="mo-lbl">${mo}</span><div class="mo-line"></div></div>`;
+    items.filter(e=>e.month===mo).forEach(e=>{
+      const id='ec'+e.id;
+      h+=`<div class="entry-card" id="${id}">
+        <div class="ec-top">
+          <div class="ec-tag-row">${th(e.cat)}<span class="ec-ext">${sd(e.domain)}</span></div>
+          <div class="ec-title">${e.title}</div>
+          <div class="ec-summary">${e.tldr.oneliner}</div>
+        </div>
+        <div class="expand-btn" onclick="tog('${id}',event)"><span class="expand-chevron">›</span><span style="margin-left:2px">Read more</span></div>
+        <div class="ec-footer" onclick="openArt(${e.id},'tldr')">
+          <span class="ec-src-domain">${e.domain}</span><span class="ec-arrow">Open article ›</span>
+        </div>
+      </div>`;
+    });
+  });
+  document.getElementById('feed-body').innerHTML=h||'<p style="color:var(--t3);font-size:13px;padding:4px 0;">Nothing here yet.</p>';
+}
+
+function tog(id,ev){
+  ev.stopPropagation();
+  const c=document.getElementById(id);
+  const x=c.classList.toggle('ec-expanded');
+  const btn=c.querySelector('.expand-btn');
+  btn.querySelector('.expand-chevron').style.transform=x?'rotate(90deg)':'';
+  btn.querySelector('span:last-child').textContent=x?'Show less':'Read more';
+}
+
+/* ── BUILD PODCAST ── */
+function buildPodcast(){
+  let h='';
+  PODCASTS.forEach((p,i)=>{
+    const tagHtml=p.tags.map(c=>{const t=TAG[c]||TAG.ai;return `<span class="pod-footer-tag" style="color:${t[1]}">${t[2]}</span>`;}).join('');
+    h+=`<div class="pod-card">
+      <div class="pod-top">
+        <div class="pod-show-row">
+          <div class="pod-art">${p.art}</div>
+          <div class="pod-show-info">
+            <div class="pod-show-name">${p.show}</div>
+            <div class="pod-ep-meta">
+              <span class="pod-dur">${p.dur}</span>
+              <span style="color:var(--t4)">·</span>
+              <span class="pod-date">${p.date}</span>
+            </div>
+          </div>
+        </div>
+        <div class="pod-ep-title">${p.ep}</div>
+        <div class="pod-tldr-lbl">TL;DR</div>
+        <div class="pod-tldr-txt">${p.tldr}</div>
+      </div>
+      <div class="pod-footer">
+        <span style="font-size:11px;color:var(--t3);flex:1">with ${p.guests}</span>
+        ${tagHtml}
+      </div>
+    </div>`;
+  });
+  document.getElementById('pod-outer').innerHTML=h;
+}
+
+/* ── NAV ── */
+function navClick(el,tab){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('on'));
+  el.classList.add('on');
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.getElementById('pane-'+tab).classList.add('active');
+}
+function catClick(w,el,val){
+  const barId=w==='d'?'cat-d':'cat-f';
+  document.getElementById(barId).querySelectorAll('.pill').forEach(p=>p.classList.remove('on'));
+  el.classList.add('on');
+  if(w==='d')buildDigest(val);else buildFeed(val);
+}
+
+/* ══ ARTICLE VIEW ══ */
+let CUR={id:null,mode:'tldr',domain:'',title:'',cats:[]};
+function openArt(id,mode,domain,title){
+  CUR.id=id;CUR.mode=mode||'tldr';
+  CUR.domain=id!=null?ENTRIES.find(e=>e.id===id).domain:(domain||'');
+  CUR.title=id!=null?ENTRIES.find(e=>e.id===id).title:(title||domain||'');
+  document.getElementById('art-domain').textContent=CUR.domain;
+  document.getElementById('art-view').classList.add('open');
+  renderMode(CUR.mode);
+}
+function closeArt(){document.getElementById('art-view').classList.remove('open');}
+function setMode(m){CUR.mode=m;renderMode(m);}
+function renderMode(m){
+  ['tldr','read','web'].forEach(x=>document.getElementById('mseg-'+x).classList.toggle('on',x===m));
+  const scroll=document.getElementById('art-scroll');scroll.scrollTop=0;
+  const entry=CUR.id!=null?ENTRIES.find(e=>e.id===CUR.id):null;
+  if(m==='tldr')renderTldr(scroll,entry);
+  else if(m==='read')renderRead(scroll,entry);
+  else renderWeb(scroll,entry);
+}
+function renderTldr(el,e){
+  if(!e){el.innerHTML=`<div class="tldr-wrap"><div class="tldr-header"><span class="tldr-badge">TL;DR</span><span class="tldr-time">~30 sec</span></div><div class="tldr-title">${CUR.title}</div><div class="tldr-oneliner">Summary not yet available — this link hasn't been processed by the digest pipeline.</div><div class="tldr-next" onclick="setMode('read')">Read full article in <span class="tldr-next-acc">Reader mode</span> →</div></div>`;return;}
+  const d=e.tldr;
+  const vicon=`<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5.5L4 7.5L8 3" stroke="#0F1117" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  el.innerHTML=`<div class="tldr-wrap">
+    <div class="tldr-header"><span class="tldr-badge">TL;DR</span><span class="tldr-time">~30 sec read</span></div>
+    <div class="tldr-title">${e.title}</div>
+    <div class="tldr-oneliner">${d.oneliner}</div>
+    <div class="tldr-sec">Key points</div>
+    <div class="tldr-bullets">${d.bullets.map(b=>`<div class="tldr-bullet"><div class="tldr-bdot"></div><div class="tldr-btxt">${b.t}</div></div>`).join('')}</div>
+    ${d.callout?`<div class="tldr-callout"><div class="tldr-callout-lbl">${d.callout.lbl}</div><div class="tldr-callout-txt">${d.callout.txt}</div></div>`:''}
+    <div class="tldr-verdict"><div class="tldr-vicon">${vicon}</div><div class="tldr-vtxt"><strong>Bottom line: </strong>${d.verdict}</div></div>
+    <div class="tldr-sec" style="margin-bottom:8px">Topics</div>
+    <div class="tldr-tags">${d.tags.map(c=>{const t=TAG[c]||TAG.ai;return `<span class="tldr-tag" style="background:${t[0]};color:${t[1]}">${t[2]}</span>`;}).join('')}</div>
+    <div class="tldr-next" onclick="setMode('read')">Read full article in <span class="tldr-next-acc">Reader mode</span> →</div>
+  </div>`;
+}
+function renderRead(el,e){
+  const acts=`<div class="read-actions"><div class="read-actions-lbl">Actions</div><div class="read-actions-row"><div class="read-act-btn" onclick="setMode('web')"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M1.5 6h9M6 1.5C5 3 4.5 4.5 4.5 6S5 9 6 10.5M6 1.5C7 3 7.5 4.5 7.5 6S7 9 6 10.5" stroke="currentColor" stroke-width="1.2"/></svg> Open in browser</div><div class="read-act-btn primary"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6l4 4 4-4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg> Save offline</div></div></div>`;
+  if(!e){el.innerHTML=`<div class="read-wrap"><div class="read-origin">${CUR.domain}</div><div class="read-title">${CUR.title}</div><div class="read-byline"><span class="read-btxt">${CUR.domain}</span><div class="read-bdot"></div><span class="read-btxt">Mar 2026</span></div><div class="read-body"><p>Article content parsed via Readability.js renders here. The WebView loads the URL, Readability.js extracts the main content node, and the cleaned HTML is displayed in this dark-theme template.</p><div class="img-ph"><span>article content</span></div><p>Navigation bars, ads, and cookie banners stripped. Only prose and inline images remain.</p></div>${acts}</div>`;return;}
+  el.innerHTML=`<div class="read-wrap">${e.read}${acts}</div>`;
+}
+function renderWeb(el,e){
+  const domain=e?e.domain:CUR.domain;
+  const title=e?e.title:CUR.title;
+  const snippet=e?e.tldr.oneliner:'Full article renders here in a Chrome WebView.';
+  const related=ENTRIES.filter(x=>x.id!==CUR.id).slice(0,3).map(x=>`<div class="web-rel-item"><div class="web-rel-thumb"></div><div class="web-rel-txt">${x.title}</div></div>`).join('');
+  el.innerHTML=`<div class="web-wrap">
+    <div class="web-urlbar"><svg width="10" height="12" viewBox="0 0 10 12" fill="none"><rect x="1" y="5" width="8" height="7" rx="1.5" stroke="#454B62" stroke-width="1.2"/><path d="M3 5V3.5a2 2 0 0 1 4 0V5" stroke="#454B62" stroke-width="1.2"/></svg><div class="web-urlbar-txt">https://${domain}/article</div><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M10 6A4 4 0 1 1 8.5 2.9" stroke="#454B62" stroke-width="1.2" stroke-linecap="round"/><path d="M10 1v3H7" stroke="#454B62" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="web-tools"><div class="web-tbtn dim"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 6L1.5 6M3 6l2-2M3 6l2 2" stroke="#3E4358" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="web-tbtn"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M9 6l1.5 0M9 6L7 4M9 6L7 8" stroke="#8890A8" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div style="flex:1"></div><div class="web-tbtn reader-pill" onclick="setMode('read')"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 2.5h8M1.5 5h8M1.5 7.5h5" stroke="#3DDC84" stroke-width="1.1" stroke-linecap="round"/></svg>Reader</div></div>
+    <div class="web-viewport"><div class="web-site-bar"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="3" stroke="#454B62" stroke-width="1.1"/><path d="M4 7h6M4 4.5h6M4 9.5h4" stroke="#454B62" stroke-width="1.1" stroke-linecap="round"/></svg><div class="web-site-name">${sd(domain)}</div><div class="web-site-nav"><span>Home</span><span>Blog</span><span>Docs</span></div></div>
+    <div class="web-ad"><div class="web-ad-lbl">Advertisement</div></div>
+    <div class="web-art-title">${title}</div><div class="web-art-meta">${domain} · March 2026</div>
+    <div class="web-art-body"><p>${snippet}</p><p style="font-size:11px;color:var(--t3);font-family:'JetBrains Mono',monospace;line-height:1.6">[ Simulated web view — real app uses Chrome Custom Tab. Tap Reader (top right) to switch to Readability mode. ]</p></div>
+    <div class="web-ad" style="margin-top:12px"><div class="web-ad-lbl">Advertisement</div></div>
+    ${related?`<div class="web-related-lbl">Related</div>${related}`:''}
+    </div></div>`;
+}
+
+buildDigest('all');
+buildFeed('all');
+buildPodcast();
+</script>
+</body>
+</html>

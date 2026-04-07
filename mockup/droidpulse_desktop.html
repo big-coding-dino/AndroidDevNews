@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>droidpulse — desktop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#0A0C12;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;font-family:'DM Sans',sans-serif;}
+:root{
+  --green:#3DDC84;--gdim:rgba(61,220,132,0.10);--gbdr:rgba(61,220,132,0.32);
+  --bg:#0F1117;--surf:#161921;--card:#1C1F2C;--card2:#21253A;--raised:#232638;
+  --bdr:rgba(255,255,255,0.07);--bdr2:rgba(255,255,255,0.11);
+  --t1:#E4E6EF;--t2:#8089A4;--t3:#3E4358;
+  --ai-bg:rgba(160,120,255,0.13);--ai-t:#B89FFF;
+  --kt-bg:rgba(80,140,255,0.13);--kt-t:#7AABFF;
+  --gr-bg:rgba(240,170,50,0.13);--gr-t:#F5C04A;
+  --ts-bg:rgba(255,90,90,0.13);--ts-t:#FF7575;
+  --cm-bg:rgba(61,220,132,0.13);--cm-t:#3DDC84;
+  --ar-bg:rgba(240,140,80,0.13);--ar-t:#FFAA66;
+}
+.win{background:var(--bg);border-radius:12px;border:1px solid var(--bdr2);overflow:hidden;width:100%;max-width:1100px;height:700px;display:flex;flex-direction:column;}
+.titlebar{background:var(--surf);border-bottom:1px solid var(--bdr);height:40px;display:flex;align-items:center;padding:0 16px;gap:10px;flex-shrink:0;}
+.win-btns{display:flex;gap:6px;}
+.wb{width:12px;height:12px;border-radius:50%;}
+.wb-r{background:#FF5F56;}.wb-y{background:#FFBD2E;}.wb-g{background:#27C93F;}
+.win-title{flex:1;text-align:center;font-size:12px;color:var(--t2);font-family:'JetBrains Mono',monospace;letter-spacing:.3px;}
+.win-actions{display:flex;gap:6px;}
+.win-act-btn{height:22px;padding:0 10px;background:var(--card);border:1px solid var(--bdr);border-radius:5px;font-size:10px;color:var(--t2);cursor:pointer;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;gap:4px;}
+.win-act-btn.on{background:var(--gdim);border-color:var(--gbdr);color:var(--green);}
+.body{flex:1;display:flex;overflow:hidden;}
+.sidebar{width:200px;background:var(--surf);border-right:1px solid var(--bdr);display:flex;flex-direction:column;flex-shrink:0;}
+.app-brand{padding:16px 14px 12px;border-bottom:1px solid var(--bdr);}
+.brand-name{font-size:15px;font-weight:600;color:var(--t1);display:flex;align-items:center;gap:6px;}
+.brand-dot{width:6px;height:6px;background:var(--green);border-radius:50%;}
+.brand-acc{color:var(--green);}
+.nav-section{padding:10px 8px;}
+.nav-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3);letter-spacing:1.5px;padding:0 6px;margin-bottom:4px;}
+.nav-row{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:7px;cursor:pointer;margin-bottom:2px;transition:background .12s;}
+.nav-row:hover{background:var(--card);}
+.nav-row.on{background:var(--gdim);}
+.nav-row.on .nav-row-lbl{color:var(--green);}
+.nav-row.on svg path,.nav-row.on svg rect,.nav-row.on svg circle{stroke:#3DDC84 !important;}
+.nav-row-lbl{font-size:13px;font-weight:500;color:var(--t2);}
+.nav-badge{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:9px;background:var(--card2);color:var(--t3);padding:2px 6px;border-radius:10px;}
+.nav-row.on .nav-badge{background:var(--gbdr);color:var(--green);}
+.cat-section{padding:10px 8px;border-top:1px solid var(--bdr);flex:1;}
+.cat-row{display:flex;align-items:center;padding:6px 8px;border-radius:6px;cursor:pointer;margin-bottom:1px;gap:6px;transition:background .12s;}
+.cat-row:hover{background:var(--card);}
+.cat-row.on{background:var(--card);}
+.cat-row.on .cat-row-lbl{color:var(--t1);}
+.cat-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.cat-row-lbl{font-size:12px;color:var(--t2);}
+.cat-count{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3);}
+.list-panel{width:340px;border-right:1px solid var(--bdr);display:flex;flex-direction:column;flex-shrink:0;}
+.list-header{padding:12px 14px 10px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.list-title{font-size:13px;font-weight:500;color:var(--t1);}
+.list-count{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);}
+.list-scroll{flex:1;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--card2) transparent;}
+.list-scroll::-webkit-scrollbar{width:4px;}
+.list-scroll::-webkit-scrollbar-thumb{background:var(--card2);border-radius:2px;}
+.list-mo{padding:8px 14px 4px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3);letter-spacing:1.2px;text-transform:uppercase;border-top:1px solid var(--bdr);}
+.list-mo:first-child{border-top:none;}
+.list-item{padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--bdr);transition:background .1s;}
+.list-item:hover{background:var(--card);}
+.list-item.on{background:var(--card);border-left:2px solid var(--green);}
+.li-top{display:flex;align-items:center;gap:6px;margin-bottom:5px;}
+.li-tag{font-size:9.5px;font-weight:500;padding:2px 7px;border-radius:100px;}
+.li-domain{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3);}
+.li-title{font-size:12.5px;font-weight:500;color:var(--t1);line-height:1.38;margin-bottom:4px;}
+.li-preview{font-size:11.5px;color:var(--t2);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.detail-panel{flex:1;display:flex;flex-direction:column;min-width:0;}
+.detail-topbar{padding:10px 20px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:10px;flex-shrink:0;background:var(--surf);}
+.detail-url-bar{flex:1;background:var(--card);border:1px solid var(--bdr);border-radius:7px;padding:5px 12px;display:flex;align-items:center;gap:6px;}
+.d-url-dot{width:5px;height:5px;background:var(--green);border-radius:50%;flex-shrink:0;}
+.d-url-txt{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mode-tog{display:flex;gap:2px;background:var(--card);border-radius:6px;padding:2px;border:1px solid var(--bdr);}
+.m-btn{font-size:10px;padding:4px 10px;border-radius:4px;cursor:pointer;color:var(--t3);font-family:'JetBrains Mono',monospace;font-weight:500;}
+.m-btn.on{background:var(--gdim);color:var(--green);}
+.detail-scroll{flex:1;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--card2) transparent;}
+.detail-scroll::-webkit-scrollbar{width:4px;}
+.detail-scroll::-webkit-scrollbar-thumb{background:var(--card2);border-radius:2px;}
+.detail-inner{padding:28px 32px 40px;max-width:720px;}
+.d-origin{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--green);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;}
+.d-title{font-size:22px;font-weight:600;color:var(--t1);line-height:1.3;margin-bottom:10px;}
+.d-meta{font-size:11.5px;color:var(--t3);font-family:'JetBrains Mono',monospace;margin-bottom:24px;display:flex;align-items:center;gap:12px;}
+.d-meta-sep{color:var(--t3);}
+.d-body{font-size:14px;color:var(--t2);line-height:1.8;}
+.d-body p{margin-bottom:16px;}
+.d-body h3{font-size:15px;font-weight:500;color:var(--t1);margin:22px 0 9px;}
+.d-body code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--card2);padding:2px 6px;border-radius:4px;color:var(--green);}
+.d-body pre{background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:14px 16px;margin:14px 0;}
+.d-body pre code{background:none;padding:0;color:#B89FFF;font-size:12px;line-height:1.7;}
+.d-body .note{background:var(--card2);border-left:3px solid var(--green);border-radius:0 8px 8px 0;padding:12px 14px;margin:14px 0;font-size:13px;color:var(--t2);}
+.empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--t3);}
+.empty-lbl{font-size:13px;color:var(--t3);}
+.links-date-lbl{padding:8px 14px 4px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3);letter-spacing:1.2px;border-top:1px solid var(--bdr);}
+.links-date-lbl:first-child{border-top:none;}
+.link-list-item{padding:9px 14px;cursor:pointer;border-bottom:1px solid var(--bdr);display:flex;gap:10px;align-items:flex-start;transition:background .1s;}
+.link-list-item:hover{background:var(--card);}
+.link-list-item.on{background:var(--card);border-left:2px solid var(--green);}
+.ll-source{font-family:'JetBrains Mono',monospace;font-size:9px;background:var(--card2);color:var(--t3);padding:2px 6px;border-radius:3px;white-space:nowrap;flex-shrink:0;margin-top:1px;}
+.ll-meta{flex:1;min-width:0;}
+.ll-title{font-size:12.5px;font-weight:500;color:var(--t1);line-height:1.35;margin-bottom:4px;}
+.ll-tags{display:flex;gap:4px;}
+.ll-tag{font-size:9.5px;padding:2px 7px;border-radius:100px;}
+.media-section-lbl{padding:8px 14px 4px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3);letter-spacing:1.2px;border-top:1px solid var(--bdr);}
+.media-section-lbl:first-child{border-top:none;}
+.media-list-item{padding:9px 14px;cursor:pointer;border-bottom:1px solid var(--bdr);display:flex;gap:10px;align-items:center;transition:background .1s;}
+.media-list-item:hover{background:var(--card);}
+.media-list-item.on{background:var(--card);border-left:2px solid var(--green);}
+.media-thumb{width:48px;height:32px;background:var(--card2);border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.media-play-tri{width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:9px solid var(--t3);}
+.pod-icon{width:32px;height:32px;background:var(--card2);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;}
+.media-info{flex:1;min-width:0;}
+.media-ch{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--green);margin-bottom:2px;}
+.media-title-s{font-size:12px;font-weight:500;color:var(--t1);line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.media-dur{font-size:10px;color:var(--t3);margin-top:2px;}
+</style>
+</head>
+<body>
+<div class="win" id="app">
+  <div class="titlebar">
+    <div class="win-btns"><div class="wb wb-r"></div><div class="wb wb-y"></div><div class="wb wb-g"></div></div>
+    <div class="win-title">droidpulse</div>
+    <div class="win-actions">
+      <div class="win-act-btn on" id="mode-read-btn" onclick="toggleGlobalMode('read')">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 2h8M1 5h8M1 8h5" stroke="#3DDC84" stroke-width="1.2" stroke-linecap="round"/></svg>
+        Reader
+      </div>
+      <div class="win-act-btn" id="mode-web-btn" onclick="toggleGlobalMode('web')">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="#8089A4" stroke-width="1.2"/><path d="M1 5h8M5 1v8M2 3c1 .5 2 .7 3 .7S8 3.5 8 3M2 7c1-.5 2-.7 3-.7s3 .2 3 .7" stroke="#8089A4" stroke-width="1" stroke-linecap="round"/></svg>
+        Web
+      </div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="sidebar">
+      <div class="app-brand">
+        <div class="brand-name"><div class="brand-dot"></div>droid<span class="brand-acc">pulse</span></div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-lbl">Views</div>
+        <div class="nav-row on" id="nav-digest" onclick="switchView('digest')">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="5" height="5" rx="1.5" stroke="#3DDC84" stroke-width="1.2"/><rect x="8" y="1" width="5" height="5" rx="1.5" stroke="#3DDC84" stroke-width="1.2"/><rect x="1" y="8" width="5" height="5" rx="1.5" stroke="#3DDC84" stroke-width="1.2"/><rect x="8" y="8" width="5" height="5" rx="1.5" stroke="#3DDC84" stroke-width="1.2"/></svg>
+          <span class="nav-row-lbl">Digest</span><span class="nav-badge">14</span>
+        </div>
+        <div class="nav-row" id="nav-links" onclick="switchView('links')">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 4h8M3 7h8M3 10h5" stroke="#8089A4" stroke-width="1.2" stroke-linecap="round"/></svg>
+          <span class="nav-row-lbl">Links</span><span class="nav-badge">12</span>
+        </div>
+        <div class="nav-row" id="nav-media" onclick="switchView('media')">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="3" width="9" height="6" rx="1.5" stroke="#8089A4" stroke-width="1.2"/><path d="M10 6.2l3-2v5.6l-3-2V6.2z" stroke="#8089A4" stroke-width="1.2" stroke-linejoin="round"/></svg>
+          <span class="nav-row-lbl">Media</span><span class="nav-badge">8</span>
+        </div>
+      </div>
+      <div class="cat-section">
+        <div class="nav-lbl" style="margin-bottom:6px">Categories</div>
+        <div class="cat-row on" id="cat-all" onclick="filterCat('all')"><div class="cat-dot" style="background:var(--t3)"></div><span class="cat-row-lbl">All</span><span class="cat-count">14</span></div>
+        <div class="cat-row" id="cat-ai" onclick="filterCat('ai')"><div class="cat-dot" style="background:var(--ai-t)"></div><span class="cat-row-lbl">AI</span><span class="cat-count">6</span></div>
+        <div class="cat-row" id="cat-kotlin" onclick="filterCat('kotlin')"><div class="cat-dot" style="background:var(--kt-t)"></div><span class="cat-row-lbl">Kotlin</span><span class="cat-count">7</span></div>
+        <div class="cat-row" id="cat-compose" onclick="filterCat('compose')"><div class="cat-dot" style="background:var(--cm-t)"></div><span class="cat-row-lbl">Compose</span><span class="cat-count">3</span></div>
+        <div class="cat-row" id="cat-gradle" onclick="filterCat('gradle')"><div class="cat-dot" style="background:var(--gr-t)"></div><span class="cat-row-lbl">Gradle</span><span class="cat-count">2</span></div>
+        <div class="cat-row" id="cat-testing" onclick="filterCat('testing')"><div class="cat-dot" style="background:var(--ts-t)"></div><span class="cat-row-lbl">Testing</span><span class="cat-count">2</span></div>
+        <div class="cat-row" id="cat-architecture" onclick="filterCat('architecture')"><div class="cat-dot" style="background:var(--ar-t)"></div><span class="cat-row-lbl">Architecture</span><span class="cat-count">2</span></div>
+      </div>
+    </div>
+    <div class="list-panel">
+      <div class="list-header">
+        <span class="list-title" id="list-title">Digest</span>
+        <span class="list-count" id="list-count">14 entries</span>
+      </div>
+      <div class="list-scroll" id="list-scroll"></div>
+    </div>
+    <div class="detail-panel">
+      <div class="detail-topbar">
+        <div class="detail-url-bar">
+          <div class="d-url-dot"></div>
+          <div class="d-url-txt" id="d-url">Select an entry to read</div>
+        </div>
+        <div class="mode-tog">
+          <div class="m-btn on" id="d-mode-read" onclick="setDetailMode('read')">Reader</div>
+          <div class="m-btn" id="d-mode-web" onclick="setDetailMode('web')">Web</div>
+        </div>
+      </div>
+      <div class="detail-scroll">
+        <div id="detail-content">
+          <div class="empty-state" style="height:600px">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><rect x="6" y="6" width="12" height="12" rx="3" stroke="#3E4358" stroke-width="1.5"/><rect x="22" y="6" width="12" height="12" rx="3" stroke="#3E4358" stroke-width="1.5"/><rect x="6" y="22" width="12" height="12" rx="3" stroke="#3E4358" stroke-width="1.5"/><rect x="22" y="22" width="12" height="12" rx="3" stroke="#3E4358" stroke-width="1.5"/></svg>
+            <span class="empty-lbl">Select an entry from the list</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const TAG={ai:['var(--ai-bg)','var(--ai-t)','AI'],kotlin:['var(--kt-bg)','var(--kt-t)','Kotlin'],compose:['var(--cm-bg)','var(--cm-t)','Compose'],gradle:['var(--gr-bg)','var(--gr-t)','Gradle'],testing:['var(--ts-bg)','var(--ts-t)','Testing'],architecture:['var(--ar-bg)','var(--ar-t)','Architecture']};
+const ENTRIES=[
+  {id:0,month:'March 2026',cat:'ai',title:"Android Bench: Google's Public LLM Leaderboard",domain:'android-developers.googleblog.com',body:`Google launched Android Bench, the first public benchmark that scores LLMs specifically on Android tasks: resolving breaking API changes, domain-specific Wear OS challenges, and Jetpack Compose migrations. Models are measured by whether they can fix reported issues from real GitHub Android repos, verified by unit or instrumentation tests — not synthetic evals.\n\nThe current spread is stark: models ranged from 16% to 72% completion, with Gemini 3.1 Pro topping the leaderboard and Claude Opus 4.6 close behind. The dataset is public on GitHub with canary strings to discourage training contamination.\n\nPractically, it gives you a data-driven basis for choosing your AI assistant for Android work — not just general coding benchmarks where Android specifics are invisible.`},
+  {id:1,month:'March 2026',cat:'ai',title:'Android Studio Panda 2: Prompt → Deployed App',domain:'android-developers.googleblog.com',body:`The new "Create with AI" flow takes a text description plus optional screenshots, produces a full project plan to approve, then enters an autonomous loop: generates code, builds, reads compile errors, self-corrects, repeats until it succeeds — then deploys to the emulator and walks through each screen.\n\nEverything generates in Kotlin + Compose + latest stable libraries. A paid Gemini API key unlocks Gemini 3.1 Pro and a "Nano Banana" image model for design ideation.\n\nAlso new: a Version Upgrade Assistant — right-click your version catalog, select AI → "Update Dependencies," and it iteratively resolves conflicts across library upgrades without manual intervention.`},
+  {id:2,month:'March 2026',cat:'kotlin',title:'Update Your Kotlin Projects for Android Gradle Plugin 9.0',domain:'blog.jetbrains.com',body:`AGP 9.0 ships two breaking changes that affect every Kotlin Android project. First: Kotlin support is now built into AGP, so you no longer apply org.jetbrains.kotlin.android separately — remove that plugin, and update any kapt usage or custom kotlinOptions blocks.\n\nSecond: KMP modules targeting Android must migrate to the new com.android.kotlin.multiplatform.library plugin. You can temporarily opt out with android.builtInKotlin=false in gradle.properties, but that flag disappears in AGP 10.0.\n\nAndroid Studio Otter 3 Feature Drop is the minimum IDE version with AGP 9.0 support.`},
+  {id:3,month:'March 2026',cat:'kotlin',title:"The KotlinConf 2026 Talks We're Excited About",domain:'touchlab.co',body:`Touchlab's Kevin Schildhorn picks highlights from the 80-talk lineup (Munich, May 21–22). Top picks: Tadeas Kriz on multi-binary KMP performance; "Adventures in Whimsical UX" on the delight-vs-performance tradeoff in Compose Multiplatform; and Amazon's "Expedited Shipping" — a look at App Platform (v0.0.8), Amazon's own library covering state management, DI, and layer decoupling for KMP iOS.\n\nUseful pre-conference reading if you're deciding which sessions to prioritize.`},
+  {id:4,month:'February 2026',cat:'ai',title:"AppFunctions: Your App's Interface to AI Agents",domain:'android-developers.googleblog.com',body:`The biggest architectural shift of Q1. AppFunctions lets apps declare self-describing capabilities via the Jetpack AppFunctions library — Android's version of MCP, but executed locally on-device. AI agents (starting with Gemini) discover these functions and invoke them without the user ever opening the app.\n\nThe Samsung Galaxy S26 demo: say "show me photos of my cat from Samsung Gallery," and Gemini identifies the Gallery's AppFunction and retrieves the results inside Gemini's interface.\n\nThe paradigm shift for developers: success is no longer "user launches your app" — it's "agent completes the task on behalf of the user."`},
+  {id:5,month:'February 2026',cat:'kotlin',title:'Re: Dependency Injection vs. Service Locators',domain:'zacsweers.dev',body:`Zac Sweers gives the clearest explanation of the DI vs. service locator distinction in the Kotlin ecosystem. The core split: Metro, Dagger, Hilt, kotlin-inject, and Anvil are true DI frameworks — compile-time graph validation means if it compiles, it works at runtime. Koin is a service locator — simpler setup, but graph errors surface at runtime.\n\nFor mobile, compile-time safety is more valuable than in backend/web because you can't hotfix production at the same velocity. Metro and Dagger also generate code shaped to the actual graph, giving them a performance edge.\n\nWorth reading if your team is evaluating a switch to Metro or kotlin-inject.`},
+  {id:6,month:'February 2026',cat:'compose',title:'Compose Multiplatform for Web Goes Beta',domain:'blog.jetbrains.com',body:`Compose Multiplatform 1.9.0 moves web (Wasm) from Alpha to Beta. The web target now ships Material 3, adaptive layouts, browser navigation (back/forward, deep links, history), and dark mode out of the box.\n\nHTML interop lets you mix Compose UI and native web elements. Cross-browser compatibility includes fallback for older browsers.\n\nCaveat: still Beta — production use for non-critical surfaces is reasonable, but wait for stable before betting core user flows on it.`},
+  {id:7,month:'February 2026',cat:'kotlin',title:'Do I Need an Umbrella Framework for My KMP App?',domain:'pamelaahill.com',body:`Short, practical answer: yes, if you're targeting Apple with a multi-module project. Without an umbrella framework, each exported module bundles its own copy of the Kotlin stdlib (bloating the iOS binary) and creates incompatible binary representations of shared types.\n\nThe umbrella aggregates all modules into a single binary, deduplicating stdlib and ensuring type identity across modules. Not needed for Android-only, but essential the moment iOS is in scope.`},
+  {id:8,month:'January 2026',cat:'ai',title:'Android Studio Otter 3: Bring Your Own LLM',domain:'android-developers.googleblog.com',body:`The BYOM feature unlocks model choice: connect any OpenAI-compatible endpoint (GPT, Claude, anything) via API key, or run a local model through LM Studio or Ollama for fully offline development.\n\nAgent Mode now deploys to physical devices, reads the screen, takes screenshots, and checks Logcat — closing the build-run-debug loop autonomously.\n\nNew: multiple conversation threads, MCP server connectivity (Figma, Notion, Linear, Canva), natural-language Journey tests, and an App Links assistant. The most feature-dense Studio release in memory.`},
+  {id:9,month:'January 2026',cat:'kotlin',title:'Kotlin 2.3.0 Released',domain:'blog.jetbrains.com',body:`The significant items: unused return value checker, explicit backing fields moving toward stable, and context-sensitive resolution improvements.\n\nPlatform side: Java 25 support, faster Native release build times, Swift export improvements for better iOS interop, Wasm gets compact Latin-1 storage and the new exception handling proposal enabled by default.\n\nStandard library gets stable time tracking (Duration, TimeSource) and improved UUID generation/parsing. Update via kotlinVersion = "2.3.0".`},
+  {id:10,month:'January 2026',cat:'compose',title:'Compose Multiplatform 1.10.0: Navigation 3 + Stable Hot Reload',domain:'blog.jetbrains.com',body:`Navigation 3 reaches stable — a full reimagining designed for KMP that handles back stacks as a declarative list of entries. The API is compose-native: no NavController, just state. Hot Reload also reaches stable.\n\nOther highlights: improved iOS scroll performance, Compose for Web (Wasm) gets first-class Material 3 adaptive components, and the iOS interop views API is now stable for embedding UIKit in Compose and vice versa.`},
+  {id:11,month:'October 2025',cat:'kotlin',title:'Understanding the Internals of Flow, StateFlow, and SharedFlow',domain:'revenuecat.com',body:`RevenueCat digs into the machinery behind Kotlin's reactive primitives. Flow enforces two runtime invariants — context preservation and exception transparency. The SafeCollector wrapper throws IllegalStateException if you violate them.\n\nStateFlow and SharedFlow diverge in backpressure handling: StateFlow is always conflated (only latest value), while SharedFlow has configurable replay and buffer policies.\n\nThe post includes actual source-level implementation details — useful for debugging surprising behavior.`},
+  {id:12,month:'September 2025',cat:'kotlin',title:'Pragmatic KMP for Mobile — Part 4: Navigation',domain:'kiranrao.in',body:`Kiran Rao at Somnox shares how they kept existing navigation when introducing KMP — without a full rewrite. The approach: inject a Router abstraction into ViewModels, implement natively per platform. For iOS, FlowStacks drive NavigationView from a KMP ViewModel's Router as a SwiftUI ObservableObject.\n\nThe author explicitly flags that NavController-backed Router on Android is problematic and recommends state-based routing for new projects. Part of a series worth reading for incremental KMP adoption.`},
+  {id:13,month:'September 2025',cat:'ai',title:'The Kotlin AI Stack',domain:'blog.jetbrains.com',body:`JetBrains laid out a four-tier hierarchy: (1) raw SDKs for Anthropic and OpenAI; (2) Spring AI for provider abstraction; (3) MCP Kotlin SDK for standardized tool exposure; (4) Koog for full agentic workflows with persistence, checkpointing, OpenTelemetry integration, and Spring Boot / Ktor connectors.\n\nJetBrains also released Mellum — their in-house code-focused LLM, now open-source — with a Kotlin-specific fine-tuned variant. The positioning: they want Kotlin, not Python, to be the go-to language for JVM-based AI agent development.`},
+];
+const LINKS_DATA=[
+  {date:'Mar 20, 2026',title:'Migrating to Kotlin 2.x: what actually breaks',domain:'kotlinlang.org',cats:['kotlin']},
+  {date:'Mar 20, 2026',title:'Understanding Gemini Nano quantization on-device',domain:'android.googleblog.com',cats:['ai']},
+  {date:'Mar 19, 2026',title:'Compose performance — avoiding recomposition pitfalls',domain:'medium.com/androiddevelopers',cats:['compose']},
+  {date:'Mar 18, 2026',title:'AGP 9.0 migration: kapt removal & built-in Kotlin',domain:'developer.android.com',cats:['gradle','kotlin']},
+  {date:'Mar 17, 2026',title:'AppFunctions deep dive: declaring capabilities for AI agents',domain:'android-developers.googleblog.com',cats:['ai']},
+  {date:'Mar 16, 2026',title:'Navigation 3 in Compose Multiplatform: the complete guide',domain:'blog.jetbrains.com',cats:['compose']},
+  {date:'Mar 15, 2026',title:'End-to-end testing with Maestro on CI/CD',domain:'mobile.dev',cats:['testing']},
+  {date:'Mar 14, 2026',title:'K2 compiler migration guide for library authors',domain:'blog.jetbrains.com',cats:['kotlin']},
+  {date:'Mar 13, 2026',title:'Koin vs Hilt in 2026: a real-world KMP comparison',domain:'proandroiddev.com',cats:['architecture']},
+  {date:'Mar 12, 2026',title:'AndroidX Lifecycle 3.0: what changed and what broke',domain:'developer.android.com',cats:['architecture']},
+  {date:'Mar 11, 2026',title:'SKIE 0.9: sealed classes as Swift enums, Flow as AsyncSequence',domain:'touchlab.co',cats:['kotlin']},
+  {date:'Mar 10, 2026',title:'Screenshot testing with Roborazzi in a KMP project',domain:'github.com/takahirom',cats:['testing']},
+];
+const MEDIA_DATA={
+  yt:[
+    {title:"What's new in Android Studio Panda 2 | Google I/O 2026",ch:'Android Developers',dur:'24:18',views:'142K views'},
+    {title:'Kotlin 2.3 deep dive — K2, context params & KMP updates',ch:'JetBrains',dur:'47:22',views:'91K views'},
+    {title:'Building a full KMP app with AppFunctions + Gemini',ch:'Philipp Lackner',dur:'1:18:04',views:'218K views'},
+    {title:'Episode 112: AGP 9.0, Navigation 3 stable, and more',ch:'Now in Android',dur:'38:55',views:'64K views'},
+  ],
+  pod:[
+    {show:'ANDROID BACKSTAGE',ep:'Ep. 221 — AppFunctions and the agent-first OS',dur:'1h 08m',date:'Mar 18'},
+    {show:'FRAGMENTED',ep:'Ep. 302 — KMP in production at RevenueCat: 18 months later',dur:'1h 02m',date:'Mar 14'},
+    {show:'TALKING KOTLIN',ep:"Ep. 145 — Kotlin 2.3, context params, and what's next for K2",dur:'44m',date:'Mar 10'},
+    {show:'THE CONTEXT',ep:'Ep. 28 — Compose hot reload stable: what it means',dur:'51m',date:'Mar 6'},
+  ]
+};
+let curView='digest',curCat='all',curItem=null,detailMode='read';
+function tagHtml(cat,sz){const t=TAG[cat]||TAG.ai;return `<span class="li-tag" style="background:${t[0]};color:${t[1]};font-size:${sz||'9.5px'}">${t[2]}</span>`;}
+function shortDomain(d){return d.replace('www.','').replace('.com','').replace('.dev','').replace('.co','');}
+function buildList(){
+  const scroll=document.getElementById('list-scroll');
+  if(curView==='digest'){
+    const items=ENTRIES.filter(e=>curCat==='all'||e.cat===curCat);
+    document.getElementById('list-count').textContent=items.length+' entries';
+    const months=[...new Set(items.map(e=>e.month))];
+    let h='';
+    months.forEach(mo=>{
+      h+=`<div class="list-mo">${mo}</div>`;
+      items.filter(e=>e.month===mo).forEach(e=>{
+        h+=`<div class="list-item${curItem&&curItem.type==='entry'&&curItem.id===e.id?' on':''}" onclick="selectEntry(${e.id})"><div class="li-top">${tagHtml(e.cat)}<span class="li-domain">${shortDomain(e.domain)}</span></div><div class="li-title">${e.title}</div><div class="li-preview">${e.body.split('\n')[0]}</div></div>`;
+      });
+    });
+    scroll.innerHTML=h;
+  } else if(curView==='links'){
+    const items=LINKS_DATA.filter(l=>curCat==='all'||l.cats.includes(curCat));
+    document.getElementById('list-count').textContent=items.length+' links';
+    const dates=[...new Set(items.map(l=>l.date))];
+    let h='';
+    dates.forEach(dt=>{
+      h+=`<div class="links-date-lbl">${dt}</div>`;
+      items.filter(l=>l.date===dt).forEach((l,i)=>{
+        const lid=dt+i;
+        h+=`<div class="link-list-item${curItem&&curItem.type==='link'&&curItem.lid===lid?' on':''}" onclick="selectLink('${lid}','${l.domain}','${l.title}','${l.cats.join(',')}')"><div class="ll-source">${shortDomain(l.domain)}</div><div class="ll-meta"><div class="ll-title">${l.title}</div><div class="ll-tags">${l.cats.map(c=>tagHtml(c,'9.5px')).join('')}</div></div></div>`;
+      });
+    });
+    scroll.innerHTML=h;
+  } else {
+    document.getElementById('list-count').textContent=(MEDIA_DATA.yt.length+MEDIA_DATA.pod.length)+' items';
+    let h='<div class="media-section-lbl">YouTube</div>';
+    MEDIA_DATA.yt.forEach((v,i)=>{h+=`<div class="media-list-item${curItem&&curItem.type==='yt'&&curItem.id===i?' on':''}" onclick="selectMedia('yt',${i})"><div class="media-thumb"><div class="media-play-tri"></div></div><div class="media-info"><div class="media-ch">${v.ch}</div><div class="media-title-s">${v.title}</div><div class="media-dur">${v.dur} · ${v.views}</div></div></div>`;});
+    h+='<div class="media-section-lbl" style="margin-top:2px">Podcasts</div>';
+    MEDIA_DATA.pod.forEach((p,i)=>{h+=`<div class="media-list-item${curItem&&curItem.type==='pod'&&curItem.id===i?' on':''}" onclick="selectMedia('pod',${i})"><div class="pod-icon">🎙</div><div class="media-info"><div class="media-ch" style="color:var(--t3)">${p.show}</div><div class="media-title-s">${p.ep}</div><div class="media-dur">${p.dur} · ${p.date}</div></div></div>`;});
+    scroll.innerHTML=h;
+  }
+}
+function renderDetail(){
+  const dc=document.getElementById('detail-content');
+  if(!curItem){dc.innerHTML='<div class="empty-state" style="height:600px"><span class="empty-lbl">Select an entry from the list</span></div>';return;}
+  if(detailMode==='web'){
+    document.getElementById('d-url').textContent=curItem.domain||'—';
+    dc.innerHTML=`<div class="detail-inner"><div style="background:var(--card);border-radius:10px;padding:20px;text-align:center;margin-bottom:16px"><div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">Chrome WebView</div><div style="font-size:13px;color:var(--t2)">${curItem.domain||''}</div></div><div style="font-size:13px;color:var(--t3);line-height:1.7">Full web view renders here. In the real app this is a WebView that loads the full page — scripts, images, ads, navigation, everything intact.</div></div>`;
+    return;
+  }
+  if(curItem.type==='entry'){
+    const e=ENTRIES.find(x=>x.id===curItem.id);
+    document.getElementById('d-url').textContent=e.domain;
+    const paras=e.body.split('\n\n').map(p=>`<p>${p}</p>`).join('');
+    dc.innerHTML=`<div class="detail-inner"><div class="d-origin">${e.domain}</div><div class="d-title">${e.title}</div><div class="d-meta"><span>${e.month}</span><span class="d-meta-sep">·</span>${tagHtml(e.cat,'10px')}<span class="d-meta-sep">·</span><span>~4 min read</span></div><div class="d-body">${paras}</div></div>`;
+  } else if(curItem.type==='link'){
+    document.getElementById('d-url').textContent=curItem.domain;
+    dc.innerHTML=`<div class="detail-inner"><div class="d-origin">${curItem.domain}</div><div class="d-title">${curItem.title}</div><div class="d-meta"><span>Mar 2026</span><span class="d-meta-sep">·</span>${curItem.cats.split(',').map(c=>tagHtml(c,'10px')).join(' ')}</div><div class="d-body"><p>Article content rendered via Readability.js — all navigation, ads, and clutter stripped. Only the text and inline images remain, re-styled to match the app's dark theme.</p><div class="note">The parsed article body would appear here. Readability.js runs in a hidden WebView, extracts the main content node, and returns the cleaned HTML to Compose for native rendering.</div></div></div>`;
+  } else if(curItem.type==='yt'){
+    const v=MEDIA_DATA.yt[curItem.id];
+    document.getElementById('d-url').textContent='youtube.com';
+    dc.innerHTML=`<div class="detail-inner"><div class="d-origin">YouTube · ${v.ch}</div><div class="d-title">${v.title}</div><div class="d-meta"><span>${v.dur}</span><span class="d-meta-sep">·</span><span>${v.views}</span></div><div style="background:var(--card);border-radius:12px;height:160px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;border:1px solid var(--bdr)"><div style="width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,0.9);display:flex;align-items:center;justify-content:center;cursor:pointer"><div style="width:0;height:0;border-top:10px solid transparent;border-bottom:10px solid transparent;border-left:18px solid #0F1117;margin-left:3px"></div></div></div><div class="d-body"><p>Embedded player renders here via YouTube WebView. Plays in-app with standard controls — no external browser needed.</p></div></div>`;
+  } else {
+    const p=MEDIA_DATA.pod[curItem.id];
+    document.getElementById('d-url').textContent='podcast';
+    dc.innerHTML=`<div class="detail-inner"><div class="d-origin">${p.show}</div><div class="d-title">${p.ep}</div><div class="d-meta"><span>${p.dur}</span><span class="d-meta-sep">·</span><span>${p.date}</span></div><div style="background:var(--card);border-radius:12px;padding:16px 20px;margin-bottom:20px;border:1px solid var(--bdr);display:flex;align-items:center;gap:16px"><div style="width:44px;height:44px;border-radius:50%;border:1.5px solid var(--green);display:flex;align-items:center;justify-content:center;cursor:pointer"><div style="width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-left:13px solid var(--green);margin-left:2px"></div></div><div style="flex:1;height:4px;background:var(--card2);border-radius:2px"><div style="width:30%;height:100%;background:var(--green);border-radius:2px"></div></div><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t3)">${p.dur}</span></div><div class="d-body"><p>Podcast episode playback renders here with a native audio player UI.</p></div></div>`;
+  }
+}
+function selectEntry(id){curItem={type:'entry',id,domain:ENTRIES.find(e=>e.id===id).domain};buildList();renderDetail();}
+function selectLink(lid,domain,title,cats){curItem={type:'link',lid,domain,title,cats};buildList();renderDetail();}
+function selectMedia(type,id){curItem={type,id,domain:type==='yt'?'youtube.com':'podcast'};buildList();renderDetail();}
+function switchView(v){
+  curView=v;curItem=null;
+  document.getElementById('list-title').textContent=v.charAt(0).toUpperCase()+v.slice(1);
+  ['digest','links','media'].forEach(x=>{
+    const nr=document.getElementById('nav-'+x);
+    if(x===v)nr.classList.add('on');else nr.classList.remove('on');
+    nr.querySelectorAll('svg path,svg rect,svg circle').forEach(p=>{if(p.getAttribute('stroke'))p.setAttribute('stroke',x===v?'#3DDC84':'#8089A4');if(p.getAttribute('fill')&&p.getAttribute('fill')!=='none')p.setAttribute('fill',x===v?'#3DDC84':'#8089A4');});
+  });
+  buildList();renderDetail();
+}
+function filterCat(cat){
+  curCat=cat;curItem=null;
+  document.querySelectorAll('.cat-row').forEach(r=>r.classList.remove('on'));
+  document.getElementById('cat-'+cat).classList.add('on');
+  buildList();renderDetail();
+}
+function setDetailMode(m){detailMode=m;document.getElementById('d-mode-read').classList.toggle('on',m==='read');document.getElementById('d-mode-web').classList.toggle('on',m==='web');renderDetail();}
+function toggleGlobalMode(m){detailMode=m;document.getElementById('mode-read-btn').classList.toggle('on',m==='read');document.getElementById('mode-web-btn').classList.toggle('on',m==='web');document.getElementById('d-mode-read').classList.toggle('on',m==='read');document.getElementById('d-mode-web').classList.toggle('on',m==='web');renderDetail();}
+buildList();
+</script>
+</body>
+</html>
