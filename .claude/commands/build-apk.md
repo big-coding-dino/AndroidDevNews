@@ -15,12 +15,13 @@ If the build fails, read the error output and fix compilation issues before retr
 fuser -k 9000/tcp 2>/dev/null; sleep 1
 ```
 
-3. Serve the APK:
+3. Copy the APK as `a.apk` and serve it:
 ```
+cp ~/anews/kmp/composeApp/build/outputs/apk/debug/composeApp-debug.apk ~/anews/kmp/composeApp/build/outputs/apk/debug/a.apk
 python3 -m http.server 9000 --directory ~/anews/kmp/composeApp/build/outputs/apk/debug &
 ```
 
 4. Report the download URL to the user:
 ```
-http://$(hostname -I | awk '{print $1}'):9000/composeApp-debug.apk
+http://$(hostname -I | awk '{print $1}'):9000/a.apk
 ```

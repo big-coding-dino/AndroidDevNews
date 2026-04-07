@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anews.ds.DsTheme
@@ -87,6 +88,7 @@ private fun FeedArticleList(
     state: FeedUiState.Success,
     spacing: com.anews.ds.DsSpacing,
 ) {
+    val uriHandler = LocalUriHandler.current
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(spacing.cardGap),
     ) {
@@ -97,7 +99,7 @@ private fun FeedArticleList(
             items(articles) { article ->
                 DsArticleCard(
                     article       = article,
-                    onOpenArticle = { /* wire URL opening next */ },
+                    onOpenArticle = { uriHandler.openUri(it.url) },
                 )
             }
             item { Spacer(Modifier.height(spacing.sm)) }

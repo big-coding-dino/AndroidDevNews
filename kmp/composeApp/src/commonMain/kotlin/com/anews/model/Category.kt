@@ -13,10 +13,10 @@ enum class Category(
     Testing     ("Testing",      "testing"),
     Android     ("Android",      "android"),
     Kmp         ("KMP",          "kmp"),
-    Performance ("Performance",  "performance",  showInFilter = false),
-    Architecture("Architecture", "architecture", showInFilter = false),
-    Security    ("Security",     "security",     showInFilter = false),
-    Xr          ("XR",           "xr",           showInFilter = false);
+    Performance ("Performance",  "performance"),
+    Architecture("Architecture", "architecture"),
+    Security    ("Security",     "security"),
+    Xr          ("XR",           "xr");
 
     companion object {
         fun fromSlug(slug: String): Category =
