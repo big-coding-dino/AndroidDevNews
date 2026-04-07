@@ -14,6 +14,17 @@ class ArticleResponse(BaseModel):
     read_time_minutes: int
 
 
+class PodcastEpisodeResponse(BaseModel):
+    id: int
+    title: str
+    url: str
+    date: str               # YYYY-MM-DD
+    show: str               # feed/show name
+    episode_number: int | None
+    duration_seconds: int | None
+    summary: str            # prose blurb extracted from markdown summary
+
+
 class DigestArticleItem(BaseModel):
     url: str
     title: str

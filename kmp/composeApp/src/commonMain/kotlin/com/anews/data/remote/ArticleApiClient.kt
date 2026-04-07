@@ -2,6 +2,7 @@ package com.anews.data.remote
 
 import com.anews.data.dto.ArticleDto
 import com.anews.data.dto.DigestDto
+import com.anews.data.dto.PodcastEpisodeDto
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -21,6 +22,12 @@ class ArticleApiClient(
     suspend fun fetchDigests(category: String? = null): List<DigestDto> {
         return httpClient.get("$baseUrl/digests") {
             if (category != null) parameter("category", category)
+        }.body()
+    }
+
+    suspend fun fetchPodcasts(): List<PodcastEpisodeDto> {
+        return httpClient.get("$baseUrl/podcasts") {
+            parameter("limit", 50)
         }.body()
     }
 }
