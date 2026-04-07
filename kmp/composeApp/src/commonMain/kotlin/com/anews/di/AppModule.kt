@@ -2,8 +2,11 @@ package com.anews.di
 
 import com.anews.data.MockArticleRepository
 import com.anews.data.RemoteArticleRepository
+import com.anews.data.RemoteDigestRepository
 import com.anews.data.remote.ArticleApiClient
 import com.anews.domain.ArticleRepository
+import com.anews.domain.DigestRepository
+import com.anews.ui.digest.DigestViewModel
 import com.anews.ui.feed.FeedViewModel
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -38,7 +41,9 @@ val appModule = module {
     // Mock  → single<ArticleRepository> { MockArticleRepository() }
     // Remote → single<ArticleRepository> { RemoteArticleRepository(get()) }
     single<ArticleRepository> { RemoteArticleRepository(get()) }
+    single<DigestRepository> { RemoteDigestRepository(get()) }
 
     // ── ViewModel ──────────────────────────────────────────────────────────────
     viewModel { FeedViewModel(get()) }
+    viewModel { DigestViewModel(get()) }
 }

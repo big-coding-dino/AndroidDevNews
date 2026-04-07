@@ -12,3 +12,18 @@ class ArticleResponse(BaseModel):
     source_domain: str
     category: str           # tag slug, e.g. "kotlin"
     read_time_minutes: int
+
+
+class DigestArticleItem(BaseModel):
+    url: str
+    title: str
+    tldr: str
+    source_domain: str
+    category: str           # tag slug
+
+
+class DigestResponse(BaseModel):
+    id: int
+    tag: str                # digest tag slug, e.g. "kotlin"
+    period: str             # YYYY-MM, e.g. "2026-03"
+    articles: list[DigestArticleItem]

@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from api.db import init_pool, close_pool
 from api.routes.articles import router as articles_router
+from api.routes.digests import router as digests_router
 
 
 @asynccontextmanager
@@ -24,3 +25,4 @@ app.add_middleware(
 )
 
 app.include_router(articles_router)
+app.include_router(digests_router)
