@@ -6,17 +6,6 @@ from api.schemas import PodcastEpisodeResponse
 router = APIRouter()
 
 
-def _blurb(summary: str | None) -> str:
-    """Extract the first prose paragraph from a markdown-formatted episode summary."""
-    if not summary:
-        return ""
-    for line in summary.split("\n"):
-        s = line.strip()
-        if s and not s.startswith("*") and not s.startswith("#") and not s.startswith(">"):
-            return s
-    return ""
-
-
 @router.get("/podcasts", response_model=list[PodcastEpisodeResponse])
 def get_podcasts(
     limit: int = Query(default=50, ge=1, le=200),
@@ -34,12 +23,12 @@ def get_podcasts(
                     f.name              AS show,
                     pe.episode_number,
                     pe.duration_seconds,
-                    r.summary
+                    r.tldr
                 FROM resources r
                 JOIN feeds f ON f.id = r.source_id
                 JOIN podcast_episodes pe ON pe.resource_id = r.id
                 WHERE r.resource_type = 'podcast_episode'
-                  AND r.summary IS NOT NULL
+                  AND r.tldr IS NOT NULL
                   AND r.published_at IS NOT NULL
                 ORDER BY r.published_at DESC
                 LIMIT %s OFFSET %s
@@ -57,7 +46,7 @@ def get_podcasts(
             show=row[4] or "",
             episode_number=row[5],
             duration_seconds=row[6],
-            summary=_blurb(row[7]),
+            summary=row[7] or "",
         )
         for row in rows
     ]

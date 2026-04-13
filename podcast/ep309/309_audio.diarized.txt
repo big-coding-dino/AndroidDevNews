@@ -1,0 +1,187 @@
+# ep309
+Podcast: Fragmented Podcast
+
+---
+
+[SPEAKER_00]
+Welcome to Fragmented, an AI developer podcast that helps vibe coders become software engineers, one episode at a time. I'm your host, Kaushik.
+
+[SPEAKER_01]
+And I'm Yuri, the other host of Fragmented, where I'd love to talk about using AI to make you a better developer.
+
+[SPEAKER_00]
+All right, Yuri, what are we going to talk about today?
+
+[SPEAKER_01]
+Man, I was watching this podcast the other day. It's called No Priors.
+
+[SPEAKER_00]
+And it was with Andrew Karpathy, right? You know this guy?
+
+[SPEAKER_01]
+He gave me some food for thought the other day because this guy is on the very, you know, very edge of everything, right? With LLM related. And he casually dropped a quote on the podcast. Like he was saying something like how our goal now needs to be moving to maximizing how long an agent can go without intervention. Something like maximizing the... how many tokens the model can use without you having to intervene.
+
+[SPEAKER_00]
+That sounds interesting. There's a term people have coined now called token maxing, which is subtly different from what Karpathy is saying here, right? If I understand correctly, what Karpathy is saying is we have to maximize how long an agent can go on without intervention, which makes a lot of sense. But that doesn't necessarily mean burn as many tokens as you want, because token maxing is this idea that people are boasting where they are in the leaderboards in terms of how many tokens they've burned using an AI. Not the same thing, right? Not the same thing. I hope people are able to distinguish that because I really hate the latter concept about token maxing.
+
+[SPEAKER_01]
+Of course, yeah. It's like a vanity metric, right? Just like lines of code.
+
+[SPEAKER_00]
+Yeah, it doesn't translate to effectiveness. Just because you've used a lot of tokens, that doesn't necessarily mean that you're effective.
+
+[SPEAKER_01]
+Yeah, vanity metric. And I think if you want to understand how to make agents run for longer on their own, then I think we need to understand how background agents work. And it's not as obvious as it looks, I think. There's some... nuance there.
+
+[SPEAKER_00]
+That was one of my immediate questions. How is this any different from just running a bunch of sub agents in the background? I realized there's a lot of nuance in there once I talked to you a little more about this. So maybe we should give listeners a brief overview of what we're going to cover today in this episode, given that context. So I think what you wanted to cover is first... background agents in general. The way we're going to go through this episode is an evolution of that concept and, you know, evolution and also how you can take it to the next level, right? So we start with the most basic concept of background agents. How do you run this locally? So that's one section. The next is you brought up this really beautiful idea of a false summit and local maximums. Folks should listen to that part of the episode to understand what Yuri means by false summit. It took me some time, but I loved the idea. And from there, we move to the concept of hosted async agents. Then we go to what we think is probably the most evolved form of background agents today, which is fully autonomous background agents. Right. And then we'll close out with that. So that's how we want to run through this episode. Maybe let's start with the very first basic concept of local background agents. So Yuri, can you help me understand this concept? Because I use Tmux today with Cloud Code and I have a whole bunch of background agents running. Is it as simple as that? What do you specifically mean by local background agents?
+
+[SPEAKER_01]
+I think that's a very good starting point because that is arguably already a form of a background agent. It's like multitasking with agents, right? So I think we've all been there, especially now. If you're in Tmux world, then you probably have another tab or another window. or a combination of those where you have one agent working on a feature, maybe another agent doing some code review. Maybe you have an agent running some tasks or verifying something. Maybe some agent doing some research that is going to take a while.
+
+[SPEAKER_00]
+And to be clear, this is as simple as you just have a bunch of tabs running these agents where you spun up cloud code independently. That's one form of it. you've decided you're going to have these multiple tasks and run them independently in multiple tabs. Is that different from sub-agents? Like you could have the main orchestrator agent spawn multiple tasks through sub-agents. So you haven't necessarily, you haven't opened up the tab. You haven't started that new session. It's the main agent that has spun up those.
+
+[SPEAKER_01]
+tasks clear to with our listeners these are very you know like loosely defined terms that we're just trying to build some intuition here and just like giving giving some words to work with but it's this is generally just the concept of agents multiple sessions like running locally and the main i think the main thing is that they're sharing the same resource which is your machine
+
+[SPEAKER_00]
+So this distinction I called out are both types of background agents. They might be like subtly different, but you're right. The common thread here is the resource is your local machine. Okay, that makes sense to me.
+
+[SPEAKER_01]
+But as you said, that you can have them manually spawn in parallel sessions or like right now, for example, with Claude and I mean, Anthropic releasing a bunch of features every other day, there's the new slash loop command.
+
+[SPEAKER_00]
+Maybe this is a good way to structure it. We started with like manually kicked off... background agents. So we as humans open multiple tabs in our terminal window and then spawn, you know, new sessions. There's the main agent that might spawn separate agents, but both of these in some ways are manual because you as a human got into opening cloud code or codex or whatever your agent harnesses and you spun those. You can also do that now, but in a recurring fashion with slash loop and these clone style jobs. I am curious, have you done, have you worked with a lot of this, the slash loop and running things in the background?
+
+[SPEAKER_01]
+Personally, I haven't used it yet. I think they were released just the other day. Also, there's the new co-work one. That's right.
+
+[SPEAKER_00]
+four different instances of this feature, right? I'm a little hesitant to doing this mostly because I'm worried, especially on my personal accounts, it'll burn through a bunch of tokens and I'll wake up with a crazy will, right? So I am a little cautious exploring this. I would say I have tried the other thing, which is I have a manual cron job and I have a personal skill I've written. So on the Mac, they have this way of using plist files. So I've done that. And I do like it where every day I have... a skill for me that I've written, which I completely understand how it works and it's going to terminate. So that way, at some point, it's not going to, you know, blow up and send me a bill from Anthropic or OpenAI the next day for $100, $1,000. Yeah. Yeah.
+
+[SPEAKER_01]
+So the idea of having that running autonomously, like on your own accounts is very, yeah. In any case... I think all the tools that we're using now, they have this concept of like being able to multitask or having multiple agents running concurrently on your local machine. Let's maybe take some of the most popular tools today. What are examples of us doing this? Right. Yeah. So Cursor has this agent mode. I remember even when they released that because you had like that chat interface. Yeah. And then they have this other interface where you can see different threads, different sessions where you're having agents doing things and you can jump between them. And it's like this new mode of work that you're mainly just driving the agency. You're not really looking at the code anymore. It's just like you're just managing these multiple sessions going on.
+
+[SPEAKER_00]
+And this is in the day where there was a tussle between the terminal TUI users and cursor, right? Because the terminal TUI users were more easily able to do this because, you know, the terminal, you can just run things in tabs. And then cursor came up with that as a sort of response where they had this agent board, but it was definitely a much better user interface and typical cursor style. Yeah.
+
+[SPEAKER_01]
+Exactly, yeah. And I know also like when Google released Antigravity, they had this agent manager interface, which I think to me, Antigravity as a whole was meant to be this different way of working already. It's like a vision they had that, okay, this is a way for you to create multiple agents to tackle different tasks in this agent first UX. Yeah. that they won't try to come up with.
+
+[SPEAKER_00]
+Think of it as a new paradigm. So they were like, hey, forget the whole open up a single tab with your code. What if we could get an interface where you just chat with it and then you have multiple agents spawned taking care of the task that you put in?
+
+[SPEAKER_01]
+That makes sense.
+
+[SPEAKER_00]
+I also was playing around with Cloud Code's implementation. Cloud Code specifically has a feature called agent teams. It was interesting. There was a sub feature in this where there was a mode that you could pick for agent teams. You can do the interactive way, which is like basically what most people do with this. You deal with the main agent and then... a bunch of background agents are spawned by the main session. But there was an interesting flag for Tmux. So you can even flip it to Tmux. And Cloud Code itself, if it recognizes that you're running in a Tmux session, it would spawn Tmux window panes, which is pretty cool. I actually kind of like that a lot because then I'm like, I can see another implementation of the same pattern of using your local machine to run multiple background agents. So what is the challenge though? So maybe that's the next step. Like, okay, fine. This works great. You know, we are using our local machine. We all have like these super beefy MacBooks and MacBook Pros that run, you know, these background agents. Why can't we call it there? What's the next stage of how we improve upon background agents?
+
+[SPEAKER_01]
+Yeah, so this is the thing, because in the end, as we said before, what unifies this idea is that they are still all running on your machine, right? So they're all sharing the same resource, which is the compute you have locally. So there's only so many agents that you can spawn before frying your Mac, you know? Yeah, there's a ceiling there. Yeah.
+
+[SPEAKER_00]
+This is true. And I feel this very viscerally as an Android developer, and I'm sure you do too. One approach that a lot of these tools use for running multiple background agents, especially if you want to run tasks in parallel, is with work trees, right? Git work trees are like a very common mechanism. And if you're an Android developer and you have... three or four work trees going on parallel and you have gradle compiling each of those apps because again a lot of these background agents to be effective they need to check their work they need to compile even running tests assemble lint all of these common gradle tasks man my machine is roaring like you know an angry airplane i'm More than three or four, I just cannot get it to work. At that point, I have to either limit the number of tasks or choose a task very selectively that does not run Gradle in this fashion, right? So I hear you. Like at some point, my machine becomes the bottleneck.
+
+[SPEAKER_01]
+And I think that's where we can bring the notion of the false summit. Summit is in the peak as the highest part of a mountain or something. And that's literally it. Like when you get to this part, you think that you got it, right? You think that's it, but it's not really it because... you're maybe improving your individual speed, but the system speed is still, it didn't change, right? It's like a local maximum instead of a global maximum.
+
+[SPEAKER_00]
+Fascinating. So I'm like this puppet master sitting there with all my agents dancing, but then I can have a false sense that I'm super productive and I have like peaked in terms of productivity. You're still constrained by this one important resource, which is your local machine where you run. Right. And that's tapped out. In the context of background agents, what's my next unlock?
+
+[SPEAKER_01]
+Right. Once the local environment becomes the bottleneck, I think the obvious direction would be to have this hosted somewhere and to have it doing the work asynchronously. So this is where you move to the clouds. The cloud. We're there again. And this is where I think all of these tools that we mentioned before, they already all have this notion of I think one of the ones that started this was Jules from Google. I think not a lot of people use that, but they kickstarted with this idea of being, you know, like already a completely background cloud-based solution.
+
+[SPEAKER_00]
+Cursor, for example, brought out this thing called Cursor Cloud Agents. Yeah. Right. Which is pretty much the same thing. Codex has codex for the web. So we're also pointing out a lot of these examples. So people understand how the concept relates to... real tools that people use. So hopefully people can connect the dots. They're all the same crop of solutions, which is I make the instructions locally, but somehow in the cloud, they are able to clone my repository and then do the work. Is that the idea?
+
+[SPEAKER_01]
+Yeah, pretty much. You have your environment provisioned elsewhere, and the whole workload will happen in the cloud and not in your machine. And also, very importantly, you don't need to have your computer turned on, right? So this can run completely... You can just trigger this even like from your phone or something like just from a web interface or yeah.
+
+[SPEAKER_00]
+Ah, I see. I see. This is interesting. There's still an element of you triggering this though, right? Meaning you still... somehow have a mechanism of instructing the harness or this solution that has your hosted async agents to do the work in the background in the cloud, so to speak.
+
+[SPEAKER_01]
+Right. Yeah, you're still very much in the loop. You are part of the workflow. And what I see from people doing this and teams doing that is basically like toil tasks, which is like, you know, cleanups and library migrations, like dead code cleanup, you know, like feature flag cleanup is also a very good one. You can just... trigger an agent and say, yeah, we need to clean up the feature flags.
+
+[SPEAKER_00]
+And it makes a lot of sense because if you examine a lot of the tasks that we do today, a major portion of the task is very much like this toil-based thing. So we as developers kick off the task where we give the plan and we talk about how we want it implemented. But after that, maybe 80% of it is the agent writing the code. running tests, compiling, making sure that the code works. If it doesn't, add the fixes, doing the review. All of that toil kind of work, which is I think what a reference you made, is why the agent in the cloud makes a lot of sense because that doesn't need to run in my machine. What needs to run in my machine is the piece that interacts with me. So say the task gets completed in the cloud and it's like, okay, we think we're done. This is the output of the results. Bringing back my Android example, yeah, most of the CI, Lint tests, can eat up a large portion of the resources in the machine. So wouldn't it be nice if like a cloud agent just did that and came back with just the results and the only piece that runs on your machine is that interaction because then that allows you to just run that many more agents in parallel. It goes to the point that you're making where we are breaking from local maxima to global maxima because we are adding more number of agents in the process that can execute on this.
+
+[SPEAKER_01]
+Right. Yeah, that's a very good way to put it. That sounds great.
+
+[SPEAKER_00]
+Like, no, why do you want me to do more, Yuri? Why can't I just be happy with this world? What am I missing now in this chase for global maxima?
+
+[SPEAKER_01]
+Yeah, the only thing there now is that you had to ask the agent to do something, right? You're still very much in the loop. But there are a bunch of tasks that they're just kind of recurring or they're event-based. For example, something happens and you know that you have to do some work, some code changes or very kind of trivial, but still need someone to go in there and do it. Can you give me some examples of those tasks just to really cement that concept? something that's very easy to verify. So, for example, migrations, you know, some bad code cleanup, something that, you know, you know that if you can remove this code and everything keeps working, this is something that should be done and doesn't really require a lot of effort from a human to be there. Also, a very good one is feature flag cleanup.
+
+[SPEAKER_00]
+This is very typical of larger code bases when people are actively working on multiple features, merging into the code base. At some point, you'll notice that a lot of these feature flags exist in code, but they're all dead, right? Like the feature flag itself is turned on to 100%. So perfect example. I can see a world where you even have an agent or a task that... repeatedly runs every day to make sure that, you know, even the code is shaped properly. As people add more features and the thing that everyone's worried about with AI, just like sending in thousands of PRs, there's a high likelihood that some of the logic across your code base is duplicated. So what you could do is you could have an agent comb through the code base, see if there are like patterns that are repeated unnecessarily, and you can dry up your code, not repeat yourself. We have skills that do this. I can easily see us having like an agent that autonomously does this, puts up a PR where you can just hit approve and you're like, yep, that makes sense. And, you know, next thing you know, boom, you're going into this world of improving your code base without any human intervention.
+
+[SPEAKER_01]
+Yeah, like documentation drift. So you could have an agent just verifying if the docs are up to date and making sure that it stays like that, like stays up to date.
+
+[SPEAKER_00]
+I have this storm. I don't know if I heard it from somewhere, but I like calling it self-healing agents, self-healing agents that help improve your code base. And in the world of harness engineering, I think self-healing agents are really powerful.
+
+[SPEAKER_01]
+With that, I think the next thing that opens up is the need for new orchestration surfaces or new types of UX for us to deal with that. Because if you stop and think about it, when you're doing this kind of work, when you're orchestrating agents... Specifically here, you're not looking a lot at the code anymore. It's more about verifying if things went well and if this migration was correct. And so a lot of these tools already have some kind of new approach to that, like showing your recording or, you know, like trying to surface the architecture changes or dependency graph or these new things just like emerging from this new approach to do work.
+
+[SPEAKER_00]
+Oh, I think that's actually a really important point you made. I was thinking, I was like, OK, how is that different from what we have today, which is, you know, cloud code or like some of these things talking about how the agents come back in a chat like interface. But I think the point that I originally missed that you brought out was there's so much more that can be done in terms of the designing that user experience tailored towards just getting really good at orchestration surface. Right. You know, for example, if you want to review and make sure that the task is done, right, that's what you mean by recording, right? Like, is there a way for the agent to basically replay what it did throughout, but in a more cogent way and like, you know, surface that as a user experience for me and the user being the developer here?
+
+[SPEAKER_01]
+Yeah.
+
+[SPEAKER_00]
+If anything changed as part of the architecture because of the design, it visually shows you the dependency graph tree what changed. I would love for some tool to your point that is able to do this in a more visual way, right? As against trying to like shoehorn that in a chat interface with just text.
+
+[SPEAKER_01]
+Basically, the idea is like the agent can create new artifacts as part of the output of a task. And you can use that to verify the work. And if it makes it faster, it makes it easier for you to validate and move on, especially in this kind of recurring toil work. I think it's all for the good.
+
+[SPEAKER_00]
+So a good way to frame this whole background, fully autonomous version is... Local agents basically help me write code, while a background agent actually takes a task altogether and works on that and executes that to come up with a result. Essentially, it's more autonomous, right?
+
+[SPEAKER_01]
+And then we have the whole issue, like, if you're going to have an autonomous agent... I think the final part is like, how do you trust this, right?
+
+[SPEAKER_00]
+And you're sounding like everyone's manager right now, which is, can you do more? Can you do more? You know, local maximum to what is it that you said? Global maximum.
+
+[SPEAKER_01]
+I don't want to be in this position though, but I know it can sound like that.
+
+[SPEAKER_00]
+Hey man, you chose the topic. True. I feel with agents basically doing all the work, we are at global maximum. So what's the problem? Like, why isn't everyone just in this world now?
+
+[SPEAKER_01]
+I think the problem is the same problem we have with AI from all the time, which is trust. How do you trust this thing at all? One thing that keeps pushing this frontier is data, right? As the models get better and they have more data, you start being able to trust them more. And it's almost like when you have a new co-worker joining your team or a junior developer joining. It's like you, at the beginning, you don't know how much you can trust this new person. So you progressively give more tasks and you delegate more stuff and you have feedback on how much you can trust. Trust is going to evolve as they perform, right? And at some point, you just trust the person to do the work. And I think that's why it's a good idea to start with these very basic toil tasks that is easy to validate and so that you can build up the trust. This kind of task the agent can safely do in the background, and I don't need to be checking the code directly. We have enough guardrails, and I know it's going to work because it's been working. It's just like when you delegate a task to a colleague that you trust, you know that you can trust this person. You will check the code maybe. You will talk, you know, have an overview, maybe something like that. But you don't need to, you know, like inspect every single line of code. And, you know, it's something like that.
+
+[SPEAKER_00]
+But I guess maybe in closing, Yuri, the important point is how do you build that trust? That's the question. That's the question on everyone's mind. What do I need to do to start building that trust?
+
+[SPEAKER_01]
+So I think a lot of it has to do with what the points that we were making on the harness engineering episode. that you're moving from like this cool AI flows to actually getting mergeable work. So all the guardrails you have to put and all the work you have to do to actually get there.
+
+[SPEAKER_00]
+To your point, what you're saying is it's not just that, hey, wait for the model to get better because yeah, sure, you can wait for the model to get better and it will probably get better at doing a lot of the tasks. That's one aspect of it. But the other important aspect of... What you can do to build that trust is work towards harness engineering. You know, our episode on harness engineering is actually a really important one. I really hope people, to your recommendation, listen to it because it talks specifically about what you can do now, what you can do today to make it better for these agents to execute work autonomously.
+
+[SPEAKER_01]
+And I think one thing that listeners can also like take from this episode, like in the whole background agents is also, okay, if you were able to finish a task by driving the agent, you know, like, for example, let's think about feature flag cleanup. So you can drive the agents to do that. And going back to Karpathy idea of maximizing or minimizing the amount of innovation you have to do to get something done. So if you can do that on your machine, you know, like on your environment and that works. And the next thing I think is like being able to move that to the cloud and like to do that to the completely on the background agent that doesn't need your machine to be involved is If you can do that, then perhaps you could hook that into an event-based system that could trigger the migration, for example, this cleanup to happen. And once you get there, I think basically you got the whole stack going from the starting point to the end point of doing the work autonomously. So maybe... Maybe that's one way to try it.
+
+[SPEAKER_00]
+Yuri, thank you for pushing me today. I really feel like you've been everyone's manager, you know, where you're like, push, push, maximize productivity. I'll take notes from you, sir. And, you know, I'll report back on my productivity gains.
+
+[SPEAKER_01]
+Well, at least if we can drop the boring toil work, that would be nice.
+
+[SPEAKER_00]
+It's exactly what my manager said too. They're gently patting me on my back saying, you know, think about it. You can focus on the interesting work. You don't have to focus on the toil work. So I'm suspiciously very optimistic about what you said.
+
+[SPEAKER_01]
+Nice.
+
+[SPEAKER_00]
+All right. Thanks for listening, folks. And we will catch you in the next one. Thanks for joining, everyone.

@@ -1,19 +1,19 @@
 """
-Import transcribed podcast episodes from podcast/ into the database.
+Import transcribed podcast episodes into the database.
 
-Reads podcast/episodes.csv, finds each episode directory, and upserts into
-resources + podcast_episodes. Only imports episodes where a diarized
-transcript file exists on disk.
+Fetches all episode metadata from the Simplecast RSS feed, compares against
+the DB, and upserts any episode that has a diarized transcript on disk.
+No CSV required — the RSS is the source of truth.
 
 Usage:
   uv run pipeline/import_podcasts.py
   uv run pipeline/import_podcasts.py --dry-run
 """
 import argparse
-import csv
 import json
 import os
-import re
+import urllib.request
+import xml.etree.ElementTree as ET
 from datetime import datetime
 from email.utils import parsedate_to_datetime
 from pathlib import Path
@@ -26,19 +26,79 @@ load_dotenv()
 PODCAST_DIR = Path(__file__).parent.parent / "podcast"
 FRAGMENTED_SLUG = "fragmented-podcast"
 FRAGMENTED_NAME = "Fragmented Podcast"
-FRAGMENTED_FEED  = "https://fragmentedpodcast.com/episodes/feed/"
+FRAGMENTED_FEED = "https://feeds.simplecast.com/LpAGSLnY"
+
+ITUNES_NS = "http://www.itunes.com/dtds/podcast-1.0.dtd"
 
 
-def parse_published(s: str):
-    s = s.strip()
-    try:
-        return parsedate_to_datetime(s).date()
-    except Exception:
-        pass
-    try:
-        return datetime.fromisoformat(s.replace("Z", "+00:00")).date()
-    except Exception:
+def parse_duration_seconds(duration_str: str) -> int | None:
+    """Convert HH:MM:SS or MM:SS duration string to integer seconds."""
+    if not duration_str:
         return None
+    parts = duration_str.strip().split(":")
+    try:
+        if len(parts) == 3:
+            h, m, s = parts
+            return int(h) * 3600 + int(m) * 60 + int(s)
+        elif len(parts) == 2:
+            m, s = parts
+            return int(m) * 60 + int(s)
+    except ValueError:
+        pass
+    return None
+
+
+def fetch_rss_episodes() -> dict[int, dict]:
+    """Fetch all episode metadata from the Simplecast RSS feed.
+
+    Returns a dict keyed by episode number with full metadata.
+    """
+    with urllib.request.urlopen(FRAGMENTED_FEED) as resp:
+        root = ET.fromstring(resp.read())
+
+    episodes: dict[int, dict] = {}
+    for item in root.findall(".//item"):
+        ep_str = item.findtext(f"{{{ITUNES_NS}}}episode", "")
+        if not ep_str or not ep_str.isdigit():
+            continue
+        ep_num = int(ep_str)
+
+        pub_str = item.findtext("pubDate", "")
+        try:
+            published_at = parsedate_to_datetime(pub_str).date()
+        except Exception:
+            published_at = None
+
+        link = (item.findtext("link") or "").rstrip("/") + "/"
+        enclosure = item.find("enclosure")
+        audio_url = enclosure.get("url") if enclosure is not None else None
+
+        duration_str = item.findtext(f"{{{ITUNES_NS}}}duration", "")
+        duration_seconds = parse_duration_seconds(duration_str)
+
+        description_html = (item.findtext("description") or "").strip()
+
+        raw_summary = item.findtext(f"{{{ITUNES_NS}}}summary", "") or ""
+        tldr_lines = []
+        for line in raw_summary.strip().splitlines():
+            if line.strip().lower().startswith("full shownotes"):
+                break
+            tldr_lines.append(line)
+        tldr = "\n".join(tldr_lines).strip() or None
+
+        title = item.findtext("title", "") or item.findtext(f"{{{ITUNES_NS}}}title", "")
+
+        episodes[ep_num] = {
+            "title": title,
+            "url": link,
+            "published_at": published_at,
+            "audio_url": audio_url,
+            "duration_seconds": duration_seconds,
+            "description": description_html or None,
+            "tldr": tldr,
+        }
+
+    return episodes
 
 
 def find_file(ep_dir: Path, pattern: str) -> Path | None:
@@ -47,41 +107,45 @@ def find_file(ep_dir: Path, pattern: str) -> Path | None:
 
 
 def load_diarization(text: str) -> str:
-    # Strip file header (lines before and including the "---" divider), keep speaker labels
     parts = text.split("---\n\n", 1)
     return (parts[1] if len(parts) == 2 else text).strip()
 
 
-def load_episode(ep_num: int) -> dict | None:
+def load_transcript(ep_num: int) -> dict | None:
+    """Load diarized transcript from disk. Returns None if not transcribed yet."""
     ep_dir = PODCAST_DIR / f"ep{ep_num}"
     if not ep_dir.exists():
         return None
 
     diarization_path = find_file(ep_dir, "*.diarized.txt")
     if not diarization_path:
-        return None  # not yet transcribed
+        return None
 
     meta_path = find_file(ep_dir, "*_meta.json") or find_file(ep_dir, "*.meta.json")
-    shownotes_path = find_file(ep_dir, "*_shownotes.txt") or find_file(ep_dir, "*.shownotes.txt")
-
     meta = json.loads(meta_path.read_text()) if meta_path else {}
-    diarization = load_diarization(diarization_path.read_text())
-    description = shownotes_path.read_text().strip() if shownotes_path else None
 
     return {
-        "diarization": diarization,
-        "description": description,
-        "duration_seconds": meta.get("duration_seconds"),
-        "audio_url": meta.get("audio_url"),
+        "diarization": load_diarization(diarization_path.read_text()),
+        # Prefer meta.json values if present (more accurate), fall back to RSS
+        "duration_seconds_override": meta.get("duration_seconds"),
+        "audio_url_override": meta.get("audio_url"),
     }
+
+
+def get_db_episode_numbers(conn) -> set[int]:
+    with conn.cursor() as cur:
+        cur.execute("SELECT episode_number FROM podcast_episodes")
+        return {row[0] for row in cur.fetchall()}
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dry-run", action="store_true", help="Print what would be imported without writing to DB")
+    parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
-    episodes = list(csv.DictReader((PODCAST_DIR / "episodes.csv").open()))
+    print("Fetching RSS metadata...")
+    rss_episodes = fetch_rss_episodes()
+    print(f"  {len(rss_episodes)} episodes found in RSS feed")
 
     conn = psycopg2.connect(
         host=os.environ["POSTGRES_HOST"],
@@ -91,14 +155,22 @@ def main():
         password=os.environ["POSTGRES_PASSWORD"],
     )
 
+    db_episodes = get_db_episode_numbers(conn)
+    print(f"  {len(db_episodes)} episodes already in DB (max: {max(db_episodes) if db_episodes else 'none'})")
+
+    missing_from_db = sorted(set(rss_episodes) - db_episodes)
+    if missing_from_db:
+        print(f"  Episodes in RSS but not in DB: {missing_from_db}")
+    else:
+        print("  DB is up to date with RSS feed")
+
     with conn:
         with conn.cursor() as cur:
-            # Upsert source row for Fragmented Podcast
             cur.execute(
                 """
                 INSERT INTO feeds (slug, name, feed_url)
                 VALUES (%s, %s, %s)
-                ON CONFLICT (slug) DO NOTHING
+                ON CONFLICT (slug) DO UPDATE SET feed_url = EXCLUDED.feed_url
                 RETURNING id
                 """,
                 (FRAGMENTED_SLUG, FRAGMENTED_NAME, FRAGMENTED_FEED),
@@ -110,38 +182,48 @@ def main():
                 cur.execute("SELECT id FROM feeds WHERE slug = %s", (FRAGMENTED_SLUG,))
                 source_id = cur.fetchone()[0]
 
-    inserted = skipped = missing = 0
+    inserted = updated = skipped_no_transcript = 0
 
-    for ep in episodes:
-        ep_num = int(ep["episode"])
-        data = load_episode(ep_num)
+    # Process all RSS episodes, newest first
+    for ep_num in sorted(rss_episodes, reverse=True):
+        ep = rss_episodes[ep_num]
+        transcript = load_transcript(ep_num)
 
-        if data is None:
-            print(f"  [skip] ep{ep_num} — no transcript on disk")
-            missing += 1
+        if transcript is None:
+            if ep_num not in db_episodes:
+                print(f"  [no transcript] ep{ep_num}: {ep['title'][:60]}")
+                skipped_no_transcript += 1
             continue
 
-        published_at = parse_published(ep["published"])
+        # Use meta.json overrides if available
+        duration_seconds = transcript["duration_seconds_override"] or ep["duration_seconds"]
+        audio_url = transcript["audio_url_override"] or ep["audio_url"]
+        is_new = ep_num not in db_episodes
 
         if args.dry_run:
-            print(f"  [dry-run] ep{ep_num}: {ep['title'][:60]}  published={published_at}  diarization={len(data['diarization'])}ch")
-            inserted += 1
+            action = "insert" if is_new else "update"
+            print(f"  [dry-run/{action}] ep{ep_num}: {ep['title'][:60]}  published={ep['published_at']}")
+            if is_new:
+                inserted += 1
+            else:
+                updated += 1
             continue
 
         with conn:
             with conn.cursor() as cur:
                 cur.execute(
                     """
-                    INSERT INTO resources (source_id, url, title, description, resource_type, published_at)
-                    VALUES (%s, %s, %s, %s, 'podcast_episode', %s)
+                    INSERT INTO resources (source_id, url, title, description, tldr, resource_type, published_at)
+                    VALUES (%s, %s, %s, %s, %s, 'podcast_episode', %s)
                     ON CONFLICT (url) DO UPDATE
                         SET title         = EXCLUDED.title,
                             description   = EXCLUDED.description,
+                            tldr          = EXCLUDED.tldr,
                             published_at  = EXCLUDED.published_at,
                             resource_type = EXCLUDED.resource_type
                     RETURNING id
                     """,
-                    (source_id, ep["url"], ep["title"], data["description"], published_at),
+                    (source_id, ep["url"], ep["title"], ep["description"], ep["tldr"], ep["published_at"]),
                 )
                 resource_id = cur.fetchone()[0]
 
@@ -156,14 +238,18 @@ def main():
                             audio_url        = EXCLUDED.audio_url,
                             diarization      = EXCLUDED.diarization
                     """,
-                    (resource_id, ep_num, data["duration_seconds"], data["audio_url"], data["diarization"]),
+                    (resource_id, ep_num, duration_seconds, audio_url, transcript["diarization"]),
                 )
 
-        print(f"  [ok] ep{ep_num}: {ep['title'][:60]}")
-        inserted += 1
+        action = "inserted" if is_new else "updated"
+        print(f"  [{action}] ep{ep_num}: {ep['title'][:60]}")
+        if is_new:
+            inserted += 1
+        else:
+            updated += 1
 
     conn.close()
-    print(f"\nDone. imported={inserted}  missing_diarization={missing}")
+    print(f"\nDone. inserted={inserted}  updated={updated}  no_transcript={skipped_no_transcript}")
 
 
 if __name__ == "__main__":

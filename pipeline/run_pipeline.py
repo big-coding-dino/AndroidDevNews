@@ -17,17 +17,19 @@ import sys
 
 
 STEPS = [
-    ("sync",      ["uv", "run", "pipeline/sync_androidweekly.py"]),
-    ("scrape",    ["uv", "run", "pipeline/scrape.py"]),
-    ("embed",     ["uv", "run", "pipeline/embed.py"]),
-    ("tag",       ["uv", "run", "pipeline/tag_articles.py", "--only-untagged"]),
-    ("summarize", ["uv", "run", "pipeline/summarize.py"]),
+    ("sync-androidweekly", ["uv", "run", "pipeline/sync_androidweekly.py"]),
+    ("sync-kotlinweekly",  ["uv", "run", "pipeline/sync_kotlinweekly.py"]),
+    ("scrape",             ["uv", "run", "pipeline/scrape.py"]),
+    ("embed",              ["uv", "run", "pipeline/embed.py"]),
+    ("tag",                ["uv", "run", "pipeline/tag_articles.py", "--only-untagged"]),
+    ("summarize",          ["uv", "run", "pipeline/summarize.py"]),
 ]
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--skip-sync",      action="store_true", help="Skip sync_androidweekly step")
+    parser.add_argument("--skip-sync-androidweekly", action="store_true", help="Skip sync_androidweekly step")
+    parser.add_argument("--skip-sync-kotlinweekly",  action="store_true", help="Skip sync_kotlinweekly step")
     parser.add_argument("--skip-scrape",    action="store_true", help="Skip scrape step")
     parser.add_argument("--skip-embed",     action="store_true", help="Skip embed step")
     parser.add_argument("--skip-tag",       action="store_true", help="Skip tag step")
@@ -35,11 +37,12 @@ def main():
     args = parser.parse_args()
 
     skip = {
-        "sync":      args.skip_sync,
-        "scrape":    args.skip_scrape,
-        "embed":     args.skip_embed,
-        "tag":       args.skip_tag,
-        "summarize": args.skip_summarize,
+        "sync-androidweekly": args.skip_sync_androidweekly,
+        "sync-kotlinweekly":  args.skip_sync_kotlinweekly,
+        "scrape":             args.skip_scrape,
+        "embed":              args.skip_embed,
+        "tag":                args.skip_tag,
+        "summarize":          args.skip_summarize,
     }
 
     for name, cmd in STEPS:
