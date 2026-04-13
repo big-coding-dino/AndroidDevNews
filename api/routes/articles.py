@@ -112,6 +112,7 @@ def get_articles(
             source_domain=_source_domain(row[2]),
             category=row[8],
             read_time_minutes=_read_time(row[9]),
+            clean_content=row[9],
         )
         for row in rows
     ]

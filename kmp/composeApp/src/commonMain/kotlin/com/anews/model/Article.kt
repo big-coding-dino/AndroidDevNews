@@ -13,4 +13,5 @@ data class Article(
     val category: Category,
     val date: LocalDate,
     val readTimeMinutes: Int,
+    val cleanContent: String? = null,
 )

@@ -14,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anews.ds.DsTheme
 import com.anews.ui.components.DsArticleCard
@@ -23,7 +22,10 @@ import com.anews.ui.components.DsFilterChipRow
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun FeedScreen(viewModel: FeedViewModel = koinViewModel()) {
+fun FeedScreen(
+    onArticleSelect: (com.anews.model.Article) -> Unit = {},
+    viewModel: FeedViewModel = koinViewModel(),
+) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val colors  = DsTheme.colors
     val spacing = DsTheme.spacing
@@ -44,7 +46,7 @@ fun FeedScreen(viewModel: FeedViewModel = koinViewModel()) {
         when (val state = uiState) {
             is FeedUiState.Loading -> FeedLoading()
             is FeedUiState.Error   -> FeedError(state.message)
-            is FeedUiState.Success -> FeedArticleList(state = state, spacing = spacing)
+            is FeedUiState.Success -> FeedArticleList(state = state, spacing = spacing, onArticleSelect = onArticleSelect)
         }
     }
 }
@@ -75,8 +77,8 @@ private fun FeedError(message: String) {
 private fun FeedArticleList(
     state: FeedUiState.Success,
     spacing: com.anews.ds.DsSpacing,
+    onArticleSelect: (com.anews.model.Article) -> Unit,
 ) {
-    val uriHandler = LocalUriHandler.current
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(spacing.cardGap),
     ) {
@@ -87,7 +89,7 @@ private fun FeedArticleList(
             items(articles) { article ->
                 DsArticleCard(
                     article       = article,
-                    onOpenArticle = { uriHandler.openUri(it.url) },
+                    onOpenArticle = { onArticleSelect(it) },
                 )
             }
             item { Spacer(Modifier.height(spacing.sm)) }

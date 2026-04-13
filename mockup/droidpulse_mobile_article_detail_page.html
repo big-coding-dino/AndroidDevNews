@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>droidpulse — article</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:#0A0C12;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;font-family:'DM Sans',sans-serif;}
+    :root{
+      --green:#3DDC84;--gdim:rgba(61,220,132,0.10);--gbdr:rgba(61,220,132,0.35);
+      --bg:#0F1117;--surf:#181B25;--card:#1D2030;--card2:#232638;--card3:#272B40;
+      --bdr:rgba(255,255,255,0.07);--bdr2:rgba(255,255,255,0.13);
+      --t1:#E8EAF0;--t2:#8890A8;--t3:#454B62;
+      --amber-bg:rgba(240,170,50,0.13);--amber-t:#F5C04A;--amber-bdr:rgba(240,170,50,0.3);
+      --kt-bg:rgba(80,140,255,0.13);--kt-t:#7AABFF;
+      --gr-bg:rgba(240,170,50,0.13);--gr-t:#F5C04A;
+      --ai-bg:rgba(160,120,255,0.13);--ai-t:#B89FFF;
+    }
+    .frame{background:var(--bg);border-radius:36px;width:100%;max-width:390px;border:1.5px solid rgba(255,255,255,0.09);overflow:hidden;height:840px;display:flex;flex-direction:column;}
+    .sb{background:var(--bg);padding:12px 24px 4px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
+    .sb-time{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;color:var(--t1);}
+    .sb-icons{display:flex;gap:5px;align-items:center;}
+    .bat{width:18px;height:10px;border:1.5px solid var(--t2);border-radius:2px;position:relative;}
+    .bat::after{content:'';position:absolute;right:-4px;top:2px;width:3px;height:5px;background:var(--t2);border-radius:0 1px 1px 0;}
+    .bat-f{position:absolute;left:1px;top:1px;bottom:1px;width:72%;background:var(--green);border-radius:1px;}
+    .topbar{padding:10px 14px 0;display:flex;align-items:center;gap:8px;flex-shrink:0;}
+    .back{width:32px;height:32px;background:var(--card);border-radius:9px;border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t1);font-size:19px;flex-shrink:0;line-height:1;user-select:none;}
+    .domain-pill{flex:1;background:var(--card);border:1px solid var(--bdr);border-radius:9px;padding:6px 11px;display:flex;align-items:center;gap:6px;min-width:0;}
+    .ddot{width:5px;height:5px;background:var(--green);border-radius:50%;flex-shrink:0;}
+    .dtxt{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .share-btn{width:32px;height:32px;background:var(--card);border-radius:9px;border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+
+    /* 4-segment mode bar */
+    .mode-bar{padding:10px 14px 0;flex-shrink:0;}
+    .mode-seg{display:flex;background:var(--surf);border-radius:11px;padding:3px;border:1px solid var(--bdr);gap:2px;}
+    .mseg{flex:1;padding:7px 0;border-radius:9px;cursor:pointer;font-size:10.5px;font-weight:500;color:var(--t3);transition:all .15s;display:flex;align-items:center;justify-content:center;gap:4px;user-select:none;white-space:nowrap;}
+    .mseg.on{background:var(--card);}
+    .mseg.m-summary.on{color:var(--ai-t);}
+    .mseg.m-reader.on{color:var(--green);}
+    .mseg.m-web.on{color:var(--t2);}
+    .mseg.m-extract.on{color:var(--amber-t);}
+
+    .art-scroll{flex:1;overflow-y:auto;scrollbar-width:none;}
+    .art-scroll::-webkit-scrollbar{display:none;}
+
+    /* SUMMARY */
+    .sum-wrap{padding:18px 16px 40px;}
+    .sum-hdr{display:flex;align-items:center;gap:8px;margin-bottom:16px;}
+    .sum-badge{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--ai-t);background:var(--ai-bg);padding:4px 9px;border-radius:100px;border:1px solid rgba(160,120,255,0.22);}
+    .sum-time{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);}
+    .sum-title{font-size:18px;font-weight:600;color:var(--t1);line-height:1.32;margin-bottom:14px;}
+    .sum-oneliner{font-size:13.5px;color:var(--t2);line-height:1.65;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--bdr);}
+    .sec-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:11px;}
+    .bullets{margin-bottom:20px;}
+    .bullet{display:flex;gap:10px;align-items:flex-start;margin-bottom:12px;}
+    .bdot{width:5px;height:5px;border-radius:50%;background:var(--green);flex-shrink:0;margin-top:7px;}
+    .btxt{font-size:13px;color:var(--t2);line-height:1.65;}
+    .btxt strong{color:var(--t1);font-weight:500;}
+    .btxt code{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--card2);padding:1px 5px;border-radius:3px;color:var(--green);}
+    .callout{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:13px 14px;margin-bottom:18px;}
+    .callout-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--gr-t);letter-spacing:1px;text-transform:uppercase;margin-bottom:7px;}
+    .callout-txt{font-size:12.5px;color:var(--t2);line-height:1.62;}
+    .callout-txt code{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--card2);padding:1px 5px;border-radius:3px;color:var(--green);}
+    .verdict{background:var(--gdim);border:1px solid var(--gbdr);border-radius:12px;padding:13px 14px;margin-bottom:20px;display:flex;gap:10px;align-items:flex-start;}
+    .vicon{width:20px;height:20px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+    .vtxt{font-size:12.5px;color:var(--t2);line-height:1.62;}
+    .vtxt strong{color:var(--green);font-weight:500;}
+    .tag-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;}
+    .divider{height:1px;background:var(--bdr);margin-bottom:20px;}
+    .actions-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;}
+    .actions{display:flex;gap:8px;}
+    .act{flex:1;padding:11px 0;border-radius:11px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:12.5px;font-weight:500;cursor:pointer;}
+    .act.secondary{background:var(--card);border:1px solid var(--bdr);color:var(--t2);}
+    .act.primary{background:var(--gdim);border:1px solid var(--gbdr);color:var(--green);}
+
+    /* READER */
+    .read-wrap{padding:20px 16px 40px;}
+    .read-origin{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--green);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;}
+    .read-title{font-size:20px;font-weight:600;color:var(--t1);line-height:1.3;margin-bottom:12px;}
+    .read-byline{display:flex;align-items:center;gap:8px;padding-bottom:18px;border-bottom:1px solid var(--bdr);margin-bottom:20px;flex-wrap:wrap;}
+    .rbd{width:4px;height:4px;background:var(--t3);border-radius:50%;}
+    .rbt{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);}
+    .read-body{font-size:14px;color:var(--t2);line-height:1.82;}
+    .read-body p{margin-bottom:16px;}
+    .read-body h3{font-size:15px;font-weight:500;color:var(--t1);margin:24px 0 10px;}
+    .read-body code{font-family:'JetBrains Mono',monospace;font-size:11.5px;background:var(--card2);padding:2px 6px;border-radius:4px;color:var(--green);}
+    .read-body pre{background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:14px;margin:14px 0;overflow-x:auto;}
+    .read-body pre code{background:none;padding:0;color:#B89FFF;font-size:11.5px;line-height:1.75;display:block;}
+    .read-body blockquote{border-left:3px solid var(--green);border-radius:0 8px 8px 0;background:var(--card);padding:11px 14px;margin:16px 0;font-size:13px;color:var(--t2);line-height:1.62;font-style:italic;}
+    .read-footer{margin-top:28px;padding-top:18px;border-top:1px solid var(--bdr);}
+
+    /* WEB */
+    .web-wrap{display:flex;flex-direction:column;height:100%;}
+    .web-urlbar{margin:10px 14px 0;background:var(--card);border:1px solid var(--bdr);border-radius:9px;padding:7px 12px;display:flex;align-items:center;gap:7px;}
+    .web-url-txt{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--t2);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .web-tools{margin:0 14px;padding:7px 0;display:flex;gap:6px;border-bottom:1px solid var(--bdr);}
+    .wtbtn{width:30px;height:26px;background:var(--card);border:1px solid var(--bdr);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+    .wtbtn.dim{opacity:.3;}
+    .reader-pill{display:flex;align-items:center;gap:5px;padding:0 10px;height:26px;color:var(--green);font-size:10px;font-family:'JetBrains Mono',monospace;font-weight:500;background:var(--gdim);border:1px solid var(--gbdr);border-radius:6px;cursor:pointer;}
+    .web-vp{flex:1;overflow-y:auto;scrollbar-width:none;padding:0 14px 20px;}
+    .web-vp::-webkit-scrollbar{display:none;}
+    .web-site-bar{background:var(--card2);border-radius:9px;padding:9px 13px;margin:12px 0;display:flex;align-items:center;gap:8px;}
+    .web-site-name{font-size:12px;font-weight:500;color:var(--t1);}
+    .web-site-nav{display:flex;gap:12px;margin-left:auto;}
+    .web-site-nav span{font-size:10.5px;color:var(--t3);}
+    .web-ad{background:var(--card2);border:1px dashed var(--bdr2);border-radius:8px;padding:9px;margin:12px 0;text-align:center;}
+    .web-ad-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3);letter-spacing:1px;}
+    .web-rel-lbl{font-size:11px;font-weight:500;color:var(--t2);margin:14px 0 8px;padding-top:12px;border-top:1px solid var(--bdr);}
+    .web-rel-item{display:flex;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--bdr);}
+    .web-rel-thumb{width:36px;height:36px;background:var(--card2);border-radius:5px;flex-shrink:0;}
+    .web-rel-txt{font-size:11.5px;color:var(--t2);line-height:1.38;}
+
+    /* EXTRACT TAB */
+    .ext-wrap{display:flex;flex-direction:column;height:100%;}
+
+    /* stats strip */
+    .ext-stats{padding:10px 14px 0;flex-shrink:0;}
+    .ext-stats-row{display:flex;align-items:center;gap:6px;}
+    .ext-stat{display:flex;align-items:center;gap:4px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);}
+    .ext-stat-val{color:var(--t2);font-weight:500;}
+    .ext-stat-sep{color:var(--t4,#2E3248);}
+    .ext-fit-ok{display:flex;align-items:center;gap:4px;font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--green);background:var(--gdim);border:1px solid var(--gbdr);padding:3px 8px;border-radius:100px;margin-left:auto;white-space:nowrap;}
+    .ext-fit-warn{display:flex;align-items:center;gap:4px;font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--amber-t);background:var(--amber-bg);border:1px solid var(--amber-bdr);padding:3px 8px;border-radius:100px;margin-left:auto;white-space:nowrap;}
+
+    /* token meter bar */
+    .ext-meter-wrap{padding:8px 14px 0;flex-shrink:0;}
+    .ext-meter-track{height:3px;background:var(--card2);border-radius:2px;overflow:hidden;}
+    .ext-meter-fill{height:100%;border-radius:2px;transition:width .3s;}
+
+    /* prompt prefix */
+    .ext-prefix-wrap{padding:10px 14px 0;flex-shrink:0;}
+    .ext-prefix-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;}
+    .ext-prefix-clear{font-size:10px;color:var(--t3);cursor:pointer;letter-spacing:0;text-transform:none;}
+    .ext-prefix-chips{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;}
+    .ext-prefix-chips::-webkit-scrollbar{display:none;}
+    .ext-chip{font-size:10px;font-weight:500;padding:5px 10px;border-radius:8px;cursor:pointer;white-space:nowrap;border:1px solid var(--bdr);color:var(--t2);background:var(--card);transition:all .15s;flex-shrink:0;}
+    .ext-chip.on{background:var(--amber-bg);border-color:var(--amber-bdr);color:var(--amber-t);}
+
+    /* chunk navigator */
+    .ext-chunk-wrap{padding:8px 14px 0;flex-shrink:0;display:none;}
+    .ext-chunk-wrap.visible{display:block;}
+    .ext-chunk-bar{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--bdr);border-radius:9px;padding:7px 12px;}
+    .ext-chunk-lbl{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t2);flex:1;}
+    .ext-chunk-nav{display:flex;gap:4px;}
+    .ext-chunk-btn{width:26px;height:22px;background:var(--card2);border:1px solid var(--bdr);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;color:var(--t2);user-select:none;}
+    .ext-chunk-btn.dim{opacity:.3;cursor:default;}
+    .ext-chunk-dots{display:flex;gap:4px;margin-top:6px;justify-content:center;}
+    .ext-chunk-dot{width:5px;height:5px;border-radius:50%;background:var(--t3);transition:background .15s;}
+    .ext-chunk-dot.on{background:var(--amber-t);}
+
+    /* the text area */
+    .ext-text-area{flex:1;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--card2) transparent;padding:10px 14px 0;}
+    .ext-text-area::-webkit-scrollbar{width:3px;}
+    .ext-text-area::-webkit-scrollbar-thumb{background:var(--card2);border-radius:2px;}
+    .ext-text-box{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:14px;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--t2);line-height:1.75;white-space:pre-wrap;word-break:break-word;cursor:text;user-select:text;-webkit-user-select:text;}
+    .ext-text-prefix-preview{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--amber-t);background:rgba(240,170,50,0.08);border-radius:6px;padding:8px 10px;margin-bottom:10px;line-height:1.6;border:1px solid var(--amber-bdr);}
+    .ext-text-prefix-lbl{font-size:9px;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;opacity:.7;}
+
+    /* bottom action bar */
+    .ext-actions{padding:10px 14px 14px;flex-shrink:0;border-top:1px solid var(--bdr);background:var(--bg);}
+    .ext-act-row{display:flex;gap:7px;}
+    .ext-act{flex:1;padding:10px 0;border-radius:10px;display:flex;align-items:center;justify-content:center;gap:5px;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;}
+    .ext-act.copy{background:var(--card);border:1px solid var(--bdr);color:var(--t2);}
+    .ext-act.copy.copied{background:var(--gdim);border-color:var(--gbdr);color:var(--green);}
+    .ext-act.export{background:var(--card);border:1px solid var(--bdr);color:var(--t2);}
+    .ext-act.llm{background:var(--amber-bg);border:1px solid var(--amber-bdr);color:var(--amber-t);}
+
+    /* LLM picker sheet */
+    .llm-sheet-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.6);z-index:30;display:none;align-items:flex-end;}
+    .llm-sheet-overlay.open{display:flex;}
+    .llm-sheet{background:var(--surf);border-radius:20px 20px 0 0;border:1px solid var(--bdr2);border-bottom:none;width:100%;padding:0 0 24px;}
+    .llm-sheet-handle{width:36px;height:4px;background:var(--t3);border-radius:2px;margin:12px auto 0;}
+    .llm-sheet-title{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3);letter-spacing:1.5px;text-transform:uppercase;text-align:center;padding:14px 0 12px;border-bottom:1px solid var(--bdr);}
+    .llm-options{padding:12px 16px 0;display:flex;flex-direction:column;gap:4px;}
+    .llm-option{display:flex;align-items:center;gap:12px;padding:11px 14px;background:var(--card);border-radius:11px;cursor:pointer;border:1px solid var(--bdr);transition:border-color .15s;}
+    .llm-option:hover{border-color:var(--amber-bdr);}
+    .llm-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;}
+    .llm-info{flex:1;}
+    .llm-name{font-size:13px;font-weight:500;color:var(--t1);}
+    .llm-sub{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--t3);}
+    .llm-action{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);}
+    .llm-cancel{margin:12px 16px 0;padding:11px;background:var(--card2);border-radius:11px;text-align:center;font-size:13px;color:var(--t2);cursor:pointer;border:1px solid var(--bdr);}
+
+    /* copy flash */
+    .copy-flash{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--card2);border:1px solid var(--green);border-radius:10px;padding:10px 18px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--green);z-index:40;display:none;white-space:nowrap;}
+
+    /* bottom nav */
+    .bot-nav{background:var(--surf);border-top:1px solid var(--bdr);display:flex;padding:8px 0 18px;flex-shrink:0;}
+    .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:3px 0;}
+    .nav-ind{width:28px;height:2px;border-radius:2px;margin-bottom:1px;}
+    .nav-lbl{font-size:10px;font-weight:500;font-family:'JetBrains Mono',monospace;}
+  </style>
+</head>
+<body>
+<div class="frame" style="position:relative">
+
+  <!-- status bar -->
+  <div class="sb">
+    <span class="sb-time">09:41</span>
+    <div class="sb-icons">
+      <svg width="16" height="10" viewBox="0 0 16 10"><rect x="0" y="5" width="3" height="5" rx="1" fill="#8890A8"/><rect x="4.5" y="3" width="3" height="7" rx="1" fill="#8890A8"/><rect x="9" y="1" width="3" height="9" rx="1" fill="#8890A8"/><rect x="13.5" y="0" width="2.5" height="10" rx="1" fill="#3DDC84"/></svg>
+      <svg width="13" height="10" viewBox="0 0 13 10"><path d="M6.5 2C8.5 2 10.3 2.8 11.6 4.1L13 2.7C11.3 1 9 0 6.5 0S1.7 1 0 2.7L1.4 4.1C2.7 2.8 4.5 2 6.5 2Z" fill="#8890A8"/><path d="M6.5 5C7.7 5 8.8 5.5 9.6 6.3L11 4.9C9.8 3.7 8.2 3 6.5 3S3.2 3.7 2 4.9L3.4 6.3C4.2 5.5 5.3 5 6.5 5Z" fill="#8890A8"/><circle cx="6.5" cy="9" r="1.5" fill="#3DDC84"/></svg>
+      <div class="bat"><div class="bat-f"></div></div>
+    </div>
+  </div>
+
+  <!-- topbar -->
+  <div class="topbar">
+    <div class="back">‹</div>
+    <div class="domain-pill"><div class="ddot"></div><div class="dtxt">blog.jetbrains.com</div></div>
+    <div class="share-btn">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="11" cy="2.5" r="1.5" stroke="#8890A8" stroke-width="1.2"/><circle cx="11" cy="11.5" r="1.5" stroke="#8890A8" stroke-width="1.2"/><circle cx="3" cy="7" r="1.5" stroke="#8890A8" stroke-width="1.2"/><path d="M9.5 3.3L4.5 6.2M9.5 10.7L4.5 7.8" stroke="#8890A8" stroke-width="1.2"/></svg>
+    </div>
+  </div>
+
+  <!-- mode bar — 4 segments -->
+  <div class="mode-bar">
+    <div class="mode-seg">
+      <div class="mseg m-summary on" id="seg-summary" onclick="switchMode('summary')">
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 2.5h8M1.5 5h6M1.5 7.5h7" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+        Summary
+      </div>
+      <div class="mseg m-reader" id="seg-reader" onclick="switchMode('reader')">
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M2 2h7M2 4.5h7M2 7h7M2 9.5h4.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+        Reader
+      </div>
+      <div class="mseg m-web" id="seg-web" onclick="switchMode('web')">
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><circle cx="5.5" cy="5.5" r="4" stroke="currentColor" stroke-width="1.1"/><path d="M1.5 5.5h8M5.5 1.5C4.5 3 4 4.2 4 5.5S4.5 8 5.5 9.5M5.5 1.5C6.5 3 7 4.2 7 5.5S6.5 8 5.5 9.5" stroke="currentColor" stroke-width="1.1"/></svg>
+        Web
+      </div>
+      <div class="mseg m-extract" id="seg-extract" onclick="switchMode('extract')">
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><rect x="1.5" y="1.5" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.1"/><path d="M3.5 4h4M3.5 5.5h4M3.5 7h2.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+        Extract
+      </div>
+    </div>
+  </div>
+
+  <!-- article scroll -->
+  <div class="art-scroll" id="art-scroll"></div>
+
+  <!-- bottom nav -->
+  <div class="bot-nav">
+    <div class="nav-item" style="opacity:.4">
+      <div class="nav-ind"></div>
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="3" y="3" width="7" height="7" rx="2" fill="#454B62"/><rect x="12" y="3" width="7" height="7" rx="2" fill="#454B62" opacity=".45"/><rect x="3" y="12" width="7" height="7" rx="2" fill="#454B62" opacity=".45"/><rect x="12" y="12" width="7" height="7" rx="2" fill="#454B62" opacity=".2"/></svg>
+      <div class="nav-lbl" style="color:#454B62">Digest</div>
+    </div>
+    <div class="nav-item">
+      <div class="nav-ind" style="background:#3DDC84"></div>
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M5 6h12M5 11h12M5 16h8" stroke="#3DDC84" stroke-width="1.4" stroke-linecap="round"/><circle cx="3" cy="6" r="1.3" fill="#3DDC84"/><circle cx="3" cy="11" r="1.3" fill="#3DDC84"/><circle cx="3" cy="16" r="1.3" fill="#3DDC84"/></svg>
+      <div class="nav-lbl" style="color:#3DDC84">Feed</div>
+    </div>
+    <div class="nav-item" style="opacity:.4">
+      <div class="nav-ind"></div>
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="10" r="5" stroke="#454B62" stroke-width="1.4"/><circle cx="11" cy="10" r="2" fill="#454B62"/><path d="M4 16c1.5-2 4-3.5 7-3.5s5.5 1.5 7 3.5" stroke="#454B62" stroke-width="1.4" stroke-linecap="round"/><path d="M11 15v3M8.5 18h5" stroke="#454B62" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <div class="nav-lbl" style="color:#454B62">Podcast</div>
+    </div>
+  </div>
+
+  <!-- LLM picker sheet -->
+  <div class="llm-sheet-overlay" id="llm-sheet" onclick="closeLlm(event)">
+    <div class="llm-sheet">
+      <div class="llm-sheet-handle"></div>
+      <div class="llm-sheet-title">Send extract to LLM</div>
+      <div class="llm-options">
+        <div class="llm-option" onclick="sendToLlm('claude')">
+          <div class="llm-icon" style="background:rgba(210,100,50,0.15)">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#E8825A" stroke-width="1.5"/><path d="M5 8.5l2 2 4-4" stroke="#E8825A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="llm-info">
+            <div class="llm-name">Claude</div>
+            <div class="llm-sub">anthropic.com/claude</div>
+          </div>
+          <div class="llm-action">Copy + open ›</div>
+        </div>
+        <div class="llm-option" onclick="sendToLlm('chatgpt')">
+          <div class="llm-icon" style="background:rgba(16,163,127,0.15)">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2C5 2 3 4 3 6.5c0 1 .3 2 .9 2.7L3 12l3-1c.6.3 1.3.5 2 .5 3 0 5-2 5-4.5S11 2 8 2z" stroke="#10A37F" stroke-width="1.4" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="llm-info">
+            <div class="llm-name">ChatGPT</div>
+            <div class="llm-sub">chat.openai.com</div>
+          </div>
+          <div class="llm-action">Copy + open ›</div>
+        </div>
+        <div class="llm-option" onclick="sendToLlm('gemini')">
+          <div class="llm-icon" style="background:rgba(66,133,244,0.15)">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2L9.5 7H14L10.5 10L11.5 14L8 11.5L4.5 14L5.5 10L2 7H6.5L8 2Z" stroke="#4285F4" stroke-width="1.3" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="llm-info">
+            <div class="llm-name">Gemini</div>
+            <div class="llm-sub">gemini.google.com</div>
+          </div>
+          <div class="llm-action">Copy + open ›</div>
+        </div>
+        <div class="llm-option" onclick="sendToLlm('custom')">
+          <div class="llm-icon" style="background:var(--card2)">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="#454B62" stroke-width="1.3"/><path d="M8 5v3l2 1" stroke="#454B62" stroke-width="1.3" stroke-linecap="round"/></svg>
+          </div>
+          <div class="llm-info">
+            <div class="llm-name">Custom URL</div>
+            <div class="llm-sub">your preferred LLM</div>
+          </div>
+          <div class="llm-action">Configure ›</div>
+        </div>
+      </div>
+      <div class="llm-cancel" onclick="closeLlm()">Cancel</div>
+    </div>
+  </div>
+
+  <!-- copy toast -->
+  <div class="copy-flash" id="copy-flash">Copied to clipboard</div>
+
+</div>
+
+<script>
+  const CLEAN_TEXT = `Update Your Kotlin Projects for Android Gradle Plugin 9.0
+
+  AGP 9.0 ships two breaking changes that affect every Kotlin Android project. Neither has an automatic migration — both require manual edits to your build files before upgrading.
+
+  Change 1: built-in Kotlin support
+
+  Kotlin support is now compiled directly into AGP. You no longer apply org.jetbrains.kotlin.android as a separate plugin. Remove it from your plugins block in every module that uses it, and delete any kotlinOptions { } blocks that relied on it.
+
+  Before:
+  plugins {
+      id("com.android.application")
+      id("org.jetbrains.kotlin.android")
+  }
+
+  After:
+  plugins {
+      id("com.android.application")
+      // Kotlin now handled by AGP
+  }
+
+  Change 2: KMP Android module plugin
+
+  KMP modules targeting Android must migrate to the new dedicated plugin:
+
+  Before:
+  plugins {
+      id("com.android.library")
+      id("org.jetbrains.kotlin.multiplatform")
+  }
+
+  After:
+  plugins {
+      id("com.android.kotlin.multiplatform.library")
+  }
+
+  You can temporarily opt out of both changes with android.builtInKotlin=false in gradle.properties — but this flag is removed entirely in AGP 10.0, so the opt-out is a delay, not a solution.
+
+  IDE requirements
+
+  Android Studio Otter 3 Feature Drop is the minimum version that supports AGP 9.0 sync. Running AGP 9.0 against an older Studio build will fail at project sync. IntelliJ IDEA support was expected to land in Q1 2026.
+
+  Migration strategy
+
+  Start with leaf modules — modules that no other module depends on. Fix them, verify the build succeeds, then move up the dependency graph toward your app module. If you are still on kapt, this migration is a good moment to also move to ksp, since ksp is required to fully benefit from the K2 compiler improvements in Kotlin 2.x.`;
+
+  const CHARS = CLEAN_TEXT.length;
+  const WORDS = CLEAN_TEXT.split(/\s+/).filter(Boolean).length;
+  const TOKENS = Math.round(CHARS / 4);
+  const CHUNK_SIZE = 1800;
+  const CHUNK_COUNT = Math.ceil(CLEAN_TEXT.length / CHUNK_SIZE);
+
+  const PROMPTS = [
+    { id:'none', label:'No prefix' },
+    { id:'summarize', label:'Summarize this' },
+    { id:'keypoints', label:'Key points' },
+    { id:'explain', label:'Explain simply' },
+    { id:'action', label:'Action items' },
+    { id:'discuss', label:'Let\'s discuss' },
+  ];
+
+  const PROMPT_TEXTS = {
+    none: '',
+    summarize: 'Please summarize the following article:\n\n',
+    keypoints: 'Extract the key points from this article:\n\n',
+    explain: 'Explain this article in simple terms:\n\n',
+    action: 'What are the action items I should take based on this article?\n\n',
+    discuss: 'I want to discuss this article with you:\n\n',
+  };
+
+  let mode = 'summary';
+  let activeChunk = 0;
+  let activePrompt = 'none';
+
+  function switchMode(m) {
+    mode = m;
+    ['summary','reader','web','extract'].forEach(x =>
+      document.getElementById('seg-'+x).classList.toggle('on', x===m)
+    );
+    const el = document.getElementById('art-scroll');
+    el.scrollTop = 0;
+    if (m==='summary') renderSummary();
+    else if (m==='reader') renderReader();
+    else if (m==='web') renderWeb();
+    else renderExtract();
+  }
+
+  /* ── SUMMARY ── */
+  const vcheck = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5.5L4 7.5L8 3" stroke="#0F1117" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const icnReader = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 2h8M2 4.5h8M2 7h8M2 9.5h5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>`;
+  const icnSave = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6l4 4 4-4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const icnWeb = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M1.5 6h9M6 1.5C5 3 4.5 4.5 4.5 6S5 9 6 10.5M6 1.5C7 3 7.5 4.5 7.5 6S7 9 6 10.5" stroke="currentColor" stroke-width="1.2"/></svg>`;
+
+  function renderSummary() {
+    document.getElementById('art-scroll').innerHTML = `<div class="sum-wrap">
+      <div class="sum-hdr"><span class="sum-badge">Summary</span><span class="sum-time">~30 sec read</span></div>
+      <div class="sum-title">Update Your Kotlin Projects for Android Gradle Plugin 9.0</div>
+      <div class="sum-oneliner">AGP 9.0 has two breaking changes for every Kotlin Android project — manual migration, no automatic codemods. Affects all existing projects immediately on upgrade.</div>
+      <div class="sec-lbl">Key points</div>
+      <div class="bullets">
+        <div class="bullet"><div class="bdot"></div><div class="btxt"><strong>Remove org.jetbrains.kotlin.android</strong> — Kotlin support is now built directly into AGP. The separate plugin is gone.</div></div>
+        <div class="bullet"><div class="bdot"></div><div class="btxt"><strong>KMP Android modules</strong> must migrate to the new <code>com.android.kotlin.multiplatform.library</code> plugin.</div></div>
+        <div class="bullet"><div class="bdot"></div><div class="btxt"><strong>Opt-out via android.builtInKotlin=false</strong> — <strong>removed entirely in AGP 10.0</strong>. It's a delay, not a solution.</div></div>
+        <div class="bullet"><div class="bdot"></div><div class="btxt"><strong>Minimum IDE:</strong> Android Studio Otter 3 Feature Drop. Older builds fail at sync.</div></div>
+      </div>
+      <div class="callout">
+        <div class="callout-lbl">quick fix</div>
+        <div class="callout-txt">In each module: remove the kotlin.android plugin, delete any <code>kotlinOptions { }</code> blocks, and migrate kapt → ksp while you're in there. Then sync.</div>
+      </div>
+      <div class="verdict">
+        <div class="vicon">${vcheck}</div>
+        <div class="vtxt"><strong>Bottom line: </strong>Migrate before AGP 10.0 ships and the opt-out disappears. Start with leaf modules, verify the build, then move up the dependency graph.</div>
+      </div>
+      <div class="sec-lbl" style="margin-bottom:8px">Topics</div>
+      <div class="tag-row">
+        <span style="font-size:10px;font-weight:500;padding:4px 10px;border-radius:100px;background:rgba(80,140,255,0.13);color:#7AABFF">Kotlin</span>
+        <span style="font-size:10px;font-weight:500;padding:4px 10px;border-radius:100px;background:rgba(240,170,50,0.13);color:#F5C04A">Gradle</span>
+      </div>
+      <div class="divider"></div>
+      <div class="actions-lbl">Actions</div>
+      <div class="actions">
+        <div class="act secondary" onclick="switchMode('reader')">${icnReader} Reader mode</div>
+        <div class="act primary">${icnSave} Save offline</div>
+      </div>
+    </div>`;
+  }
+
+  /* ── READER ── */
+  function renderReader() {
+    document.getElementById('art-scroll').innerHTML = `<div class="read-wrap">
+      <div class="read-origin">blog.jetbrains.com</div>
+      <div class="read-title">Update Your Kotlin Projects for Android Gradle Plugin 9.0</div>
+      <div class="read-byline"><span class="rbt">JetBrains Kotlin Blog</span><div class="rbd"></div><span class="rbt">March 20, 2026</span><div class="rbd"></div><span class="rbt">4 min read</span></div>
+      <div class="read-body">
+        <p>AGP 9.0 ships two breaking changes that affect every Kotlin Android project. Neither has an automatic migration — both require manual edits to your build files before upgrading.</p>
+        <h3>Change 1: built-in Kotlin support</h3>
+        <p>Kotlin support is now compiled directly into AGP. Remove <code>org.jetbrains.kotlin.android</code> from your <code>plugins</code> block in every module, and delete any <code>kotlinOptions { }</code> blocks.</p>
+        <pre><code>// Before — remove from every module
+  plugins {
+      id("com.android.application")
+      id("org.jetbrains.kotlin.android") // ← delete
+  }
+
+  // After
+  plugins {
+      id("com.android.application")
+  }</code></pre>
+        <h3>Change 2: KMP Android module plugin</h3>
+        <pre><code>// Before
+  plugins {
+      id("com.android.library")
+      id("org.jetbrains.kotlin.multiplatform")
+  }
+
+  // After
+  plugins {
+      id("com.android.kotlin.multiplatform.library")
+  }</code></pre>
+        <blockquote>Opt-out: <code>android.builtInKotlin=false</code> in gradle.properties — removed in AGP 10.0. It's a delay, not a solution.</blockquote>
+        <h3>IDE requirements</h3>
+        <p>Android Studio Otter 3 Feature Drop is the minimum version that supports AGP 9.0 sync. Running it against an older Studio build fails at project sync.</p>
+        <h3>Migration strategy</h3>
+        <p>Start with leaf modules — modules that nothing else depends on. Fix, verify, then move up the graph. If you're still on <code>kapt</code>, this is a good moment to migrate to <code>ksp</code>.</p>
+      </div>
+      <div class="read-footer">
+        <div class="actions-lbl">Actions</div>
+        <div class="actions">
+          <div class="act secondary" onclick="switchMode('web')">${icnWeb} Open in browser</div>
+          <div class="act primary">${icnSave} Save offline</div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  /* ── WEB ── */
+  function renderWeb() {
+    document.getElementById('art-scroll').innerHTML = `<div class="web-wrap">
+      <div class="web-urlbar">
+        <svg width="10" height="12" viewBox="0 0 10 12" fill="none"><rect x="1" y="5" width="8" height="7" rx="1.5" stroke="#454B62" stroke-width="1.2"/><path d="M3 5V3.5a2 2 0 0 1 4 0V5" stroke="#454B62" stroke-width="1.2"/></svg>
+        <div class="web-url-txt">https://blog.jetbrains.com/kotlin/2026/03/agp-9-0-kotlin-migration/</div>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M10 6A4 4 0 1 1 8.5 2.9" stroke="#454B62" stroke-width="1.2" stroke-linecap="round"/><path d="M10 1v3H7" stroke="#454B62" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="web-tools">
+        <div class="wtbtn dim"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 6L1.5 6M3 6l2-2M3 6l2 2" stroke="#3E4358" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="wtbtn"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M9 6l1.5 0M9 6L7 4M9 6L7 8" stroke="#8890A8" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div style="flex:1"></div>
+        <div class="reader-pill" onclick="switchMode('reader')">
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 2.5h8M1.5 5h8M1.5 7.5h5" stroke="#3DDC84" stroke-width="1.1" stroke-linecap="round"/></svg>
+          Reader
+        </div>
+      </div>
+      <div class="web-vp">
+        <div class="web-site-bar">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 4h10M4 2v2M10 2v2" stroke="#454B62" stroke-width="1.1" stroke-linecap="round"/><rect x="2" y="4" width="10" height="8" rx="1.5" stroke="#454B62" stroke-width="1.1"/></svg>
+          <div class="web-site-name">JetBrains Blog</div>
+          <div class="web-site-nav"><span>Kotlin</span><span>IDEs</span><span>More</span></div>
+        </div>
+        <div style="background:var(--card);border-radius:10px;height:80px;margin-bottom:12px;border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3);letter-spacing:2px;text-transform:uppercase">Hero banner</span></div>
+        <div style="display:flex;gap:6px;margin-bottom:11px;">
+          <span style="font-size:10px;background:rgba(80,140,255,0.13);color:#7AABFF;padding:3px 9px;border-radius:100px;font-weight:500">Kotlin</span>
+          <span style="font-size:10px;background:rgba(240,170,50,0.13);color:#F5C04A;padding:3px 9px;border-radius:100px;font-weight:500">Gradle</span>
+        </div>
+        <div style="font-size:15px;font-weight:600;color:var(--t1);line-height:1.35;margin-bottom:6px">Update Your Kotlin Projects for Android Gradle Plugin 9.0</div>
+        <div style="font-size:11px;color:var(--t3);margin-bottom:10px;font-family:'JetBrains Mono',monospace">blog.jetbrains.com · March 20, 2026</div>
+        <div class="web-ad"><div class="web-ad-lbl">Advertisement</div></div>
+        <p style="font-size:12.5px;color:var(--t2);line-height:1.7;margin-bottom:10px">AGP 9.0 ships two breaking changes that affect every Kotlin Android project...</p>
+        <p style="font-size:11px;color:var(--t3);font-family:'JetBrains Mono',monospace;line-height:1.6">[ Full page in Chrome Custom Tab. Tap Reader above to strip to clean text. ]</p>
+        <div class="web-ad" style="margin-top:10px"><div class="web-ad-lbl">Advertisement</div></div>
+        <div class="web-rel-lbl">More from JetBrains</div>
+        <div class="web-rel-item"><div class="web-rel-thumb"></div><div class="web-rel-txt">Kotlin 2.3.0 Released — unused return value checker and explicit backing fields</div></div>
+        <div class="web-rel-item"><div class="web-rel-thumb"></div><div class="web-rel-txt">Compose Multiplatform 1.10.0: Navigation 3 stable</div></div>
+        <div class="web-rel-item"><div class="web-rel-thumb"></div><div class="web-rel-txt">KotlinConf 2026 — schedule and registration now open</div></div>
+      </div>
+    </div>`;
+  }
+
+  /* ── EXTRACT ── */
+  function getChunkText() {
+    const start = activeChunk * CHUNK_SIZE;
+    return CLEAN_TEXT.slice(start, start + CHUNK_SIZE);
+  }
+
+  function getFullText() {
+    const prefix = PROMPT_TEXTS[activePrompt] || '';
+    return CHUNK_COUNT > 1
+      ? prefix + `[Part ${activeChunk+1} of ${CHUNK_COUNT}]\n\n` + getChunkText()
+      : prefix + CLEAN_TEXT;
+  }
+
+  function renderExtract() {
+    const pct = Math.min(TOKENS / 4096, 1);
+    const overLimit = TOKENS > 4096;
+    const meterColor = overLimit ? '#F5C04A' : '#3DDC84';
+    const fitBadge = overLimit
+      ? `<div class="ext-fit-warn"><svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M4 2v2.5M4 5.5v.5" stroke="#F5C04A" stroke-width="1.2" stroke-linecap="round"/><circle cx="4" cy="4" r="3" stroke="#F5C04A" stroke-width="1"/></svg>${CHUNK_COUNT} chunks needed</div>`
+      : `<div class="ext-fit-ok"><svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 4L3.5 6L6.5 2" stroke="#3DDC84" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>fits in context</div>`;
+
+    const chunkVis = CHUNK_COUNT > 1
+      ? `<div class="ext-chunk-wrap visible" id="chunk-wrap">
+          <div class="ext-chunk-bar">
+            <div class="ext-chunk-lbl" id="chunk-lbl">Part <strong>${activeChunk+1}</strong> of ${CHUNK_COUNT} · ${CHUNK_SIZE} chars</div>
+            <div class="ext-chunk-nav">
+              <div class="ext-chunk-btn ${activeChunk===0?'dim':''}" id="chunk-prev" onclick="navChunk(-1)">‹</div>
+              <div class="ext-chunk-btn ${activeChunk===CHUNK_COUNT-1?'dim':''}" id="chunk-next" onclick="navChunk(1)">›</div>
+            </div>
+          </div>
+          <div class="ext-chunk-dots" id="chunk-dots">
+            ${Array.from({length:CHUNK_COUNT},(_,i)=>`<div class="ext-chunk-dot${i===activeChunk?' on':''}" id="cdot-${i}"></div>`).join('')}
+          </div>
+        </div>`
+      : `<div class="ext-chunk-wrap" id="chunk-wrap"></div>`;
+
+    const chipHtml = PROMPTS.map(p =>
+      `<div class="ext-chip${activePrompt===p.id?' on':''}" id="chip-${p.id}" onclick="setPrompt('${p.id}')">${p.label}</div>`
+    ).join('');
+
+    const prefixHtml = activePrompt !== 'none'
+      ? `<div class="ext-text-prefix-preview"><div class="ext-text-prefix-lbl">Prompt prefix</div>${PROMPT_TEXTS[activePrompt]}</div>`
+      : '';
+
+    const chunkDisplay = CHUNK_COUNT > 1 ? getChunkText() : CLEAN_TEXT;
+
+    document.getElementById('art-scroll').innerHTML = `<div class="ext-wrap">
+      <div class="ext-stats">
+        <div class="ext-stats-row">
+          <div class="ext-stat"><span class="ext-stat-val">${CHARS.toLocaleString()}</span>&nbsp;chars</div>
+          <span class="ext-stat-sep">·</span>
+          <div class="ext-stat"><span class="ext-stat-val">${WORDS}</span>&nbsp;words</div>
+          <span class="ext-stat-sep">·</span>
+          <div class="ext-stat"><span class="ext-stat-val">~${TOKENS.toLocaleString()}</span>&nbsp;tokens</div>
+          ${fitBadge}
+        </div>
+      </div>
+      <div class="ext-meter-wrap">
+        <div class="ext-meter-track">
+          <div class="ext-meter-fill" style="width:${Math.round(pct*100)}%;background:${meterColor}"></div>
+        </div>
+      </div>
+      <div class="ext-prefix-wrap">
+        <div class="ext-prefix-lbl">Prompt prefix <span class="ext-prefix-clear" onclick="setPrompt('none')">clear</span></div>
+        <div class="ext-prefix-chips">${chipHtml}</div>
+      </div>
+      ${chunkVis}
+      <div class="ext-text-area">
+        <div class="ext-text-box" id="ext-text-box">
+          ${prefixHtml}${chunkDisplay}
+        </div>
+      </div>
+      <div class="ext-actions">
+        <div class="ext-act-row">
+          <div class="ext-act copy" id="copy-btn" onclick="copyText()">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="4" width="8" height="9" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 4V2.5A1.5 1.5 0 0 1 5.5 1h5A1.5 1.5 0 0 1 12 2.5v5A1.5 1.5 0 0 1 10.5 9H9" stroke="currentColor" stroke-width="1.2"/></svg>
+            Copy
+          </div>
+          <div class="ext-act export" onclick="exportTxt()">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1.5" y="1.5" width="10" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M6.5 4.5v4M4.5 6.5l2 2 2-2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            .txt
+          </div>
+          <div class="ext-act llm" onclick="openLlm()">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 2C4 2 2 3.8 2 6s2 4 4.5 4c.5 0 1-.1 1.4-.2L10 11V8.8C11.2 8 12 7.1 12 6c0-2.2-2-4-5.5-4z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+            Send to LLM
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function navChunk(dir) {
+    const next = activeChunk + dir;
+    if (next < 0 || next >= CHUNK_COUNT) return;
+    activeChunk = next;
+    updateChunkUI();
+  }
+
+  function updateChunkUI() {
+    const lbl = document.getElementById('chunk-lbl');
+    if (lbl) lbl.innerHTML = `Part <strong>${activeChunk+1}</strong> of ${CHUNK_COUNT} · ${Math.min(CHUNK_SIZE, CLEAN_TEXT.length - activeChunk*CHUNK_SIZE).toLocaleString()} chars`;
+    const prev = document.getElementById('chunk-prev');
+    const next = document.getElementById('chunk-next');
+    if (prev) prev.className = `ext-chunk-btn${activeChunk===0?' dim':''}`;
+    if (next) next.className = `ext-chunk-btn${activeChunk===CHUNK_COUNT-1?' dim':''}`;
+    for (let i=0;i<CHUNK_COUNT;i++) {
+      const dot = document.getElementById('cdot-'+i);
+      if (dot) dot.className = `ext-chunk-dot${i===activeChunk?' on':''}`;
+    }
+    updateTextBox();
+  }
+
+  function updateTextBox() {
+    const box = document.getElementById('ext-text-box');
+    if (!box) return;
+    const prefix = PROMPT_TEXTS[activePrompt] || '';
+    const prefixHtml = activePrompt !== 'none'
+      ? `<div class="ext-text-prefix-preview"><div class="ext-text-prefix-lbl">Prompt prefix</div>${prefix}</div>`
+      : '';
+    const chunkDisplay = CHUNK_COUNT > 1 ? getChunkText() : CLEAN_TEXT;
+    box.innerHTML = prefixHtml + chunkDisplay;
+  }
+
+  function setPrompt(id) {
+    activePrompt = id;
+    PROMPTS.forEach(p => {
+      const chip = document.getElementById('chip-'+p.id);
+      if (chip) chip.classList.toggle('on', p.id===id);
+    });
+    updateTextBox();
+  }
+
+  function copyText() {
+    const text = getFullText();
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).catch(()=>{});
+    }
+    const btn = document.getElementById('copy-btn');
+    if (btn) { btn.classList.add('copied'); btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5L5 9.5L11 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg> Copied!`; }
+    const flash = document.getElementById('copy-flash');
+    flash.style.display = 'block';
+    setTimeout(() => {
+      flash.style.display = 'none';
+      if (btn) { btn.classList.remove('copied'); btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="4" width="8" height="9" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 4V2.5A1.5 1.5 0 0 1 5.5 1h5A1.5 1.5 0 0 1 12 2.5v5A1.5 1.5 0 0 1 10.5 9H9" stroke="currentColor" stroke-width="1.2"/></svg> Copy`; }
+    }, 2000);
+  }
+
+  function exportTxt() {
+    const text = getFullText();
+    const blob = new Blob([text], {type:'text/plain'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'agp-9-0-kotlin-migration.txt';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  function openLlm() {
+    document.getElementById('llm-sheet').classList.add('open');
+  }
+  function closeLlm(e) {
+    if (!e || e.target===document.getElementById('llm-sheet'))
+      document.getElementById('llm-sheet').classList.remove('open');
+  }
+  function sendToLlm(llm) {
+    copyText();
+    document.getElementById('llm-sheet').classList.remove('open');
+    const urls = { claude:'https://claude.ai', chatgpt:'https://chat.openai.com', gemini:'https://gemini.google.com', custom:'' };
+    if (urls[llm]) window.open(urls[llm],'_blank');
+  }
+
+  renderSummary();
+</script>
+</body>
+</html>

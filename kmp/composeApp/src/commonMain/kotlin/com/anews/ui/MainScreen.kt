@@ -29,7 +29,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anews.ds.DsTheme
+import com.anews.model.Article
 import com.anews.ui.components.DsAppHeader
+import com.anews.ui.detail.ArticleDetailScreen
 import com.anews.ui.digest.DigestScreen
 import com.anews.ui.feed.FeedScreen
 import com.anews.ui.podcast.PodcastScreen
@@ -42,8 +44,18 @@ enum class Tab(val label: String) {
 
 @Composable
 fun MainScreen() {
-    var selectedTab by remember { mutableStateOf(Tab.Feed) }
+    var selectedTab     by remember { mutableStateOf(Tab.Feed) }
+    var selectedArticle by remember { mutableStateOf<Article?>(null) }
     val colors = DsTheme.colors
+
+    if (selectedArticle != null) {
+        ArticleDetailScreen(
+            article  = selectedArticle!!,
+            onBack   = { selectedArticle = null },
+            modifier = Modifier.safeDrawingPadding(),
+        )
+        return
+    }
 
     Column(
         modifier = Modifier
@@ -56,7 +68,7 @@ fun MainScreen() {
         Box(modifier = Modifier.weight(1f)) {
             when (selectedTab) {
                 Tab.Digest  -> DigestScreen()
-                Tab.Feed    -> FeedScreen()
+                Tab.Feed    -> FeedScreen(onArticleSelect = { selectedArticle = it })
                 Tab.Podcast -> PodcastScreen()
             }
         }
