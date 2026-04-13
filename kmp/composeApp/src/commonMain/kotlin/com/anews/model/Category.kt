@@ -11,7 +11,7 @@ enum class Category(
     Compose     ("Compose",      "compose"),
     Gradle      ("Gradle",       "gradle"),
     Testing     ("Testing",      "testing"),
-    Android     ("Android",      "android"),
+    Android     ("Untagged",     "android",      showInFilter = false),
     Kmp         ("KMP",          "kmp"),
     Performance ("Performance",  "performance"),
     Architecture("Architecture", "architecture"),
