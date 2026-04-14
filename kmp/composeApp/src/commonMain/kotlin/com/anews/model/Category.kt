@@ -5,18 +5,18 @@ enum class Category(
     val slug: String,
     val showInFilter: Boolean = true,
 ) {
-    All         ("All",          "all"),
-    AI          ("AI",           "ai"),
-    Kotlin      ("Kotlin",       "kotlin"),
-    Compose     ("Compose",      "compose"),
-    Gradle      ("Gradle",       "gradle"),
-    Testing     ("Testing",      "testing"),
-    Android     ("Untagged",     "android",      showInFilter = false),
-    Kmp         ("KMP",          "kmp"),
-    Performance ("Performance",  "performance"),
+    All("All", "all"),
+    AI("AI", "ai"),
+    Kotlin("Kotlin", "kotlin"),
+    Compose("Compose", "compose"),
+    Gradle("Gradle", "gradle"),
+    Testing("Testing", "testing"),
+    Android("Untagged", "android", showInFilter = false),
+    Kmp("KMP", "kmp"),
+    Performance("Performance", "performance"),
     Architecture("Architecture", "architecture"),
-    Security    ("Security",     "security"),
-    Xr          ("XR",           "xr");
+    Security("Security", "security"),
+    Xr("XR", "xr");
 
     companion object {
         fun fromSlug(slug: String): Category =

@@ -24,16 +24,16 @@ data class DigestDto(
 )
 
 fun DigestDto.toDomain(): Digest = Digest(
-    id       = id,
-    tag      = Category.fromSlug(tag),
-    period   = period,
+    id = id,
+    tag = Category.fromSlug(tag),
+    period = period,
     articles = articles.map { it.toDomain() },
 )
 
 fun DigestArticleDto.toDomain(): DigestArticle = DigestArticle(
-    url          = url,
-    title        = title,
-    tldr         = tldr,
+    url = url,
+    title = title,
+    tldr = tldr,
     sourceDomain = sourceDomain,
-    category     = Category.fromSlug(category),
+    category = Category.fromSlug(category),
 )

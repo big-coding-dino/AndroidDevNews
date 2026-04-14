@@ -1,6 +1,5 @@
 package com.anews.di
 
-import com.anews.data.MockArticleRepository
 import com.anews.data.RemoteArticleRepository
 import com.anews.data.RemoteDigestRepository
 import com.anews.data.RemotePodcastRepository
@@ -35,7 +34,7 @@ val appModule = module {
     single {
         ArticleApiClient(
             httpClient = get(),
-            baseUrl    = "http://100.65.225.66:8000",
+            baseUrl = "http://100.65.225.66:8000",
         )
     }
 

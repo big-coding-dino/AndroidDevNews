@@ -51,9 +51,10 @@ private fun DsFilterChip(
     val colors = DsTheme.colors
     val shape = DsTheme.shapes.chip
 
-    val background = if (selected) colors.chipSelectedBackground else colors.chipUnselectedBackground
-    val textColor  = if (selected) colors.chipSelectedText       else colors.chipUnselectedText
-    val border     = if (selected) colors.borderAccent           else colors.chipUnselectedBorder
+    val background =
+        if (selected) colors.chipSelectedBackground else colors.chipUnselectedBackground
+    val textColor = if (selected) colors.chipSelectedText else colors.chipUnselectedText
+    val border = if (selected) colors.borderAccent else colors.chipUnselectedBorder
 
     Box(
         contentAlignment = Alignment.Center,

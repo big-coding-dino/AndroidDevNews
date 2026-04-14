@@ -6,9 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
@@ -29,7 +27,7 @@ fun DsArticleCard(
     onOpenArticle: (Article) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val colors  = DsTheme.colors
+    val colors = DsTheme.colors
     val spacing = DsTheme.spacing
     var expanded by rememberSaveable { mutableStateOf(false) }
 

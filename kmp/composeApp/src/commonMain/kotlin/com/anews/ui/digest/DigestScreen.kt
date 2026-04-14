@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -52,8 +51,8 @@ fun DigestScreen(viewModel: DigestViewModel = koinViewModel()) {
         if (filterCategories.isNotEmpty() && selectedCategory != null) {
             DsFilterChipRow(
                 categories = filterCategories,
-                selected   = selectedCategory,
-                onSelect   = viewModel::selectCategory,
+                selected = selectedCategory,
+                onSelect = viewModel::selectCategory,
             )
         }
 
@@ -74,8 +73,8 @@ fun DigestScreen(viewModel: DigestViewModel = koinViewModel()) {
 
                 LazyColumn(
                     contentPadding = PaddingValues(
-                        start  = spacing.screenHorizontal,
-                        end    = spacing.screenHorizontal,
+                        start = spacing.screenHorizontal,
+                        end = spacing.screenHorizontal,
                         bottom = spacing.xl,
                     ),
                     verticalArrangement = Arrangement.spacedBy(spacing.cardGap),

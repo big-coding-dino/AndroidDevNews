@@ -37,9 +37,9 @@ class FeedViewModel(
             repository.getArticles(slug)
                 .onSuccess { articles ->
                     _uiState.value = FeedUiState.Success(
-                        articles         = articles,
+                        articles = articles,
                         selectedCategory = category,
-                        groupedArticles  = groupArticles(articles),
+                        groupedArticles = groupArticles(articles),
                         filterCategories = Category.entries.filter { it.showInFilter },
                     )
                 }

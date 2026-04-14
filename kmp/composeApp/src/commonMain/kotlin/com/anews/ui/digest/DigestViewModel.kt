@@ -34,7 +34,7 @@ class DigestViewModel(
             repository.getDigests(slug)
                 .onSuccess { digests ->
                     _uiState.value = DigestUiState.Success(
-                        digests          = digests,
+                        digests = digests,
                         selectedCategory = category,
                         filterCategories = DIGEST_FILTER_CATEGORIES,
                     )

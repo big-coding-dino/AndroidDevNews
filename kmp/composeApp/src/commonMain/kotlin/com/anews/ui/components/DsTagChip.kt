@@ -31,16 +31,16 @@ fun DsTagChip(category: Category, modifier: Modifier = Modifier) {
 
 @Composable
 fun tagColorsFor(category: Category): DsTagColors = when (category) {
-    Category.All          -> DsTheme.colors.tagAndroid
-    Category.AI           -> DsTheme.colors.tagAi
-    Category.Kotlin       -> DsTheme.colors.tagKotlin
-    Category.Compose      -> DsTheme.colors.tagCompose
-    Category.Gradle       -> DsTheme.colors.tagGradle
-    Category.Testing      -> DsTheme.colors.tagTesting
-    Category.Android      -> DsTheme.colors.tagAndroid
-    Category.Kmp          -> DsTheme.colors.tagKotlin
-    Category.Performance  -> DsTheme.colors.tagGradle
+    Category.All -> DsTheme.colors.tagAndroid
+    Category.AI -> DsTheme.colors.tagAi
+    Category.Kotlin -> DsTheme.colors.tagKotlin
+    Category.Compose -> DsTheme.colors.tagCompose
+    Category.Gradle -> DsTheme.colors.tagGradle
+    Category.Testing -> DsTheme.colors.tagTesting
+    Category.Android -> DsTheme.colors.tagAndroid
+    Category.Kmp -> DsTheme.colors.tagKotlin
+    Category.Performance -> DsTheme.colors.tagGradle
     Category.Architecture -> DsTheme.colors.tagCompose
-    Category.Security     -> DsTheme.colors.tagTesting
-    Category.Xr           -> DsTheme.colors.tagAi
+    Category.Security -> DsTheme.colors.tagTesting
+    Category.Xr -> DsTheme.colors.tagAi
 }

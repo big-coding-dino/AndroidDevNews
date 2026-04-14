@@ -52,9 +52,9 @@ fun PodcastScreen(viewModel: PodcastViewModel = koinViewModel()) {
 
         is PodcastUiState.Success -> LazyColumn(
             contentPadding = PaddingValues(
-                start  = spacing.screenHorizontal,
-                end    = spacing.screenHorizontal,
-                top    = spacing.md,
+                start = spacing.screenHorizontal,
+                end = spacing.screenHorizontal,
+                top = spacing.md,
                 bottom = spacing.xl,
             ),
             verticalArrangement = Arrangement.spacedBy(spacing.cardGap),
@@ -124,7 +124,12 @@ private fun PodcastEpisodeCard(episode: PodcastEpisode) {
                             )
                         }
                         Text(
-                            text = episode.date.let { "${it.month.name.take(3).lowercase().replaceFirstChar { c -> c.uppercase() }} ${it.dayOfMonth}, ${it.year}" },
+                            text = episode.date.let {
+                                "${
+                                    it.month.name.take(3).lowercase()
+                                        .replaceFirstChar { c -> c.uppercase() }
+                                } ${it.dayOfMonth}, ${it.year}"
+                            },
                             fontFamily = FontFamily.Monospace,
                             fontSize = 9.5.sp,
                             color = colors.textTertiary,

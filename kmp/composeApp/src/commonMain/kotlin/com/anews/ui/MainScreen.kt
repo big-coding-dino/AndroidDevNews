@@ -44,14 +44,14 @@ enum class Tab(val label: String) {
 
 @Composable
 fun MainScreen() {
-    var selectedTab     by remember { mutableStateOf(Tab.Feed) }
+    var selectedTab by remember { mutableStateOf(Tab.Feed) }
     var selectedArticle by remember { mutableStateOf<Article?>(null) }
     val colors = DsTheme.colors
 
     if (selectedArticle != null) {
         ArticleDetailScreen(
-            article  = selectedArticle!!,
-            onBack   = { selectedArticle = null },
+            article = selectedArticle!!,
+            onBack = { selectedArticle = null },
             modifier = Modifier.safeDrawingPadding(),
         )
         return
@@ -67,8 +67,8 @@ fun MainScreen() {
 
         Box(modifier = Modifier.weight(1f)) {
             when (selectedTab) {
-                Tab.Digest  -> DigestScreen()
-                Tab.Feed    -> FeedScreen(onArticleSelect = { selectedArticle = it })
+                Tab.Digest -> DigestScreen()
+                Tab.Feed -> FeedScreen(onArticleSelect = { selectedArticle = it })
                 Tab.Podcast -> PodcastScreen()
             }
         }

@@ -38,7 +38,7 @@ fun DsAppHeader(
         Text(
             text = buildAnnotatedString {
                 withStyle(SpanStyle(color = colors.accentPrimary)) { append("• ") }
-                withStyle(SpanStyle(color = colors.textPrimary))   { append("droid ") }
+                withStyle(SpanStyle(color = colors.textPrimary)) { append("droid ") }
                 withStyle(SpanStyle(color = colors.accentPrimary)) { append("pulse") }
             },
             style = DsTheme.typography.appName,

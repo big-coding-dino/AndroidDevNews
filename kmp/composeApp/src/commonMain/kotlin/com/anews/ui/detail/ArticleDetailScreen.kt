@@ -66,8 +66,8 @@ fun ArticleDetailScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var activeTab  by remember { mutableStateOf(DetailTab.Summary) }
-    val colors     = DsTheme.colors
+    var activeTab by remember { mutableStateOf(DetailTab.Summary) }
+    val colors = DsTheme.colors
     val uriHandler = LocalUriHandler.current
 
     Column(
@@ -77,27 +77,29 @@ fun ArticleDetailScreen(
     ) {
         DetailTopBar(
             article = article,
-            onBack  = onBack,
+            onBack = onBack,
             onShare = { uriHandler.openUri(article.url) },
         )
 
         DetailModeBar(
-            active     = activeTab,
+            active = activeTab,
             onSelected = { activeTab = it },
         )
 
         Box(modifier = Modifier.weight(1f)) {
             when (activeTab) {
                 DetailTab.Summary -> SummaryTab(
-                    article          = article,
+                    article = article,
                     onSwitchToReader = { activeTab = DetailTab.Reader },
-                    onOpenInBrowser  = { uriHandler.openUri(article.url) },
+                    onOpenInBrowser = { uriHandler.openUri(article.url) },
                 )
-                DetailTab.Reader  -> ReaderTab(article = article)
-                DetailTab.Web     -> WebTab(
-                    article          = article,
+
+                DetailTab.Reader -> ReaderTab(article = article)
+                DetailTab.Web -> WebTab(
+                    article = article,
                     onSwitchToReader = { activeTab = DetailTab.Reader },
                 )
+
                 DetailTab.Extract -> ExtractTab(article = article)
             }
         }
@@ -129,7 +131,11 @@ private fun DetailTopBar(
                 .clickable(onClick = onBack),
             contentAlignment = Alignment.Center,
         ) {
-            Text(text = "‹", color = colors.textPrimary, style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Light))
+            Text(
+                text = "‹",
+                color = colors.textPrimary,
+                style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Light)
+            )
         }
 
         Row(
@@ -143,9 +149,9 @@ private fun DetailTopBar(
         ) {
             Box(modifier = Modifier.size(5.dp).background(colors.accentPrimary, CircleShape))
             Text(
-                text     = article.sourceDomain,
-                style    = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp),
-                color    = colors.textSecondary,
+                text = article.sourceDomain,
+                style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp),
+                color = colors.textSecondary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -176,8 +182,8 @@ private fun DetailModeBar(
     val activeColor: (DetailTab) -> Color = { tab ->
         when (tab) {
             DetailTab.Summary -> colors.tagKotlin.text
-            DetailTab.Reader  -> colors.accentPrimary
-            DetailTab.Web     -> colors.textSecondary
+            DetailTab.Reader -> colors.accentPrimary
+            DetailTab.Web -> colors.textSecondary
             DetailTab.Extract -> colors.tagTesting.text
         }
     }
@@ -197,12 +203,15 @@ private fun DetailModeBar(
                 modifier = Modifier
                     .weight(1f)
                     .height(32.dp)
-                    .background(if (isActive) colors.backgroundCard else Color.Transparent, RoundedCornerShape(9.dp))
+                    .background(
+                        if (isActive) colors.backgroundCard else Color.Transparent,
+                        RoundedCornerShape(9.dp)
+                    )
                     .clickable { onSelected(tab) },
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text  = tab.label,
+                    text = tab.label,
                     style = TextStyle(fontSize = 10.5.sp, fontWeight = FontWeight.Medium),
                     color = if (isActive) activeColor(tab) else colors.textTertiary,
                 )
@@ -231,17 +240,26 @@ private fun SummaryTab(
                 Box(
                     modifier = Modifier
                         .background(colors.tagKotlin.background, RoundedCornerShape(100.dp))
-                        .border(1.dp, colors.tagKotlin.text.copy(alpha = 0.22f), RoundedCornerShape(100.dp))
+                        .border(
+                            1.dp,
+                            colors.tagKotlin.text.copy(alpha = 0.22f),
+                            RoundedCornerShape(100.dp)
+                        )
                         .padding(horizontal = 9.dp, vertical = 4.dp),
                 ) {
                     Text(
-                        text  = "SUMMARY",
-                        style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 9.sp, fontWeight = FontWeight.Medium, letterSpacing = 1.5.sp),
+                        text = "SUMMARY",
+                        style = TextStyle(
+                            fontFamily = FontFamily.Monospace,
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.Medium,
+                            letterSpacing = 1.5.sp
+                        ),
                         color = colors.tagKotlin.text,
                     )
                 }
                 Text(
-                    text  = "~${article.readTimeMinutes} min read",
+                    text = "~${article.readTimeMinutes} min read",
                     style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp),
                     color = colors.textTertiary,
                 )
@@ -250,46 +268,70 @@ private fun SummaryTab(
 
         item {
             Text(
-                text     = article.title,
-                style    = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.SemiBold, lineHeight = 24.sp),
-                color    = colors.textPrimary,
+                text = article.title,
+                style = TextStyle(
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    lineHeight = 24.sp
+                ),
+                color = colors.textPrimary,
                 modifier = Modifier.padding(bottom = 12.dp),
             )
         }
 
         item {
             Text(
-                text     = article.tldr,
-                style    = TextStyle(fontSize = 13.5.sp, lineHeight = 22.sp),
-                color    = colors.textSecondary,
+                text = article.tldr,
+                style = TextStyle(fontSize = 13.5.sp, lineHeight = 22.sp),
+                color = colors.textSecondary,
                 modifier = Modifier.padding(bottom = 20.dp),
             )
-            HorizontalDivider(color = colors.borderSubtle, modifier = Modifier.padding(bottom = 20.dp))
+            HorizontalDivider(
+                color = colors.borderSubtle,
+                modifier = Modifier.padding(bottom = 20.dp)
+            )
         }
 
         item {
             Text(
-                text     = "KEY POINTS",
-                style    = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 9.sp, letterSpacing = 1.5.sp, fontWeight = FontWeight.Medium),
-                color    = colors.textTertiary,
+                text = "KEY POINTS",
+                style = TextStyle(
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 9.sp,
+                    letterSpacing = 1.5.sp,
+                    fontWeight = FontWeight.Medium
+                ),
+                color = colors.textTertiary,
                 modifier = Modifier.padding(bottom = 12.dp),
             )
         }
 
         item {
             Markdown(
-                content    = article.summary,
-                colors     = markdownColor(
-                    text           = colors.textSecondary,
+                content = article.summary,
+                colors = markdownColor(
+                    text = colors.textSecondary,
                     codeBackground = colors.backgroundCardElevated,
-                    dividerColor   = colors.borderSubtle,
+                    dividerColor = colors.borderSubtle,
                 ),
                 typography = markdownTypography(
-                    h1        = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = colors.textPrimary),
-                    h2        = TextStyle(fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = colors.textPrimary),
-                    h3        = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Medium,   color = colors.textPrimary),
+                    h1 = TextStyle(
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = colors.textPrimary
+                    ),
+                    h2 = TextStyle(
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = colors.textPrimary
+                    ),
+                    h3 = TextStyle(
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = colors.textPrimary
+                    ),
                     paragraph = TextStyle(fontSize = 13.sp, lineHeight = 21.sp),
-                    code      = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 11.5.sp),
+                    code = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 11.5.sp),
                 ),
             )
             Spacer(Modifier.height(20.dp))
@@ -300,15 +342,26 @@ private fun SummaryTab(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(colors.accentPrimary.copy(alpha = 0.10f), RoundedCornerShape(12.dp))
-                    .border(1.dp, colors.accentPrimary.copy(alpha = 0.35f), RoundedCornerShape(12.dp))
+                    .border(
+                        1.dp,
+                        colors.accentPrimary.copy(alpha = 0.35f),
+                        RoundedCornerShape(12.dp)
+                    )
                     .padding(13.dp),
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                Box(modifier = Modifier.size(20.dp).background(colors.accentPrimary, CircleShape), contentAlignment = Alignment.Center) {
-                    Text(text = "✓", color = colors.backgroundScreen, style = TextStyle(fontSize = 11.sp, fontWeight = FontWeight.Bold))
+                Box(
+                    modifier = Modifier.size(20.dp).background(colors.accentPrimary, CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "✓",
+                        color = colors.backgroundScreen,
+                        style = TextStyle(fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    )
                 }
                 Text(
-                    text  = "Tap Reader for a full clean view, or Web for the original source.",
+                    text = "Tap Reader for a full clean view, or Web for the original source.",
                     style = TextStyle(fontSize = 12.5.sp, lineHeight = 20.sp),
                     color = colors.textSecondary,
                 )
@@ -317,16 +370,42 @@ private fun SummaryTab(
         }
 
         item {
-            Text(text = "TOPICS", style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 9.sp, letterSpacing = 1.5.sp), color = colors.textTertiary, modifier = Modifier.padding(bottom = 8.dp))
+            Text(
+                text = "TOPICS",
+                style = TextStyle(
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 9.sp,
+                    letterSpacing = 1.5.sp
+                ),
+                color = colors.textTertiary,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) { DsTagChip(category = article.category) }
             Spacer(Modifier.height(20.dp))
         }
 
-        item { HorizontalDivider(color = colors.borderSubtle, modifier = Modifier.padding(bottom = 20.dp)) }
+        item {
+            HorizontalDivider(
+                color = colors.borderSubtle,
+                modifier = Modifier.padding(bottom = 20.dp)
+            )
+        }
 
         item {
-            Text(text = "ACTIONS", style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 9.sp, letterSpacing = 1.5.sp), color = colors.textTertiary, modifier = Modifier.padding(bottom = 10.dp))
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(
+                text = "ACTIONS",
+                style = TextStyle(
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 9.sp,
+                    letterSpacing = 1.5.sp
+                ),
+                color = colors.textTertiary,
+                modifier = Modifier.padding(bottom = 10.dp)
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 Box(
                     modifier = Modifier.weight(1f)
                         .background(colors.backgroundCard, RoundedCornerShape(11.dp))
@@ -334,15 +413,34 @@ private fun SummaryTab(
                         .clickable(onClick = onSwitchToReader)
                         .padding(vertical = 11.dp),
                     contentAlignment = Alignment.Center,
-                ) { Text(text = "Reader mode", style = TextStyle(fontSize = 12.5.sp, fontWeight = FontWeight.Medium), color = colors.textSecondary) }
+                ) {
+                    Text(
+                        text = "Reader mode",
+                        style = TextStyle(fontSize = 12.5.sp, fontWeight = FontWeight.Medium),
+                        color = colors.textSecondary
+                    )
+                }
                 Box(
                     modifier = Modifier.weight(1f)
-                        .background(colors.accentPrimary.copy(alpha = 0.10f), RoundedCornerShape(11.dp))
-                        .border(1.dp, colors.accentPrimary.copy(alpha = 0.35f), RoundedCornerShape(11.dp))
+                        .background(
+                            colors.accentPrimary.copy(alpha = 0.10f),
+                            RoundedCornerShape(11.dp)
+                        )
+                        .border(
+                            1.dp,
+                            colors.accentPrimary.copy(alpha = 0.35f),
+                            RoundedCornerShape(11.dp)
+                        )
                         .clickable(onClick = onOpenInBrowser)
                         .padding(vertical = 11.dp),
                     contentAlignment = Alignment.Center,
-                ) { Text(text = "Open in browser", style = TextStyle(fontSize = 12.5.sp, fontWeight = FontWeight.Medium), color = colors.accentPrimary) }
+                ) {
+                    Text(
+                        text = "Open in browser",
+                        style = TextStyle(fontSize = 12.5.sp, fontWeight = FontWeight.Medium),
+                        color = colors.accentPrimary
+                    )
+                }
             }
         }
     }
@@ -357,18 +455,26 @@ private fun ReaderTab(article: Article) {
     LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 20.dp)) {
         item {
             Text(
-                text     = article.sourceDomain.uppercase(),
-                style    = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp, letterSpacing = 1.sp),
-                color    = colors.accentPrimary,
+                text = article.sourceDomain.uppercase(),
+                style = TextStyle(
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 10.sp,
+                    letterSpacing = 1.sp
+                ),
+                color = colors.accentPrimary,
                 modifier = Modifier.padding(bottom = 10.dp),
             )
         }
 
         item {
             Text(
-                text     = article.title,
-                style    = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.SemiBold, lineHeight = 26.sp),
-                color    = colors.textPrimary,
+                text = article.title,
+                style = TextStyle(
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    lineHeight = 26.sp
+                ),
+                color = colors.textPrimary,
                 modifier = Modifier.padding(bottom = 12.dp),
             )
         }
@@ -379,29 +485,59 @@ private fun ReaderTab(article: Article) {
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.padding(bottom = 18.dp),
             ) {
-                Text(text = article.sourceLabel, style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp), color = colors.textTertiary)
+                Text(
+                    text = article.sourceLabel,
+                    style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp),
+                    color = colors.textTertiary
+                )
                 Box(modifier = Modifier.size(4.dp).background(colors.textTertiary, CircleShape))
-                Text(text = formatDate(article.date), style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp), color = colors.textTertiary)
+                Text(
+                    text = formatDate(article.date),
+                    style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp),
+                    color = colors.textTertiary
+                )
                 Box(modifier = Modifier.size(4.dp).background(colors.textTertiary, CircleShape))
-                Text(text = "${article.readTimeMinutes} min read", style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp), color = colors.textTertiary)
+                Text(
+                    text = "${article.readTimeMinutes} min read",
+                    style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp),
+                    color = colors.textTertiary
+                )
             }
-            HorizontalDivider(color = colors.borderSubtle, modifier = Modifier.padding(bottom = 20.dp))
+            HorizontalDivider(
+                color = colors.borderSubtle,
+                modifier = Modifier.padding(bottom = 20.dp)
+            )
         }
 
         item {
             Markdown(
-                content    = article.summary,
-                colors     = markdownColor(
-                    text           = colors.textSecondary,
+                content = article.summary,
+                colors = markdownColor(
+                    text = colors.textSecondary,
                     codeBackground = colors.backgroundCardElevated,
-                    dividerColor   = colors.borderSubtle,
+                    dividerColor = colors.borderSubtle,
                 ),
                 typography = markdownTypography(
-                    h1        = TextStyle(fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = colors.textPrimary, lineHeight = 24.sp),
-                    h2        = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = colors.textPrimary, lineHeight = 22.sp),
-                    h3        = TextStyle(fontSize = 15.sp, fontWeight = FontWeight.Medium,   color = colors.textPrimary, lineHeight = 21.sp),
+                    h1 = TextStyle(
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = colors.textPrimary,
+                        lineHeight = 24.sp
+                    ),
+                    h2 = TextStyle(
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = colors.textPrimary,
+                        lineHeight = 22.sp
+                    ),
+                    h3 = TextStyle(
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = colors.textPrimary,
+                        lineHeight = 21.sp
+                    ),
                     paragraph = TextStyle(fontSize = 14.sp, lineHeight = 25.sp),
-                    code      = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 12.sp),
+                    code = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 12.sp),
                 ),
             )
         }
@@ -415,10 +551,10 @@ private fun WebTab(
     article: Article,
     onSwitchToReader: () -> Unit,
 ) {
-    val colors    = DsTheme.colors
+    val colors = DsTheme.colors
     val clipboard = LocalClipboardManager.current
     var urlCopied by remember { mutableStateOf(false) }
-    val scope     = rememberCoroutineScope()
+    val scope = rememberCoroutineScope()
 
     Column(modifier = Modifier.fillMaxSize()) {
         // URL bar with Reader pill + Copy button
@@ -434,9 +570,9 @@ private fun WebTab(
         ) {
             Text(text = "🔒", style = TextStyle(fontSize = 11.sp))
             Text(
-                text     = article.url,
-                style    = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.5.sp),
-                color    = colors.textSecondary,
+                text = article.url,
+                style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.5.sp),
+                color = colors.textSecondary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f),
@@ -450,8 +586,12 @@ private fun WebTab(
                     .padding(horizontal = 8.dp, vertical = 4.dp),
             ) {
                 Text(
-                    text  = "Reader",
-                    style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 9.5.sp, fontWeight = FontWeight.Medium),
+                    text = "Reader",
+                    style = TextStyle(
+                        fontFamily = FontFamily.Monospace,
+                        fontSize = 9.5.sp,
+                        fontWeight = FontWeight.Medium
+                    ),
                     color = colors.accentPrimary,
                 )
             }
@@ -474,8 +614,12 @@ private fun WebTab(
                     .padding(horizontal = 8.dp, vertical = 4.dp),
             ) {
                 Text(
-                    text  = if (urlCopied) "✓" else "Copy",
-                    style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 9.5.sp, fontWeight = FontWeight.Medium),
+                    text = if (urlCopied) "✓" else "Copy",
+                    style = TextStyle(
+                        fontFamily = FontFamily.Monospace,
+                        fontSize = 9.5.sp,
+                        fontWeight = FontWeight.Medium
+                    ),
                     color = if (urlCopied) colors.accentPrimary else colors.textSecondary,
                 )
             }
@@ -483,7 +627,7 @@ private fun WebTab(
 
         // Embedded WebView — fills remaining space
         ArticleWebView(
-            url      = article.url,
+            url = article.url,
             modifier = Modifier.fillMaxSize(),
         )
     }
@@ -492,29 +636,29 @@ private fun WebTab(
 // ── Extract tab ───────────────────────────────────────────────────────────────
 
 private val PROMPT_PRESETS = listOf(
-    "No prefix"      to "",
+    "No prefix" to "",
     "Summarize this" to "Please summarize the following article:\n\n",
-    "Key points"     to "Extract the key points from this article:\n\n",
+    "Key points" to "Extract the key points from this article:\n\n",
     "Explain simply" to "Explain this article in simple terms:\n\n",
-    "Action items"   to "What are the action items I should take based on this article?\n\n",
+    "Action items" to "What are the action items I should take based on this article?\n\n",
 )
 
 @Composable
 private fun ExtractTab(article: Article) {
-    val colors     = DsTheme.colors
-    val clipboard  = LocalClipboardManager.current
+    val colors = DsTheme.colors
+    val clipboard = LocalClipboardManager.current
     val uriHandler = LocalUriHandler.current
 
     // Trafilatura clean_content from DB; fall back to summary if missing
     val rawText = article.cleanContent?.takeIf { it.isNotBlank() } ?: article.summary
 
-    val charCount  = rawText.length
-    val wordCount  = rawText.split(Regex("\\s+")).count { it.isNotEmpty() }
+    val charCount = rawText.length
+    val wordCount = rawText.split(Regex("\\s+")).count { it.isNotEmpty() }
     val tokenCount = (charCount / 4).coerceAtLeast(1)
-    val fits4k     = tokenCount <= 4096
+    val fits4k = tokenCount <= 4096
 
     var selectedPromptIdx by remember { mutableStateOf(0) }
-    var copyFlash         by remember { mutableStateOf(false) }
+    var copyFlash by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -538,19 +682,35 @@ private fun ExtractTab(article: Article) {
                         .background(colors.accentPrimary.copy(0.10f), RoundedCornerShape(100.dp))
                         .border(1.dp, colors.accentPrimary.copy(0.35f), RoundedCornerShape(100.dp))
                         .padding(horizontal = 8.dp, vertical = 3.dp),
-                ) { Text(text = "✓ fits in context", style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 9.5.sp), color = colors.accentPrimary) }
+                ) {
+                    Text(
+                        text = "✓ fits in context",
+                        style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 9.5.sp),
+                        color = colors.accentPrimary
+                    )
+                }
             } else {
                 Box(
                     modifier = Modifier
                         .background(colors.tagTesting.background, RoundedCornerShape(100.dp))
-                        .border(1.dp, colors.tagTesting.text.copy(0.30f), RoundedCornerShape(100.dp))
+                        .border(
+                            1.dp,
+                            colors.tagTesting.text.copy(0.30f),
+                            RoundedCornerShape(100.dp)
+                        )
                         .padding(horizontal = 8.dp, vertical = 3.dp),
-                ) { Text(text = "⚠ large context", style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 9.5.sp), color = colors.tagTesting.text) }
+                ) {
+                    Text(
+                        text = "⚠ large context",
+                        style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 9.5.sp),
+                        color = colors.tagTesting.text
+                    )
+                }
             }
         }
 
         // Token meter
-        val fraction   = (tokenCount / 4096f).coerceIn(0f, 1f)
+        val fraction = (tokenCount / 4096f).coerceIn(0f, 1f)
         val meterColor = if (fits4k) colors.accentPrimary else colors.tagTesting.text
         Box(
             modifier = Modifier
@@ -559,7 +719,10 @@ private fun ExtractTab(article: Article) {
                 .height(3.dp)
                 .background(colors.backgroundCardElevated, RoundedCornerShape(2.dp)),
         ) {
-            Box(modifier = Modifier.fillMaxWidth(fraction).height(3.dp).background(meterColor, RoundedCornerShape(2.dp)))
+            Box(
+                modifier = Modifier.fillMaxWidth(fraction).height(3.dp)
+                    .background(meterColor, RoundedCornerShape(2.dp))
+            )
         }
 
         // Prompt prefix chips
@@ -569,23 +732,49 @@ private fun ExtractTab(article: Article) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                Text(text = "PROMPT PREFIX", style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 9.sp, letterSpacing = 1.2.sp), color = colors.textTertiary)
+                Text(
+                    text = "PROMPT PREFIX",
+                    style = TextStyle(
+                        fontFamily = FontFamily.Monospace,
+                        fontSize = 9.sp,
+                        letterSpacing = 1.2.sp
+                    ),
+                    color = colors.textTertiary
+                )
                 if (selectedPromptIdx != 0) {
-                    Text(text = "clear", style = TextStyle(fontSize = 10.sp), color = colors.textTertiary, modifier = Modifier.clickable { selectedPromptIdx = 0 })
+                    Text(
+                        text = "clear",
+                        style = TextStyle(fontSize = 10.sp),
+                        color = colors.textTertiary,
+                        modifier = Modifier.clickable { selectedPromptIdx = 0 })
                 }
             }
             Spacer(Modifier.height(6.dp))
-            Row(modifier = Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+            Row(
+                modifier = Modifier.horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(5.dp)
+            ) {
                 PROMPT_PRESETS.forEachIndexed { idx, (label, _) ->
                     val isOn = idx == selectedPromptIdx
                     Box(
                         modifier = Modifier
-                            .background(if (isOn) colors.tagTesting.background else colors.backgroundCard, RoundedCornerShape(8.dp))
-                            .border(1.dp, if (isOn) colors.tagTesting.text.copy(0.30f) else colors.borderSubtle, RoundedCornerShape(8.dp))
+                            .background(
+                                if (isOn) colors.tagTesting.background else colors.backgroundCard,
+                                RoundedCornerShape(8.dp)
+                            )
+                            .border(
+                                1.dp,
+                                if (isOn) colors.tagTesting.text.copy(0.30f) else colors.borderSubtle,
+                                RoundedCornerShape(8.dp)
+                            )
                             .clickable { selectedPromptIdx = idx }
                             .padding(horizontal = 10.dp, vertical = 5.dp),
                     ) {
-                        Text(text = label, style = TextStyle(fontSize = 10.sp, fontWeight = FontWeight.Medium), color = if (isOn) colors.tagTesting.text else colors.textSecondary)
+                        Text(
+                            text = label,
+                            style = TextStyle(fontSize = 10.sp, fontWeight = FontWeight.Medium),
+                            color = if (isOn) colors.tagTesting.text else colors.textSecondary
+                        )
                     }
                 }
             }
@@ -606,19 +795,50 @@ private fun ExtractTab(article: Article) {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .background(colors.tagTesting.background.copy(0.5f), RoundedCornerShape(6.dp))
-                                .border(1.dp, colors.tagTesting.text.copy(0.22f), RoundedCornerShape(6.dp))
+                                .background(
+                                    colors.tagTesting.background.copy(0.5f),
+                                    RoundedCornerShape(6.dp)
+                                )
+                                .border(
+                                    1.dp,
+                                    colors.tagTesting.text.copy(0.22f),
+                                    RoundedCornerShape(6.dp)
+                                )
                                 .padding(horizontal = 10.dp, vertical = 8.dp),
                         ) {
                             Column {
-                                Text(text = "PROMPT PREFIX", style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 9.sp, letterSpacing = 1.sp), color = colors.tagTesting.text.copy(0.7f))
+                                Text(
+                                    text = "PROMPT PREFIX",
+                                    style = TextStyle(
+                                        fontFamily = FontFamily.Monospace,
+                                        fontSize = 9.sp,
+                                        letterSpacing = 1.sp
+                                    ),
+                                    color = colors.tagTesting.text.copy(0.7f)
+                                )
                                 Spacer(Modifier.height(4.dp))
-                                Text(text = prefix.trimEnd(), style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 11.sp, lineHeight = 18.sp), color = colors.tagTesting.text)
+                                Text(
+                                    text = prefix.trimEnd(),
+                                    style = TextStyle(
+                                        fontFamily = FontFamily.Monospace,
+                                        fontSize = 11.sp,
+                                        lineHeight = 18.sp
+                                    ),
+                                    color = colors.tagTesting.text
+                                )
                             }
                         }
                         Spacer(Modifier.height(10.dp))
                     }
-                    Text(text = rawText, style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 11.5.sp, lineHeight = 20.sp), color = colors.textSecondary)
+                    Text(
+                        text = rawText,
+                        style = TextStyle(
+                            fontFamily = FontFamily.Monospace,
+                            fontSize = 11.5.sp,
+                            lineHeight = 20.sp
+                        ),
+                        color = colors.textSecondary
+                    )
                 }
                 Spacer(Modifier.height(10.dp))
             }
@@ -636,8 +856,15 @@ private fun ExtractTab(article: Article) {
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .background(if (copyFlash) colors.accentPrimary.copy(0.10f) else colors.backgroundCard, RoundedCornerShape(10.dp))
-                    .border(1.dp, if (copyFlash) colors.accentPrimary.copy(0.35f) else colors.borderSubtle, RoundedCornerShape(10.dp))
+                    .background(
+                        if (copyFlash) colors.accentPrimary.copy(0.10f) else colors.backgroundCard,
+                        RoundedCornerShape(10.dp)
+                    )
+                    .border(
+                        1.dp,
+                        if (copyFlash) colors.accentPrimary.copy(0.35f) else colors.borderSubtle,
+                        RoundedCornerShape(10.dp)
+                    )
                     .clickable {
                         clipboard.setText(AnnotatedString(prefix + rawText))
                         scope.launch { copyFlash = true; delay(2000); copyFlash = false }
@@ -646,7 +873,7 @@ private fun ExtractTab(article: Article) {
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text  = if (copyFlash) "✓ Copied!" else "Copy",
+                    text = if (copyFlash) "✓ Copied!" else "Copy",
                     style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium),
                     color = if (copyFlash) colors.accentPrimary else colors.textSecondary,
                 )
@@ -663,7 +890,11 @@ private fun ExtractTab(article: Article) {
                     .padding(vertical = 10.dp),
                 contentAlignment = Alignment.Center,
             ) {
-                Text(text = "Send to LLM", style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium), color = colors.tagTesting.text)
+                Text(
+                    text = "Send to LLM",
+                    style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium),
+                    color = colors.tagTesting.text
+                )
             }
         }
     }
@@ -675,14 +906,30 @@ private fun ExtractTab(article: Article) {
 private fun ExtractStat(value: String, unit: String) {
     val colors = DsTheme.colors
     Row(horizontalArrangement = Arrangement.spacedBy(3.dp)) {
-        Text(text = value, style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp, fontWeight = FontWeight.Medium), color = colors.textSecondary)
-        Text(text = unit,  style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp), color = colors.textTertiary)
+        Text(
+            text = value,
+            style = TextStyle(
+                fontFamily = FontFamily.Monospace,
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Medium
+            ),
+            color = colors.textSecondary
+        )
+        Text(
+            text = unit,
+            style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp),
+            color = colors.textTertiary
+        )
     }
 }
 
 @Composable
 private fun ExtractStatSep() {
-    Text(text = "·", style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp), color = DsTheme.colors.borderDefault)
+    Text(
+        text = "·",
+        style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp),
+        color = DsTheme.colors.borderDefault
+    )
 }
 
 private fun formatDate(date: LocalDate): String {

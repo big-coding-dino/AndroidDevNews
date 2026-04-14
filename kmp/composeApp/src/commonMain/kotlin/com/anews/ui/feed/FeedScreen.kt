@@ -27,7 +27,7 @@ fun FeedScreen(
     viewModel: FeedViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val colors  = DsTheme.colors
+    val colors = DsTheme.colors
     val spacing = DsTheme.spacing
 
     val filterCategories = (uiState as? FeedUiState.Success)?.filterCategories ?: emptyList()
@@ -37,16 +37,20 @@ fun FeedScreen(
         if (filterCategories.isNotEmpty() && selectedCategory != null) {
             DsFilterChipRow(
                 categories = filterCategories,
-                selected   = selectedCategory,
-                onSelect   = viewModel::selectCategory,
+                selected = selectedCategory,
+                onSelect = viewModel::selectCategory,
             )
             Spacer(Modifier.height(spacing.md))
         }
 
         when (val state = uiState) {
             is FeedUiState.Loading -> FeedLoading()
-            is FeedUiState.Error   -> FeedError(state.message)
-            is FeedUiState.Success -> FeedArticleList(state = state, spacing = spacing, onArticleSelect = onArticleSelect)
+            is FeedUiState.Error -> FeedError(state.message)
+            is FeedUiState.Success -> FeedArticleList(
+                state = state,
+                spacing = spacing,
+                onArticleSelect = onArticleSelect
+            )
         }
     }
 }
@@ -88,7 +92,7 @@ private fun FeedArticleList(
             }
             items(articles) { article ->
                 DsArticleCard(
-                    article       = article,
+                    article = article,
                     onOpenArticle = { onArticleSelect(it) },
                 )
             }
