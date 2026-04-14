@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Query
 from urllib.parse import urlparse
 
 from api.db import get_conn
-from api.schemas import ArticleResponse
+from api.schemas import ArticleReaderResponse, ArticleResponse
 
 router = APIRouter()
 
@@ -42,7 +42,7 @@ def get_articles(
                         f.slug        AS source_domain,
                         t.slug        AS category,
                         a.clean_content,
-                        a.readability_content
+                        (a.readability_content IS NOT NULL) AS has_readability_content
                     FROM resources r
                     JOIN articles a  ON a.resource_id = r.id
                     JOIN feeds f     ON f.id = r.source_id
@@ -71,7 +71,7 @@ def get_articles(
                         f.slug        AS source_domain,
                         COALESCE(best.slug, 'android') AS category,
                         a.clean_content,
-                        a.readability_content
+                        (a.readability_content IS NOT NULL) AS has_readability_content
                     FROM resources r
                     JOIN articles a  ON a.resource_id = r.id
                     JOIN feeds f     ON f.id = r.source_id
@@ -115,7 +115,23 @@ def get_articles(
             category=row[8],
             read_time_minutes=_read_time(row[9]),
             clean_content=row[9],
-            readability_content=row[10],
+            has_readability_content=row[10],
         )
         for row in rows
     ]
+
+
+@router.get("/articles/{article_id}/reader", response_model=ArticleReaderResponse)
+def get_article_reader(article_id: int):
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT readability_content FROM articles WHERE resource_id = %s",
+                (article_id,),
+            )
+            row = cur.fetchone()
+
+    if row is None:
+        raise HTTPException(status_code=404, detail=f"Article {article_id} not found")
+
+    return ArticleReaderResponse(readability_content=row[0])

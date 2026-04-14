@@ -12,8 +12,12 @@ class ArticleResponse(BaseModel):
     source_domain: str
     category: str           # tag slug, e.g. "kotlin"
     read_time_minutes: int
-    clean_content: str | None = None  # trafilatura plain-text extract
-    readability_content: str | None = None  # readability.js HTML extract
+    clean_content: str | None = None          # trafilatura plain-text extract
+    has_readability_content: bool = False     # readability.js HTML available
+
+
+class ArticleReaderResponse(BaseModel):
+    readability_content: str | None = None
 
 
 class PodcastEpisodeResponse(BaseModel):

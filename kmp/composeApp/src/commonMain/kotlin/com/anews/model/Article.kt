@@ -14,5 +14,5 @@ data class Article(
     val date: LocalDate,
     val readTimeMinutes: Int,
     val cleanContent: String? = null,
-    val readabilityContent: String? = null,
+    val hasReadabilityContent: Boolean = false,
 )

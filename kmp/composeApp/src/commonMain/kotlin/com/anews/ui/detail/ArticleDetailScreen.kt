@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,6 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.anews.domain.ArticleRepository
 import com.anews.ds.DsTheme
 import com.anews.model.Article
 import com.mikepenz.markdown.m3.Markdown
@@ -47,6 +49,7 @@ import com.mikepenz.markdown.m3.markdownTypography
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
+import org.koin.compose.koinInject
 
 // ── Tabs ──────────────────────────────────────────────────────────────────────
 
@@ -65,9 +68,29 @@ fun ArticleDetailScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var activeTab by remember { mutableStateOf(DetailTab.Summary) }
+    val hasSummary = article.tldr.isNotBlank() || article.summary.isNotBlank()
+    val visibleTabs = remember(article.id) {
+        DetailTab.entries.filter { tab ->
+            when (tab) {
+                DetailTab.Summary -> hasSummary
+                DetailTab.Reader  -> article.hasReadabilityContent
+                DetailTab.Web     -> true
+                DetailTab.Extract -> true
+            }
+        }
+    }
+
+    var activeTab by remember(article.id) { mutableStateOf(visibleTabs.first()) }
+    var readabilityHtml by remember { mutableStateOf<String?>(null) }
     val colors = DsTheme.colors
     val uriHandler = LocalUriHandler.current
+    val repository = koinInject<ArticleRepository>()
+
+    LaunchedEffect(activeTab) {
+        if (activeTab == DetailTab.Reader && readabilityHtml == null) {
+            repository.getReadabilityContent(article.id).onSuccess { readabilityHtml = it }
+        }
+    }
 
     Column(
         modifier = modifier
@@ -81,6 +104,7 @@ fun ArticleDetailScreen(
         )
 
         DetailModeBar(
+            tabs = visibleTabs,
             active = activeTab,
             onSelected = { activeTab = it },
         )
@@ -93,7 +117,11 @@ fun ArticleDetailScreen(
                     onOpenInBrowser = { uriHandler.openUri(article.url) },
                 )
 
-                DetailTab.Reader -> ReaderTab(article = article)
+                DetailTab.Reader -> ReaderTab(
+                    article = article,
+                    readabilityHtml = readabilityHtml,
+                )
+
                 DetailTab.Web -> WebTab(
                     article = article,
                     onSwitchToReader = { activeTab = DetailTab.Reader },
@@ -173,6 +201,7 @@ private fun DetailTopBar(
 
 @Composable
 private fun DetailModeBar(
+    tabs: List<DetailTab>,
     active: DetailTab,
     onSelected: (DetailTab) -> Unit,
 ) {
@@ -196,7 +225,7 @@ private fun DetailModeBar(
             .padding(3.dp),
         horizontalArrangement = Arrangement.spacedBy(2.dp),
     ) {
-        DetailTab.entries.forEach { tab ->
+        tabs.forEach { tab ->
             val isActive = tab == active
             Box(
                 modifier = Modifier
@@ -222,9 +251,9 @@ private fun DetailModeBar(
 // ── Reader tab ────────────────────────────────────────────────────────────────
 
 @Composable
-private fun ReaderTab(article: Article) {
+private fun ReaderTab(article: Article, readabilityHtml: String?) {
     val colors = DsTheme.colors
-    val html = article.readabilityContent
+    val html = readabilityHtml
 
     if (html != null) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -475,9 +504,57 @@ private fun ExtractTab(article: Article) {
     val colors = DsTheme.colors
     val clipboard = LocalClipboardManager.current
     val uriHandler = LocalUriHandler.current
+    val scope = rememberCoroutineScope()
 
-    // Trafilatura clean_content from DB; fall back to summary if missing
-    val rawText = article.cleanContent?.takeIf { it.isNotBlank() } ?: article.summary
+    val rawText = article.cleanContent?.takeIf { it.isNotBlank() }
+
+    if (rawText == null) {
+        var urlCopied by remember { mutableStateOf(false) }
+
+        Column(
+            modifier = Modifier.fillMaxSize().padding(horizontal = 24.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = "No extracted text available",
+                style = TextStyle(fontSize = 13.sp, fontWeight = FontWeight.Medium),
+                color = colors.textSecondary,
+            )
+            Spacer(Modifier.height(6.dp))
+            Text(
+                text = "Copy the URL and paste it into your LLM of choice",
+                style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp, lineHeight = 16.sp),
+                color = colors.textTertiary,
+            )
+            Spacer(Modifier.height(20.dp))
+            Box(
+                modifier = Modifier
+                    .background(
+                        if (urlCopied) colors.accentPrimary.copy(0.10f) else colors.backgroundCard,
+                        RoundedCornerShape(10.dp)
+                    )
+                    .border(
+                        1.dp,
+                        if (urlCopied) colors.accentPrimary.copy(0.35f) else colors.borderSubtle,
+                        RoundedCornerShape(10.dp)
+                    )
+                    .clickable {
+                        clipboard.setText(AnnotatedString(article.url))
+                        scope.launch { urlCopied = true; delay(2000); urlCopied = false }
+                    }
+                    .padding(horizontal = 24.dp, vertical = 12.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = if (urlCopied) "✓ URL Copied!" else "Copy URL",
+                    style = TextStyle(fontSize = 13.sp, fontWeight = FontWeight.Medium),
+                    color = if (urlCopied) colors.accentPrimary else colors.textSecondary,
+                )
+            }
+        }
+        return
+    }
 
     val charCount = rawText.length
     val wordCount = rawText.split(Regex("\\s+")).count { it.isNotEmpty() }
@@ -486,7 +563,6 @@ private fun ExtractTab(article: Article) {
 
     var selectedPromptIdx by remember { mutableStateOf(0) }
     var copyFlash by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
 
     Column(modifier = Modifier.fillMaxSize()) {
         // Stats strip
