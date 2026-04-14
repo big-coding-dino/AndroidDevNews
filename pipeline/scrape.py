@@ -30,6 +30,8 @@ class EnrichResult:
     scraped_date: date | None = None
     readability_content: str | None = None
     fetch_error: str | None = None
+    clean_content_error: str | None = None
+    readability_error: str | None = None
 
 
 async def fetch_html(client: httpx.AsyncClient, url: str) -> str:
@@ -39,31 +41,42 @@ async def fetch_html(client: httpx.AsyncClient, url: str) -> str:
         return resp.text
 
 
-async def run_readability(html: str, url: str) -> str | None:
+async def run_readability(html: str, url: str) -> tuple[str | None, str | None]:
     async with NODE_SEM:
-        proc = await asyncio.create_subprocess_exec(
-            "node", "readability.js", url,
-            stdin=asyncio.subprocess.PIPE,
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.DEVNULL,
-        )
-        stdout, _ = await proc.communicate(input=html.encode())
-        if not stdout.strip():
-            return None
-        data = json.loads(stdout)
-        return data.get("content")
-
-
-def run_trafilatura(html: str, url: str) -> tuple[str | None, date | None]:
-    clean = trafilatura.extract(html, url=url)
-    meta = trafilatura.extract_metadata(html, default_url=url)
-    scraped_date = None
-    if meta and meta.date:
         try:
-            scraped_date = date.fromisoformat(meta.date[:10])
-        except ValueError:
-            pass
-    return clean, scraped_date
+            proc = await asyncio.create_subprocess_exec(
+                "node", "readability.js", url,
+                stdin=asyncio.subprocess.PIPE,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+            stdout, stderr = await proc.communicate(input=html.encode())
+            if not stdout.strip():
+                err = stderr.decode().strip() or "empty output"
+                return None, err
+            data = json.loads(stdout)
+            content = data.get("content")
+            if not content:
+                return None, "no content in readability output"
+            return content, None
+        except Exception as e:
+            return None, str(e)
+
+
+def run_trafilatura(html: str, url: str) -> tuple[str | None, date | None, str | None]:
+    try:
+        clean = trafilatura.extract(html, url=url)
+        meta = trafilatura.extract_metadata(html, default_url=url)
+        scraped_date = None
+        if meta and meta.date:
+            try:
+                scraped_date = date.fromisoformat(meta.date[:10])
+            except ValueError:
+                pass
+        error = None if clean else "trafilatura returned no content"
+        return clean, scraped_date, error
+    except Exception as e:
+        return None, None, str(e)
 
 
 async def process_one(client: httpx.AsyncClient, resource_id: int, url: str) -> EnrichResult:
@@ -78,8 +91,8 @@ async def process_one(client: httpx.AsyncClient, resource_id: int, url: str) -> 
         print(f"  [error] {url}: {e}")
         return EnrichResult(resource_id=resource_id, fetch_error=str(e))
 
-    clean_content, scraped_date = run_trafilatura(html, url)
-    readability_content = await run_readability(html, url)
+    clean_content, scraped_date, clean_error = run_trafilatura(html, url)
+    readability_content, readability_error = await run_readability(html, url)
 
     print(f"  [ok] {url[:80]}  clean={len(clean_content or '')}ch  readability={len(readability_content or '')}ch")
     return EnrichResult(
@@ -87,6 +100,8 @@ async def process_one(client: httpx.AsyncClient, resource_id: int, url: str) -> 
         clean_content=clean_content,
         scraped_date=scraped_date,
         readability_content=readability_content,
+        clean_content_error=clean_error,
+        readability_error=readability_error,
     )
 
 
@@ -128,10 +143,13 @@ async def main():
                     SET clean_content       = %s,
                         scraped_date        = %s,
                         readability_content = %s,
-                        fetch_error         = %s
+                        fetch_error         = %s,
+                        clean_content_error = %s,
+                        readability_error   = %s
                     WHERE resource_id = %s
                     """,
-                    (r.clean_content, r.scraped_date, r.readability_content, r.fetch_error, r.resource_id),
+                    (r.clean_content, r.scraped_date, r.readability_content, r.fetch_error,
+                     r.clean_content_error, r.readability_error, r.resource_id),
                 )
                 if r.scraped_date:
                     cur.execute(

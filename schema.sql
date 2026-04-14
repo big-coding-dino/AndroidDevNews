@@ -60,7 +60,9 @@ CREATE TABLE IF NOT EXISTS articles (
     clean_content       TEXT,
     readability_content TEXT,
     fetch_error         TEXT,
-    scraped_date        DATE
+    scraped_date        DATE,
+    clean_content_error TEXT,
+    readability_error   TEXT
 );
 
 CREATE TABLE IF NOT EXISTS podcast_episodes (
