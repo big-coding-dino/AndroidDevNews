@@ -41,7 +41,8 @@ def get_articles(
                         f.name        AS source_label,
                         f.slug        AS source_domain,
                         t.slug        AS category,
-                        a.clean_content
+                        a.clean_content,
+                        a.readability_content
                     FROM resources r
                     JOIN articles a  ON a.resource_id = r.id
                     JOIN feeds f     ON f.id = r.source_id
@@ -69,7 +70,8 @@ def get_articles(
                         f.name        AS source_label,
                         f.slug        AS source_domain,
                         COALESCE(best.slug, 'android') AS category,
-                        a.clean_content
+                        a.clean_content,
+                        a.readability_content
                     FROM resources r
                     JOIN articles a  ON a.resource_id = r.id
                     JOIN feeds f     ON f.id = r.source_id
@@ -113,6 +115,7 @@ def get_articles(
             category=row[8],
             read_time_minutes=_read_time(row[9]),
             clean_content=row[9],
+            readability_content=row[10],
         )
         for row in rows
     ]

@@ -224,95 +224,149 @@ private fun DetailModeBar(
 @Composable
 private fun ReaderTab(article: Article) {
     val colors = DsTheme.colors
+    val html = article.readabilityContent
 
-    LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 20.dp)) {
-        item {
-            Text(
-                text = article.sourceDomain.uppercase(),
-                style = TextStyle(
-                    fontFamily = FontFamily.Monospace,
-                    fontSize = 10.sp,
-                    letterSpacing = 1.sp
-                ),
-                color = colors.accentPrimary,
-                modifier = Modifier.padding(bottom = 10.dp),
-            )
-        }
-
-        item {
-            Text(
-                text = article.title,
-                style = TextStyle(
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    lineHeight = 26.sp
-                ),
-                color = colors.textPrimary,
-                modifier = Modifier.padding(bottom = 12.dp),
-            )
-        }
-
-        item {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(bottom = 18.dp),
-            ) {
+    if (html != null) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
                 Text(
-                    text = article.sourceLabel,
-                    style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp),
-                    color = colors.textTertiary
+                    text = article.sourceDomain.uppercase(),
+                    style = TextStyle(
+                        fontFamily = FontFamily.Monospace,
+                        fontSize = 10.sp,
+                        letterSpacing = 1.sp
+                    ),
+                    color = colors.accentPrimary,
+                    modifier = Modifier.padding(bottom = 8.dp),
                 )
-                Box(modifier = Modifier.size(4.dp).background(colors.textTertiary, CircleShape))
                 Text(
-                    text = formatDate(article.date),
-                    style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp),
-                    color = colors.textTertiary
-                )
-                Box(modifier = Modifier.size(4.dp).background(colors.textTertiary, CircleShape))
-                Text(
-                    text = "${article.readTimeMinutes} min read",
-                    style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp),
-                    color = colors.textTertiary
-                )
-            }
-            HorizontalDivider(
-                color = colors.borderSubtle,
-                modifier = Modifier.padding(bottom = 20.dp)
-            )
-        }
-
-        item {
-            Markdown(
-                content = article,
-                colors = markdownColor(
-                    text = colors.textSecondary,
-                    codeBackground = colors.backgroundCardElevated,
-                    dividerColor = colors.borderSubtle,
-                ),
-                typography = markdownTypography(
-                    h1 = TextStyle(
-                        fontSize = 17.sp,
+                    text = article.title,
+                    style = TextStyle(
+                        fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = colors.textPrimary,
                         lineHeight = 24.sp
                     ),
-                    h2 = TextStyle(
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = colors.textPrimary,
-                        lineHeight = 22.sp
-                    ),
-                    h3 = TextStyle(
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = colors.textPrimary,
-                        lineHeight = 21.sp
-                    ),
-                    paragraph = TextStyle(fontSize = 14.sp, lineHeight = 25.sp),
-                    code = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 12.sp),
-                ),
+                    color = colors.textPrimary,
+                    modifier = Modifier.padding(bottom = 10.dp),
+                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.padding(bottom = 12.dp),
+                ) {
+                    Text(
+                        text = article.sourceLabel,
+                        style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp),
+                        color = colors.textTertiary
+                    )
+                    Box(modifier = Modifier.size(4.dp).background(colors.textTertiary, CircleShape))
+                    Text(
+                        text = formatDate(article.date),
+                        style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp),
+                        color = colors.textTertiary
+                    )
+                    Box(modifier = Modifier.size(4.dp).background(colors.textTertiary, CircleShape))
+                    Text(
+                        text = "${article.readTimeMinutes} min read",
+                        style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp),
+                        color = colors.textTertiary
+                    )
+                }
+                HorizontalDivider(color = colors.borderSubtle)
+            }
+            ArticleHtmlView(
+                html = html,
+                baseUrl = article.url,
+                modifier = Modifier.weight(1f).fillMaxWidth(),
             )
+        }
+    } else {
+        LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 20.dp)) {
+            item {
+                Text(
+                    text = article.sourceDomain.uppercase(),
+                    style = TextStyle(
+                        fontFamily = FontFamily.Monospace,
+                        fontSize = 10.sp,
+                        letterSpacing = 1.sp
+                    ),
+                    color = colors.accentPrimary,
+                    modifier = Modifier.padding(bottom = 10.dp),
+                )
+            }
+            item {
+                Text(
+                    text = article.title,
+                    style = TextStyle(
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        lineHeight = 26.sp
+                    ),
+                    color = colors.textPrimary,
+                    modifier = Modifier.padding(bottom = 12.dp),
+                )
+            }
+            item {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.padding(bottom = 18.dp),
+                ) {
+                    Text(
+                        text = article.sourceLabel,
+                        style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp),
+                        color = colors.textTertiary
+                    )
+                    Box(modifier = Modifier.size(4.dp).background(colors.textTertiary, CircleShape))
+                    Text(
+                        text = formatDate(article.date),
+                        style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp),
+                        color = colors.textTertiary
+                    )
+                    Box(modifier = Modifier.size(4.dp).background(colors.textTertiary, CircleShape))
+                    Text(
+                        text = "${article.readTimeMinutes} min read",
+                        style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp),
+                        color = colors.textTertiary
+                    )
+                }
+                HorizontalDivider(
+                    color = colors.borderSubtle,
+                    modifier = Modifier.padding(bottom = 20.dp)
+                )
+            }
+            item {
+                Markdown(
+                    content = article.summary,
+                    colors = markdownColor(
+                        text = colors.textSecondary,
+                        codeBackground = colors.backgroundCardElevated,
+                        dividerColor = colors.borderSubtle,
+                    ),
+                    typography = markdownTypography(
+                        h1 = TextStyle(
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = colors.textPrimary,
+                            lineHeight = 24.sp
+                        ),
+                        h2 = TextStyle(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = colors.textPrimary,
+                            lineHeight = 22.sp
+                        ),
+                        h3 = TextStyle(
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = colors.textPrimary,
+                            lineHeight = 21.sp
+                        ),
+                        paragraph = TextStyle(fontSize = 14.sp, lineHeight = 25.sp),
+                        code = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 12.sp),
+                    ),
+                )
+            }
         }
     }
 }

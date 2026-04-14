@@ -19,6 +19,7 @@ data class ArticleDto(
     val category: String,
     @SerialName("read_time_minutes") val readTimeMinutes: Int,
     @SerialName("clean_content") val cleanContent: String? = null,
+    @SerialName("readability_content") val readabilityContent: String? = null,
 )
 
 fun ArticleDto.toDomain(): Article = Article(
@@ -33,4 +34,5 @@ fun ArticleDto.toDomain(): Article = Article(
     date = LocalDate.parse(date),
     readTimeMinutes = readTimeMinutes,
     cleanContent = cleanContent,
+    readabilityContent = readabilityContent,
 )

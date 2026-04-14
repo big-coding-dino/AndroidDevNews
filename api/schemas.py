@@ -13,6 +13,7 @@ class ArticleResponse(BaseModel):
     category: str           # tag slug, e.g. "kotlin"
     read_time_minutes: int
     clean_content: str | None = None  # trafilatura plain-text extract
+    readability_content: str | None = None  # readability.js HTML extract
 
 
 class PodcastEpisodeResponse(BaseModel):
