@@ -104,7 +104,7 @@ async def main():
             SELECT r.id, r.url
             FROM resources r
             JOIN articles ad ON ad.resource_id = r.id
-            WHERE ad.clean_content IS NULL AND ad.fetch_error IS NULL
+            WHERE (ad.clean_content IS NULL OR ad.readability_content IS NULL) AND ad.fetch_error IS NULL
             ORDER BY r.published_at DESC NULLS LAST
         """)
         rows = cur.fetchall()
