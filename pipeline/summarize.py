@@ -37,6 +37,8 @@ Article content:
 Write a summary that:
 - Explains what the article is about, preserving the original meaning and narrative
 - Includes specific technical details: APIs, library names, version numbers, metrics
+- Includes all specific samples, features, or use cases mentioned in the article
+- Includes the author's name if stated in the article; if written in first person, treat the author's identity as stated
 - Ends with a "**Why it matters:**" paragraph explaining the real-world significance for developers
 - Has no strict word limit — cover what needs to be covered
 - Uses direct, developer-to-developer tone with no hype or filler
@@ -125,7 +127,8 @@ def call_claude(prompt):
     """Call claude -p with retry on rate limit. Returns output string."""
     while True:
         result = subprocess.run(
-            ["claude", "-p", prompt],
+            ["claude", "-p", "-"],
+            input=prompt,
             capture_output=True,
             text=True,
         )
