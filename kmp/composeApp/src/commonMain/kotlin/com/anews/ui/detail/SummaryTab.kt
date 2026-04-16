@@ -2,7 +2,6 @@ package com.anews.ui.detail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -36,23 +35,22 @@ import com.mikepenz.markdown.m3.markdownTypography
 @Composable
 internal fun SummaryTab(
     article: Article,
-    onSwitchToReader: () -> Unit,
-    onOpenInBrowser: () -> Unit,
+    fontScale: Float,
 ) {
     val colors = DsTheme.colors
 
     LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 18.dp)) {
         item {
-            Title(article = article, colors = colors)
+            Title(article = article, colors = colors, fontScale = fontScale)
         }
         item {
-            TldrTagRow(article = article, colors = colors)
+            TldrTagRow(article = article, colors = colors, fontScale = fontScale)
         }
 
         item {
             Text(
                 text = article.tldr,
-                style = TextStyle(fontSize = 13.5.sp, lineHeight = 22.sp),
+                style = TextStyle(fontSize = 13.5.sp * fontScale, lineHeight = 22.sp * fontScale),
                 color = colors.textSecondary,
                 modifier = Modifier.padding(bottom = 20.dp),
             )
@@ -67,8 +65,8 @@ internal fun SummaryTab(
                 text = "SUMMARY",
                 style = TextStyle(
                     fontFamily = FontFamily.Monospace,
-                    fontSize = 9.sp,
-                    letterSpacing = 1.5.sp,
+                    fontSize = 9.sp * fontScale,
+                    letterSpacing = 1.5.sp * fontScale,
                     fontWeight = FontWeight.Medium
                 ),
                 color = colors.textTertiary,
@@ -86,22 +84,22 @@ internal fun SummaryTab(
                 ),
                 typography = markdownTypography(
                     h1 = TextStyle(
-                        fontSize = 16.sp,
+                        fontSize = 16.sp * fontScale,
                         fontWeight = FontWeight.SemiBold,
                         color = colors.textPrimary
                     ),
                     h2 = TextStyle(
-                        fontSize = 15.sp,
+                        fontSize = 15.sp * fontScale,
                         fontWeight = FontWeight.SemiBold,
                         color = colors.textPrimary
                     ),
                     h3 = TextStyle(
-                        fontSize = 14.sp,
+                        fontSize = 14.sp * fontScale,
                         fontWeight = FontWeight.Medium,
                         color = colors.textPrimary
                     ),
-                    paragraph = TextStyle(fontSize = 13.sp, lineHeight = 21.sp),
-                    code = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 11.5.sp),
+                    paragraph = TextStyle(fontSize = 13.sp * fontScale, lineHeight = 21.sp * fontScale),
+                    code = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 11.5.sp * fontScale),
                 ),
             )
             Spacer(Modifier.height(20.dp))
@@ -127,12 +125,12 @@ internal fun SummaryTab(
                     Text(
                         text = "✓",
                         color = colors.backgroundScreen,
-                        style = TextStyle(fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        style = TextStyle(fontSize = 11.sp * fontScale, fontWeight = FontWeight.Bold)
                     )
                 }
                 Text(
                     text = "Tap Reader for a full clean view, or Web for the original source.",
-                    style = TextStyle(fontSize = 12.5.sp, lineHeight = 20.sp),
+                    style = TextStyle(fontSize = 12.5.sp * fontScale, lineHeight = 20.sp * fontScale),
                     color = colors.textSecondary,
                 )
             }
@@ -144,8 +142,8 @@ internal fun SummaryTab(
                 text = "TOPICS",
                 style = TextStyle(
                     fontFamily = FontFamily.Monospace,
-                    fontSize = 9.sp,
-                    letterSpacing = 1.5.sp
+                    fontSize = 9.sp * fontScale,
+                    letterSpacing = 1.5.sp * fontScale
                 ),
                 color = colors.textTertiary,
                 modifier = Modifier.padding(bottom = 8.dp)
@@ -153,71 +151,11 @@ internal fun SummaryTab(
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) { DsTagChip(category = article.category) }
             Spacer(Modifier.height(20.dp))
         }
-
-        item {
-            HorizontalDivider(
-                color = colors.borderSubtle,
-                modifier = Modifier.padding(bottom = 20.dp)
-            )
-        }
-
-        item {
-            Text(
-                text = "ACTIONS",
-                style = TextStyle(
-                    fontFamily = FontFamily.Monospace,
-                    fontSize = 9.sp,
-                    letterSpacing = 1.5.sp
-                ),
-                color = colors.textTertiary,
-                modifier = Modifier.padding(bottom = 10.dp)
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Box(
-                    modifier = Modifier.weight(1f)
-                        .background(colors.backgroundCard, RoundedCornerShape(11.dp))
-                        .border(1.dp, colors.borderSubtle, RoundedCornerShape(11.dp))
-                        .clickable(onClick = onSwitchToReader)
-                        .padding(vertical = 11.dp),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = "Reader mode",
-                        style = TextStyle(fontSize = 12.5.sp, fontWeight = FontWeight.Medium),
-                        color = colors.textSecondary
-                    )
-                }
-                Box(
-                    modifier = Modifier.weight(1f)
-                        .background(
-                            colors.accentPrimary.copy(alpha = 0.10f),
-                            RoundedCornerShape(11.dp)
-                        )
-                        .border(
-                            1.dp,
-                            colors.accentPrimary.copy(alpha = 0.35f),
-                            RoundedCornerShape(11.dp)
-                        )
-                        .clickable(onClick = onOpenInBrowser)
-                        .padding(vertical = 11.dp),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = "Open in browser",
-                        style = TextStyle(fontSize = 12.5.sp, fontWeight = FontWeight.Medium),
-                        color = colors.accentPrimary
-                    )
-                }
-            }
-        }
     }
 }
 
 @Composable
-private fun TldrTagRow(article: Article, colors: DsColors) {
+private fun TldrTagRow(article: Article, colors: DsColors, fontScale: Float) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -239,29 +177,29 @@ private fun TldrTagRow(article: Article, colors: DsColors) {
                 text = "TLDR",
                 style = TextStyle(
                     fontFamily = FontFamily.Monospace,
-                    fontSize = 9.sp,
+                    fontSize = 9.sp * fontScale,
                     fontWeight = FontWeight.Medium,
-                    letterSpacing = 1.5.sp
+                    letterSpacing = 1.5.sp * fontScale
                 ),
                 color = colors.tagKotlin.text,
             )
         }
         Text(
             text = "~${article.readTimeMinutes} min read",
-            style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp),
+            style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp * fontScale),
             color = colors.textTertiary,
         )
     }
 }
 
 @Composable
-private fun Title(article: Article, colors: DsColors) {
+private fun Title(article: Article, colors: DsColors, fontScale: Float) {
     Text(
         text = article.title,
         style = TextStyle(
-            fontSize = 18.sp,
+            fontSize = 18.sp * fontScale,
             fontWeight = FontWeight.SemiBold,
-            lineHeight = 24.sp
+            lineHeight = 24.sp * fontScale
         ),
         color = colors.textPrimary,
         modifier = Modifier.padding(bottom = 12.dp),

@@ -13,7 +13,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.sp
 
 @Composable
-actual fun ArticleHtmlView(html: String, baseUrl: String, modifier: Modifier) {
+actual fun ArticleHtmlView(html: String, baseUrl: String, fontSizePx: Int, modifier: Modifier) {
     Box(
         modifier = modifier.fillMaxSize().background(Color(0xFF0F1117)),
         contentAlignment = Alignment.Center,

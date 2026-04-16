@@ -22,6 +22,8 @@ kotlin {
             implementation(libs.ktor.client.android)
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.koin.android)
+            implementation(libs.multiplatform.settings.datastore)
+            implementation(libs.androidx.datastore.preferences)
         }
 
         commonMain.dependencies {
@@ -46,6 +48,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.markdown.renderer)
             implementation(libs.markdown.renderer.m3)
+            implementation(libs.multiplatform.settings)
         }
 
         desktopMain.dependencies {

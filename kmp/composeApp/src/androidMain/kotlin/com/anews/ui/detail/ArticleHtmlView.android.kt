@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 
-private fun wrapHtml(body: String): String = """
+private fun wrapHtml(body: String, fontSizePx: Int): String = """
 <!DOCTYPE html>
 <html>
 <head>
@@ -17,7 +17,7 @@ private fun wrapHtml(body: String): String = """
     background: #0F1117;
     color: #C8C9D4;
     font-family: -apple-system, system-ui, sans-serif;
-    font-size: 15px;
+    font-size: ${fontSizePx}px;
     line-height: 1.75;
     margin: 0;
     padding: 16px;
@@ -28,7 +28,7 @@ private fun wrapHtml(body: String): String = """
   pre, code {
     background: #1A1C26;
     border-radius: 6px;
-    font-size: 13px;
+    font-size: ${(fontSizePx * 0.87).toInt()}px;
   }
   pre { padding: 12px; overflow-x: auto; }
   code { padding: 2px 5px; }
@@ -46,7 +46,7 @@ private fun wrapHtml(body: String): String = """
 """.trimIndent()
 
 @Composable
-actual fun ArticleHtmlView(html: String, baseUrl: String, modifier: Modifier) {
+actual fun ArticleHtmlView(html: String, baseUrl: String, fontSizePx: Int, modifier: Modifier) {
     AndroidView(
         modifier = modifier,
         factory = { ctx ->
@@ -54,11 +54,11 @@ actual fun ArticleHtmlView(html: String, baseUrl: String, modifier: Modifier) {
                 webViewClient = WebViewClient()
                 settings.javaScriptEnabled = false
                 settings.domStorageEnabled = false
-                loadDataWithBaseURL(baseUrl, wrapHtml(html), "text/html", "UTF-8", null)
+                loadDataWithBaseURL(baseUrl, wrapHtml(html, fontSizePx), "text/html", "UTF-8", null)
             }
         },
         update = { webView ->
-            webView.loadDataWithBaseURL(baseUrl, wrapHtml(html), "text/html", "UTF-8", null)
+            webView.loadDataWithBaseURL(baseUrl, wrapHtml(html, fontSizePx), "text/html", "UTF-8", null)
         },
     )
 }

@@ -7,5 +7,6 @@ import androidx.compose.ui.Modifier
 expect fun ArticleHtmlView(
     html: String,
     baseUrl: String,
+    fontSizePx: Int = 15,
     modifier: Modifier = Modifier,
 )

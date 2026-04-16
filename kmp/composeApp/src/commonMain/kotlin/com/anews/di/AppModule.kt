@@ -17,8 +17,9 @@ import kotlinx.serialization.json.Json
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
-val appModule = module {
+expect fun platformModule(): org.koin.core.module.Module
 
+val appModule = module {
     // ── Network ────────────────────────────────────────────────────────────────
     single {
         HttpClient {
@@ -39,12 +40,12 @@ val appModule = module {
     }
 
     // ── Repository ─────────────────────────────────────────────────────────────
-    // SWAP POINT: change this one line to go live with the real API.
-    // Mock  → single<ArticleRepository> { MockArticleRepository() }
-    // Remote → single<ArticleRepository> { RemoteArticleRepository(get()) }
     single<ArticleRepository> { RemoteArticleRepository(get()) }
     single<DigestRepository> { RemoteDigestRepository(get()) }
     single<PodcastRepository> { RemotePodcastRepository(get()) }
+
+    // ── Platform-specific (preferences, etc.) ──────────────────────────────────
+    includes(platformModule())
 
     // ── ViewModel ──────────────────────────────────────────────────────────────
     viewModel { FeedViewModel(get()) }

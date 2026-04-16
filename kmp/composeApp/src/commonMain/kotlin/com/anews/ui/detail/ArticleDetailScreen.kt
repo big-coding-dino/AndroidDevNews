@@ -23,6 +23,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +42,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anews.domain.ArticleRepository
+import com.anews.domain.PreferencesRepository
 import com.anews.ds.DsTheme
 import com.anews.model.Article
 import com.mikepenz.markdown.m3.Markdown
@@ -85,6 +87,11 @@ fun ArticleDetailScreen(
     val colors = DsTheme.colors
     val uriHandler = LocalUriHandler.current
     val repository = koinInject<ArticleRepository>()
+    val preferencesRepository = koinInject<PreferencesRepository>()
+    val scope = rememberCoroutineScope()
+
+    val fontScale by preferencesRepository.observeFontSizeMultiplier()
+        .collectAsState(initial = 1f)
 
     LaunchedEffect(activeTab) {
         if (activeTab == DetailTab.Reader && readabilityHtml == null) {
@@ -113,13 +120,13 @@ fun ArticleDetailScreen(
             when (activeTab) {
                 DetailTab.Summary -> SummaryTab(
                     article = article,
-                    onSwitchToReader = { activeTab = DetailTab.Reader },
-                    onOpenInBrowser = { uriHandler.openUri(article.url) },
+                    fontScale = fontScale,
                 )
 
                 DetailTab.Reader -> ReaderTab(
                     article = article,
                     readabilityHtml = readabilityHtml,
+                    fontScale = fontScale,
                 )
 
                 DetailTab.Web -> WebTab(
@@ -130,6 +137,15 @@ fun ArticleDetailScreen(
                 DetailTab.Extract -> ExtractTab(article = article)
             }
         }
+
+        ArticleActionsSheet(
+            currentFontScale = fontScale,
+            onFontScaleChange = { scale ->
+                scope.launch { preferencesRepository.setFontSizeMultiplier(scale) }
+            },
+            onSwitchToReader = { activeTab = DetailTab.Reader },
+            onOpenInBrowser = { uriHandler.openUri(article.url) },
+        )
     }
 }
 
@@ -251,9 +267,10 @@ private fun DetailModeBar(
 // ── Reader tab ────────────────────────────────────────────────────────────────
 
 @Composable
-private fun ReaderTab(article: Article, readabilityHtml: String?) {
+private fun ReaderTab(article: Article, readabilityHtml: String?, fontScale: Float) {
     val colors = DsTheme.colors
     val html = readabilityHtml
+    val fontSizePx = (15 * fontScale).toInt()
 
     if (html != null) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -271,9 +288,9 @@ private fun ReaderTab(article: Article, readabilityHtml: String?) {
                 Text(
                     text = article.title,
                     style = TextStyle(
-                        fontSize = 18.sp,
+                        fontSize = 18.sp * fontScale,
                         fontWeight = FontWeight.SemiBold,
-                        lineHeight = 24.sp
+                        lineHeight = 24.sp * fontScale
                     ),
                     color = colors.textPrimary,
                     modifier = Modifier.padding(bottom = 10.dp),
@@ -306,6 +323,7 @@ private fun ReaderTab(article: Article, readabilityHtml: String?) {
             ArticleHtmlView(
                 html = html,
                 baseUrl = article.url,
+                fontSizePx = fontSizePx,
                 modifier = Modifier.weight(1f).fillMaxWidth(),
             )
         }
@@ -327,9 +345,9 @@ private fun ReaderTab(article: Article, readabilityHtml: String?) {
                 Text(
                     text = article.title,
                     style = TextStyle(
-                        fontSize = 20.sp,
+                        fontSize = 20.sp * fontScale,
                         fontWeight = FontWeight.SemiBold,
-                        lineHeight = 26.sp
+                        lineHeight = 26.sp * fontScale
                     ),
                     color = colors.textPrimary,
                     modifier = Modifier.padding(bottom = 12.dp),
@@ -374,25 +392,25 @@ private fun ReaderTab(article: Article, readabilityHtml: String?) {
                     ),
                     typography = markdownTypography(
                         h1 = TextStyle(
-                            fontSize = 17.sp,
+                            fontSize = 17.sp * fontScale,
                             fontWeight = FontWeight.SemiBold,
                             color = colors.textPrimary,
-                            lineHeight = 24.sp
+                            lineHeight = 24.sp * fontScale
                         ),
                         h2 = TextStyle(
-                            fontSize = 16.sp,
+                            fontSize = 16.sp * fontScale,
                             fontWeight = FontWeight.SemiBold,
                             color = colors.textPrimary,
-                            lineHeight = 22.sp
+                            lineHeight = 22.sp * fontScale
                         ),
                         h3 = TextStyle(
-                            fontSize = 15.sp,
+                            fontSize = 15.sp * fontScale,
                             fontWeight = FontWeight.Medium,
                             color = colors.textPrimary,
-                            lineHeight = 21.sp
+                            lineHeight = 21.sp * fontScale
                         ),
-                        paragraph = TextStyle(fontSize = 14.sp, lineHeight = 25.sp),
-                        code = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 12.sp),
+                        paragraph = TextStyle(fontSize = 14.sp * fontScale, lineHeight = 25.sp * fontScale),
+                        code = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 12.sp * fontScale),
                     ),
                 )
             }
