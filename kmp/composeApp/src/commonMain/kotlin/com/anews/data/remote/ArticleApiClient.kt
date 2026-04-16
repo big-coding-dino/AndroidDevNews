@@ -1,6 +1,7 @@
 package com.anews.data.remote
 
 import com.anews.data.dto.ArticleDto
+import com.anews.data.dto.ArticleReaderDto
 import com.anews.data.dto.DigestDto
 import com.anews.data.dto.PodcastEpisodeDto
 import io.ktor.client.HttpClient
@@ -12,6 +13,10 @@ class ArticleApiClient(
     private val httpClient: HttpClient,
     private val baseUrl: String,
 ) {
+    suspend fun fetchArticleReader(id: Int): ArticleReaderDto {
+        return httpClient.get("$baseUrl/articles/$id/reader").body()
+    }
+
     suspend fun fetchArticles(category: String? = null): List<ArticleDto> {
         return httpClient.get("$baseUrl/articles") {
             parameter("limit", 200)

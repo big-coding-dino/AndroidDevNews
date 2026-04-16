@@ -12,4 +12,9 @@ class RemoteArticleRepository(
         runCatching {
             apiClient.fetchArticles(category).map { it.toDomain() }
         }
+
+    override suspend fun getReadabilityContent(id: String): Result<String?> =
+        runCatching {
+            apiClient.fetchArticleReader(id.toInt()).readabilityContent
+        }
 }

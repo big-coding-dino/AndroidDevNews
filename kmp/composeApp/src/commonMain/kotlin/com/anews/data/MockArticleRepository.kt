@@ -7,4 +7,7 @@ import com.anews.model.mockArticles
 class MockArticleRepository : ArticleRepository {
     override suspend fun getArticles(category: String?): Result<List<Article>> =
         Result.success(mockArticles)
+
+    override suspend fun getReadabilityContent(id: String): Result<String?> =
+        Result.success(null)
 }
