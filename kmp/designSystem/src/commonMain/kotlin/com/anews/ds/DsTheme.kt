@@ -18,13 +18,10 @@ import androidx.compose.runtime.CompositionLocalProvider
  *   DsTheme.spacing.cardPadding
  */
 @Composable
-fun DsTheme(
-    fontScale: Float = 1f,
-    content: @Composable () -> Unit,
-) {
+fun DsTheme(content: @Composable () -> Unit) {
     CompositionLocalProvider(
         LocalDsColors     provides DarkDsColors,
-        LocalDsTypography provides DefaultDsTypography.scaled(fontScale),
+        LocalDsTypography provides DefaultDsTypography,
         LocalDsShapes     provides DefaultDsShapes,
         LocalDsSpacing    provides DsSpacing(),
     ) {

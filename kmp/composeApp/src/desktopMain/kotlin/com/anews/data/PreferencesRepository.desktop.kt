@@ -10,7 +10,7 @@ class PreferencesRepositoryImpl : PreferencesRepository {
     private val prefs = Preferences.userRoot().node("com.anews.prefs")
     private val fontSizeKey = "font_size_multiplier"
 
-    private val _fontSizeFlow = MutableStateFlow(1f)
+    private val _fontSizeFlow = MutableStateFlow(prefs.getFloat(fontSizeKey, 1f))
 
     override suspend fun getFontSizeMultiplier(): Float {
         return prefs.getFloat(fontSizeKey, 1f)

@@ -1,7 +1,7 @@
 package com.anews.ds
 
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
@@ -103,38 +103,4 @@ val DefaultDsTypography = DsTypography(
     ),
 )
 
-val LocalDsTypography = compositionLocalOf { DefaultDsTypography }
-
-fun DsTypography.scaled(fontScale: Float): DsTypography {
-    if (fontScale == 1f) return this
-    return copy(
-        appName = appName.copy(fontSize = appName.fontSize * fontScale),
-        articleTitle = articleTitle.copy(
-            fontSize = articleTitle.fontSize * fontScale,
-            lineHeight = articleTitle.lineHeight * fontScale,
-        ),
-        articleBody = articleBody.copy(
-            fontSize = articleBody.fontSize * fontScale,
-            lineHeight = articleBody.lineHeight * fontScale,
-        ),
-        dateHeader = dateHeader.copy(
-            fontSize = dateHeader.fontSize * fontScale,
-            letterSpacing = dateHeader.letterSpacing * fontScale,
-        ),
-        sourceLabel = sourceLabel.copy(fontSize = sourceLabel.fontSize * fontScale),
-        sourceUrl = sourceUrl.copy(fontSize = sourceUrl.fontSize * fontScale),
-        actionText = actionText.copy(fontSize = actionText.fontSize * fontScale),
-        chipLabel = chipLabel.copy(fontSize = chipLabel.fontSize * fontScale),
-        tagLabel = tagLabel.copy(
-            fontSize = tagLabel.fontSize * fontScale,
-            letterSpacing = tagLabel.letterSpacing * fontScale,
-        ),
-        sidebarSection = sidebarSection.copy(
-            fontSize = sidebarSection.fontSize * fontScale,
-            letterSpacing = sidebarSection.letterSpacing * fontScale,
-        ),
-        sidebarItem = sidebarItem.copy(fontSize = sidebarItem.fontSize * fontScale),
-        panelHeader = panelHeader.copy(fontSize = panelHeader.fontSize * fontScale),
-        metadata = metadata.copy(fontSize = metadata.fontSize * fontScale),
-    )
-}
+val LocalDsTypography = staticCompositionLocalOf { DefaultDsTypography }

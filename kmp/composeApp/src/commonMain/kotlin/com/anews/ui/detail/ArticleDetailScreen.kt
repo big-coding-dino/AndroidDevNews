@@ -138,14 +138,16 @@ fun ArticleDetailScreen(
             }
         }
 
-        ArticleActionsSheet(
-            currentFontScale = fontScale,
-            onFontScaleChange = { scale ->
-                scope.launch { preferencesRepository.setFontSizeMultiplier(scale) }
-            },
-            onSwitchToReader = { activeTab = DetailTab.Reader },
-            onOpenInBrowser = { uriHandler.openUri(article.url) },
-        )
+        if (activeTab == DetailTab.Summary || activeTab == DetailTab.Reader) {
+            ArticleActionsSheet(
+                currentFontScale = fontScale,
+                onFontScaleChange = { scale ->
+                    scope.launch { preferencesRepository.setFontSizeMultiplier(scale) }
+                },
+                onSwitchToReader = { activeTab = DetailTab.Reader },
+                onOpenInBrowser = { uriHandler.openUri(article.url) },
+            )
+        }
     }
 }
 

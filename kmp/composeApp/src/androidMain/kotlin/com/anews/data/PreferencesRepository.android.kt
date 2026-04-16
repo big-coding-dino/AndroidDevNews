@@ -13,15 +13,9 @@ import kotlinx.coroutines.flow.map
 
 private val Context.anewsDataStore: DataStore<Preferences> by preferencesDataStore(name = "anews_prefs")
 
-class PreferencesRepositoryImpl : PreferencesRepository {
+class PreferencesRepositoryImpl(private val context: Context) : PreferencesRepository {
 
-    private val dataStore: DataStore<Preferences> by lazy {
-        // Using the application context to avoid memory leaks.
-        // android.app.Application is available as a system service.
-        @Suppress("DEPRECATION")
-        val app = android.app.Application()
-        app.applicationContext.anewsDataStore
-    }
+    private val dataStore = context.anewsDataStore
 
     private val fontSizeKey = floatPreferencesKey("font_size_multiplier")
 
