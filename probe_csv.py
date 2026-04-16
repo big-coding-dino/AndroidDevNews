@@ -13,9 +13,9 @@ scraper = AndroidWeeklyScraper()
 resources = list(scraper.fetch(count=COUNT))
 
 with open(OUTPUT, "w", newline="", encoding="utf-8") as f:
-    writer = csv.DictWriter(f, fieldnames=["url", "title", "description", "rough_date", "pg_imported"])
+    writer = csv.DictWriter(f, fieldnames=["url", "title", "rough_date", "pg_imported"])
     writer.writeheader()
     for r in resources:
-        writer.writerow({"url": r.url, "title": r.title, "description": r.description, "rough_date": r.rough_date, "pg_imported": ""})
+        writer.writerow({"url": r.url, "title": r.title, "rough_date": r.rough_date, "pg_imported": ""})
 
 print(f"\nWrote {len(resources)} resources to {OUTPUT}")

@@ -99,8 +99,8 @@ with conn:
             # Insert resource
             cur.execute(
                 """
-                INSERT INTO resources (source_id, url, title, description, published_at)
-                VALUES (%s, %s, %s, %s, %s)
+                INSERT INTO resources (source_id, url, title, published_at)
+                VALUES (%s, %s, %s, %s)
                 ON CONFLICT (url) DO NOTHING
                 RETURNING id
                 """,
@@ -108,7 +108,6 @@ with conn:
                     feed_id,
                     r["url"],
                     r["title"] or None,
-                    r["description"] or None,
                     issue_date,
                 ),
             )

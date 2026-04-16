@@ -123,12 +123,12 @@ def main():
                 # Insert resource
                 cur.execute(
                     """
-                    INSERT INTO resources (source_id, url, title, description, published_at)
-                    VALUES (%s, %s, %s, %s, %s)
+                    INSERT INTO resources (source_id, url, title, published_at)
+                    VALUES (%s, %s, %s, %s)
                     ON CONFLICT (url) DO NOTHING
                     RETURNING id
                     """,
-                    (feed_id, r.url, r.title or None, r.description or None, r.rough_date),
+                    (feed_id, r.url, r.title or None, r.rough_date),
                 )
                 resource_row = cur.fetchone()
                 if resource_row:

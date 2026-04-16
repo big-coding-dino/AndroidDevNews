@@ -7,7 +7,6 @@ from datetime import date
 class Resource:
     url: str
     title: str
-    description: str | None = None
     rough_date: date | None = None
     issue_number: int | None = None
 

@@ -16,5 +16,4 @@ for r in resources[:5]:
     print(f"  issue:  {r.issue_number}")
     print(f"  title:  {r.title}")
     print(f"  url:    {r.url}")
-    print(f"  desc:   {(r.description or '')[:120]}")
     print()

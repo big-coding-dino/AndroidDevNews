@@ -127,7 +127,7 @@ def fetch_articles(conn, model, topic, date_from, date_to=None):
         with conn.cursor() as cur:
             cur.execute(
                 f"""
-                SELECT r.id, r.title, r.url, r.published_at, r.description, ad.clean_content,
+                SELECT r.id, r.title, r.url, r.published_at, ad.clean_content,
                        1 - (r.embedding <=> %s::vector) AS score
                 FROM resources r
                 JOIN articles ad ON ad.resource_id = r.id
@@ -139,14 +139,13 @@ def fetch_articles(conn, model, topic, date_from, date_to=None):
                 params,
             )
             for row in cur.fetchall():
-                rid, title, url, pub_date, description, clean_content, score = row
+                rid, title, url, pub_date, clean_content, score = row
                 if score >= SCORE_THRESHOLD and rid not in seen:
                     seen[rid] = {
                         "id": rid,
                         "title": title,
                         "url": url,
                         "date": pub_date.isoformat() if pub_date else None,
-                        "description": description or "",
                         "clean_content": (clean_content or "")[:8000],
                         "score": round(score, 4),
                     }

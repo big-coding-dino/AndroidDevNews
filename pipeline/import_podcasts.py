@@ -76,8 +76,6 @@ def fetch_rss_episodes() -> dict[int, dict]:
         duration_str = item.findtext(f"{{{ITUNES_NS}}}duration", "")
         duration_seconds = parse_duration_seconds(duration_str)
 
-        description_html = (item.findtext("description") or "").strip()
-
         raw_summary = item.findtext(f"{{{ITUNES_NS}}}summary", "") or ""
         tldr_lines = []
         for line in raw_summary.strip().splitlines():
@@ -94,7 +92,6 @@ def fetch_rss_episodes() -> dict[int, dict]:
             "published_at": published_at,
             "audio_url": audio_url,
             "duration_seconds": duration_seconds,
-            "description": description_html or None,
             "tldr": tldr,
         }
 
@@ -213,17 +210,16 @@ def main():
             with conn.cursor() as cur:
                 cur.execute(
                     """
-                    INSERT INTO resources (source_id, url, title, description, tldr, resource_type, published_at)
-                    VALUES (%s, %s, %s, %s, %s, 'podcast_episode', %s)
+                    INSERT INTO resources (source_id, url, title, tldr, resource_type, published_at)
+                    VALUES (%s, %s, %s, %s, 'podcast_episode', %s)
                     ON CONFLICT (url) DO UPDATE
                         SET title         = EXCLUDED.title,
-                            description   = EXCLUDED.description,
                             tldr          = EXCLUDED.tldr,
                             published_at  = EXCLUDED.published_at,
                             resource_type = EXCLUDED.resource_type
                     RETURNING id
                     """,
-                    (source_id, ep["url"], ep["title"], ep["description"], ep["tldr"], ep["published_at"]),
+                    (source_id, ep["url"], ep["title"], ep["tldr"], ep["published_at"]),
                 )
                 resource_id = cur.fetchone()[0]
 

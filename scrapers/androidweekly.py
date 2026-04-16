@@ -39,15 +39,7 @@ def _extract_links(html: str, rough_date: date, issue_number: int) -> list[Resou
         if not title:
             continue
 
-        # Description is the text of the nearest <td> ancestor, minus the title
-        parent = a.find_parent("td")
-        if parent:
-            ctx = parent.get_text(separator=" ", strip=True)
-            description = ctx.replace(title, "", 1).strip() or None
-        else:
-            description = None
-
-        resources.append(Resource(url=url, title=title, description=description, rough_date=rough_date, issue_number=issue_number))
+        resources.append(Resource(url=url, title=title, rough_date=rough_date, issue_number=issue_number))
 
     return resources
 

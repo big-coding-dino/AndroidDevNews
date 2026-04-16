@@ -66,22 +66,10 @@ def _fetch_issue(n: int) -> list[Resource] | None:
         if not title:
             continue
 
-        # Description: first <span> sibling after this link, before the next link
-        description = None
-        for sibling in a.next_siblings:
-            if getattr(sibling, "name", None) == "span":
-                text = sibling.get_text(strip=True)
-                if text:
-                    description = text
-                    break
-            if getattr(sibling, "name", None) == "a" and sibling.get("href", "").startswith("http"):
-                break
-
         seen_urls.add(link_url)
         resources.append(Resource(
             url=link_url,
             title=title,
-            description=description,
             rough_date=rough_date,
             issue_number=n,
         ))
