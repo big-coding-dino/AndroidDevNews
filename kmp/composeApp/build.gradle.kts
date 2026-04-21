@@ -47,6 +47,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.markdown.renderer)
             implementation(libs.markdown.renderer.m3)
+            implementation(libs.navigation3.ui)
         }
 
         desktopMain.dependencies {
@@ -59,12 +60,12 @@ kotlin {
 
 android {
     namespace = "com.anews"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.anews"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
     }

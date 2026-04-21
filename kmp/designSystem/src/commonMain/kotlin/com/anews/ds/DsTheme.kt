@@ -20,19 +20,19 @@ import androidx.compose.runtime.CompositionLocalProvider
 @Composable
 fun DsTheme(content: @Composable () -> Unit) {
     CompositionLocalProvider(
-        LocalDsColors     provides DarkDsColors,
+        LocalDsColors provides DarkDsColors,
         LocalDsTypography provides DefaultDsTypography,
-        LocalDsShapes     provides DefaultDsShapes,
-        LocalDsSpacing    provides DsSpacing(),
+        LocalDsShapes provides DefaultDsShapes,
+        LocalDsSpacings provides DsSpacings(),
     ) {
         MaterialTheme(
             colorScheme = darkColorScheme(
-                background   = DarkDsColors.backgroundScreen,
-                surface      = DarkDsColors.backgroundCard,
-                primary      = DarkDsColors.accentPrimary,
-                onPrimary    = DarkDsColors.chipSelectedText,
+                background = DarkDsColors.backgroundScreen,
+                surface = DarkDsColors.backgroundCard,
+                primary = DarkDsColors.accentPrimary,
+                onPrimary = DarkDsColors.chipSelectedText,
                 onBackground = DarkDsColors.textPrimary,
-                onSurface    = DarkDsColors.textPrimary,
+                onSurface = DarkDsColors.textPrimary,
             ),
             content = content,
         )
@@ -53,6 +53,6 @@ object DsTheme {
     val shapes: DsShapes
         @Composable get() = LocalDsShapes.current
 
-    val spacing: DsSpacing
-        @Composable get() = LocalDsSpacing.current
+    val spacing: DsSpacings
+        @Composable get() = LocalDsSpacings.current
 }

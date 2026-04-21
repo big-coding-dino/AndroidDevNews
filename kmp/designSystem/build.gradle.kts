@@ -22,7 +22,7 @@ kotlin {
 
 android {
     namespace = "com.anews.ds"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 26

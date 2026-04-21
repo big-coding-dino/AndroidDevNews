@@ -75,8 +75,8 @@ fun ArticleDetailScreen(
         DetailTab.entries.filter { tab ->
             when (tab) {
                 DetailTab.Summary -> hasSummary
-                DetailTab.Reader  -> article.hasReadabilityContent
-                DetailTab.Web     -> true
+                DetailTab.Reader -> article.hasReadabilityContent
+                DetailTab.Web -> true
                 DetailTab.Extract -> true
             }
         }
@@ -411,8 +411,14 @@ private fun ReaderTab(article: Article, readabilityHtml: String?, fontScale: Flo
                             color = colors.textPrimary,
                             lineHeight = 21.sp * fontScale
                         ),
-                        paragraph = TextStyle(fontSize = 14.sp * fontScale, lineHeight = 25.sp * fontScale),
-                        code = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 12.sp * fontScale),
+                        paragraph = TextStyle(
+                            fontSize = 14.sp * fontScale,
+                            lineHeight = 25.sp * fontScale
+                        ),
+                        code = TextStyle(
+                            fontFamily = FontFamily.Monospace,
+                            fontSize = 12.sp * fontScale
+                        ),
                     ),
                 )
             }
@@ -544,7 +550,11 @@ private fun ExtractTab(article: Article) {
             Spacer(Modifier.height(6.dp))
             Text(
                 text = "Copy the URL and paste it into your LLM of choice",
-                style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp, lineHeight = 16.sp),
+                style = TextStyle(
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 10.sp,
+                    lineHeight = 16.sp
+                ),
                 color = colors.textTertiary,
             )
             Spacer(Modifier.height(20.dp))

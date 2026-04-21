@@ -6,7 +6,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Immutable
-data class DsSpacing(
+data class DsSpacings(
     val xxs:  Dp =  2.dp,
     val xs:   Dp =  4.dp,
     val sm:   Dp =  8.dp,
@@ -30,4 +30,4 @@ data class DsSpacing(
     val listPanelWidth: Dp = 340.dp,
 )
 
-val LocalDsSpacing = staticCompositionLocalOf { DsSpacing() }
+val LocalDsSpacings = staticCompositionLocalOf { DsSpacings() }

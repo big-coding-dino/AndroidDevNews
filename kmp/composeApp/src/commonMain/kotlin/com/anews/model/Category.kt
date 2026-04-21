@@ -1,5 +1,8 @@
 package com.anews.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 enum class Category(
     val label: String,
     val slug: String,

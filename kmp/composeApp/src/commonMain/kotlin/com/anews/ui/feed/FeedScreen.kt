@@ -80,7 +80,7 @@ private fun FeedError(message: String) {
 @Composable
 private fun FeedArticleList(
     state: FeedUiState.Success,
-    spacing: com.anews.ds.DsSpacing,
+    spacing: com.anews.ds.DsSpacings,
     onArticleSelect: (com.anews.model.Article) -> Unit,
 ) {
     LazyColumn(
