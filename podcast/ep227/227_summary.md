@@ -1,20 +1,10 @@
-It seems write permissions aren't being granted. The summary is ready — here it is:
-
----
-
 **Ep. 227 — Exotic Car Salesman to Mobile Developer with Ephraim Schmitt**
-*Fragmented · Don Felker · 46 min · 2022-04-11*
+*Fragmented Podcast · Don Felker · 46 min · Apr 11, 2022*
 
-Ephraim Schmitt spent 16 years in car sales — most recently selling Bentleys and Lamborghinis — before walking away from a $180k/year income to become an Android developer. The driver wasn't money; it was quality of life. Seventy-hour weeks doing work he didn't love pushed him to ask the classic question: if money didn't matter, what would you do? The answer was program.
+Ephraim Schmitt spent 16 years in car sales — the last stretch selling Bentleys and Lamborghinis, clearing around $180k/year — before walking away to become an Android developer. The driver wasn't money; it was 70-hour weeks doing work he didn't love. He'd tinkered with HTML and PHP since the early 2000s, and when he asked himself the "million dollar" question, programming was the honest answer.
 
-His path wasn't linear. He earned a four-year IT degree in 16 months through an online self-paced program, only to find it taught him almost nothing practical. He pivoted to YouTube tutorials, podcasts (including Fragmented), and books like the Head First design patterns series. The real education came from building an actual Android app — rewriting it roughly seven times as he discovered architectural mistakes. He'd implement a feature, add another, and find the first approach blocked him. Then he'd refactor, repeat. The app still exists and still generates a small income.
+His path in wasn't clean. He completed a four-year IT bachelor's degree in 16 months through an online program, emerged feeling like he'd learned almost nothing practical, and was told by working developers that college was always going to be that way. He picked Android because he was already an Android user and already knew Java from the degree. From there: YouTube tutorials for the how, podcasts (including Fragmented) for discovering what he didn't know yet, articles to fill the gaps, and — most importantly — building a real app and rewriting it roughly seven times. That app still makes a few dollars a month. He applied for jobs for two years before landing anything, initially sending resumes into the void until a developer friend explained how recruiting actually works and told him his resume was garbage.
 
-Landing the first job took two years of failed attempts. Mass-applying via Monster.com with a poorly written resume went nowhere. The breakthrough came from a developer contact who explained the recruiter-driven hiring market and helped him reframe his resume to demonstrate competence without a prior professional title. His current role at First Form (health/fitness) is a team of one building apps and websites on demand — closer to a product generalist than a specialist.
+His learning approach has stayed consistent: don't try to do it right the first time, just get it working, then step back and ask what makes you cringe. He's currently applying the same process to Solidity and Ethereum development.
 
-His learning approach hasn't changed: when picking up Solidity and Ethereum development, he deliberately avoids doing it "right" at first, just gets something working, then asks what makes him cringe after a week. Only then does he refactor toward elegance and extensibility.
-
-**Why it's worth your time:** If you're mid-career and wondering whether it's too late or too risky to switch into software, Ephraim's story is a grounded, honest account — not a highlight reel. The tactical details (degree vs. self-study, recruiter reality, the value of shipping something even if it's rough) are practical, not inspirational fluff.
-
----
-
-Please approve the write permission so I can save this to `podcast/ep227/227_summary.md` and then update the DB.
+**Why it's worth your time:** If you're mid-career and scared the transition window has closed, Ephraim's story is a grounded, unsentimental counterargument. The tactical bits — ignore architecture until you have working code, use podcasts as a map of what you don't know yet, go through recruiters — are the kind of advice nobody puts in blog posts but everyone learns the hard way.
