@@ -1,0 +1,14 @@
+**Ep. 310 — Mitchell Hashimoto on Ghostty & His Agentic Coding Workflow**
+*Fragmented Podcast · Kaushik & Yuri · 60 min · 2026-04-14*
+
+Mitchell Hashimoto, co-founder of HashiCorp and creator of Ghostty, breaks down the architecture of modern terminals and why the terminal is having a renaissance driven by agentic AI.
+
+Ghostty's core design goals are speed, cross-platform native feel (Mac and Linux), and treating the terminal as a true platform — not just an emulator of 1970s hardware. The Linux version shipped first; the Mac version followed over a year later. The "native" distinction matters beyond aesthetics: it means integrating with AppleScript, Shortcuts, accessibility APIs, and OS text primitives that multiplexers like Tmux can't expose.
+
+The episode goes deep on terminal layer architecture: the terminal emulator creates a PTY (a byte stream), launches a shell, and hands it the PTY. The shell in turn leases the PTY to foreground programs like Claude Code. A multiplexer like Tmux inserts itself as a full second terminal — it parses and re-renders escape sequences, creating a least-common-denominator problem where newer features (colored underlines, synchronized output, accessibility text ranges) get silently dropped. This is why Ghostty features break inside Tmux: Tmux simply doesn't forward sequences it doesn't understand.
+
+The Claude Code scrollback flickering problem is explained structurally: programs can only address the visible portion of the primary screen; anything scrolled into history can never be redrawn. Claude Code's workaround — erase all history and redraw from scratch — is the only option available today. Mitchell describes a potential fix via new terminal sequences that would allow incremental redraw of off-screen history, eliminating the full-erase-and-redraw cycle. He's been in conversation with the Claude Code team about this.
+
+Terminal capability detection also gets coverage: most terminals still use `$TERM` string sniffing (equivalent to browser user-agent sniffing), which is why Ghostty includes "xterm" in its term name. The proper solution — XTGETTCAP, a query/response protocol for feature detection — exists and is supported by most third-party terminals but not yet universally adopted.
+
+**Why it's worth your time:** If you use Claude Code, Tmux, or SSH daily and have hit mysterious rendering glitches or feature gaps, this episode explains exactly why they happen and what would need to change at the platform level to fix them. Mitchell's framing of the terminal as a platform — analogous to the browser — reframes how you think about what's possible as AI tooling pushes terminal apps harder.

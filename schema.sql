@@ -27,20 +27,6 @@ INSERT INTO tags (slug, name) VALUES
     ('xr',           'Android XR')
 ON CONFLICT (slug) DO NOTHING;
 
-CREATE TABLE IF NOT EXISTS newsletter_issues (
-    id           SERIAL PRIMARY KEY,
-    feed_id      INTEGER NOT NULL REFERENCES feeds(id),
-    issue_number INTEGER NOT NULL,
-    published_at DATE,
-    UNIQUE (feed_id, issue_number)
-);
-
-CREATE TABLE IF NOT EXISTS newsletter_issue_resources (
-    issue_id    INTEGER NOT NULL REFERENCES newsletter_issues(id) ON DELETE CASCADE,
-    resource_id INTEGER NOT NULL REFERENCES resources(id) ON DELETE CASCADE,
-    PRIMARY KEY (issue_id, resource_id)
-);
-
 CREATE TABLE IF NOT EXISTS resources (
     id            SERIAL PRIMARY KEY,
     source_id     INTEGER REFERENCES feeds(id),
@@ -71,6 +57,20 @@ CREATE TABLE IF NOT EXISTS podcast_episodes (
     duration_seconds INTEGER,
     audio_url        TEXT,
     transcript       TEXT
+);
+
+CREATE TABLE IF NOT EXISTS newsletter_issues (
+    id           SERIAL PRIMARY KEY,
+    feed_id      INTEGER NOT NULL REFERENCES feeds(id),
+    issue_number INTEGER NOT NULL,
+    published_at DATE,
+    UNIQUE (feed_id, issue_number)
+);
+
+CREATE TABLE IF NOT EXISTS newsletter_issue_resources (
+    issue_id    INTEGER NOT NULL REFERENCES newsletter_issues(id) ON DELETE CASCADE,
+    resource_id INTEGER NOT NULL REFERENCES resources(id) ON DELETE CASCADE,
+    PRIMARY KEY (issue_id, resource_id)
 );
 
 CREATE TABLE IF NOT EXISTS digests (
