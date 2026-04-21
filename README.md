@@ -47,9 +47,9 @@ Access at `http://<host>:5000/admin/`. On Tailscale, bind to `0.0.0.0` and use y
 
 **Tables available**: `Resource`, `Feed`, `Tag`, `Article`, `PodcastEpisode`, `NewsletterIssue`, `Digest`, `TagQuery`, `NewsletterIssueResource`, `DigestResource`.
 
-## Database
+## Database (Docker/ParadeDB)
 
-PostgreSQL via ParadeDB (`paradedb/paradedb:latest-pg16`). Schema is in `schema.sql`, initialized automatically on first `docker compose up`.
+PostgreSQL via `paradedb/paradedb:latest-pg16` — runs as a Docker container via `docker compose up -d db`. Schema is in `schema.sql`, initialized automatically on first `docker compose up`.
 
 Key tables:
 - **resources** — articles and podcast episodes; `embedding` is a 384-dim vector for semantic search
