@@ -53,7 +53,7 @@ fun MainScreen() {
             }
             entry<DigestTab> {
                 TabShell(activeTab = DigestTab, backStack = backStack) {
-                    DigestScreen()
+                    DigestScreen(onOpenArticle = { backStack.add(ArticleDetail(it)) })
                 }
             }
             entry<PodcastTab> {

@@ -6,6 +6,13 @@ data class DigestArticle(
     val tldr: String,
     val sourceDomain: String,
     val category: Category,
+    val id: String = "",
+    val summary: String = "",
+    val sourceLabel: String = "",
+    val date: kotlinx.datetime.LocalDate? = null,
+    val readTimeMinutes: Int = 0,
+    val cleanContent: String? = null,
+    val hasReadabilityContent: Boolean = false,
 )
 
 data class Digest(

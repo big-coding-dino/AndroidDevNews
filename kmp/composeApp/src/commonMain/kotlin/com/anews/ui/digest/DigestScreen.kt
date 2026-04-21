@@ -24,13 +24,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anews.ds.DsTheme
+import com.anews.model.Article
 import com.anews.model.Digest
 import com.anews.model.DigestArticle
 import com.anews.ui.components.DsFilterChipRow
@@ -39,7 +39,10 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun DigestScreen(viewModel: DigestViewModel = koinViewModel()) {
+fun DigestScreen(
+    onOpenArticle: (Article) -> Unit = {},
+    viewModel: DigestViewModel = koinViewModel(),
+) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val colors = DsTheme.colors
     val spacing = DsTheme.spacing
@@ -90,7 +93,7 @@ fun DigestScreen(viewModel: DigestViewModel = koinViewModel()) {
                             )
                         }
                         items(digests, key = { it.id }) { digest ->
-                            DigestCard(digest)
+                            DigestCard(digest, onOpenArticle = onOpenArticle)
                         }
                     }
                 }
@@ -125,9 +128,8 @@ private fun DigestMonthHeader(periodLabel: String, modifier: Modifier = Modifier
 }
 
 @Composable
-private fun DigestCard(digest: Digest) {
+private fun DigestCard(digest: Digest, onOpenArticle: (Article) -> Unit) {
     val colors = DsTheme.colors
-    val uriHandler = LocalUriHandler.current
     val cardShape = RoundedCornerShape(14.dp)
 
     Column(
@@ -161,13 +163,16 @@ private fun DigestCard(digest: Digest) {
                 color = colors.borderSubtle,
                 thickness = 1.dp,
             )
-            DigestArticleEntry(article, onClick = { uriHandler.openUri(article.url) })
+            DigestArticleEntry(
+                article = article.toArticle(),
+                onOpenArticle = onOpenArticle,
+            )
         }
     }
 }
 
 @Composable
-private fun DigestArticleEntry(article: DigestArticle, onClick: () -> Unit) {
+private fun DigestArticleEntry(article: Article, onOpenArticle: (Article) -> Unit) {
     val colors = DsTheme.colors
 
     Column(
@@ -197,11 +202,31 @@ private fun DigestArticleEntry(article: DigestArticle, onClick: () -> Unit) {
                 color = colors.textSecondary,
             )
         }
-        Text(
-            text = "Open article ›",
-            style = DsTheme.typography.actionText,
-            color = colors.textSecondary,
-            modifier = Modifier.padding(top = 2.dp).clickable(onClick = onClick),
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+        ) {
+            Text(
+                text = "Open article ›",
+                style = DsTheme.typography.actionText,
+                color = colors.textSecondary,
+                modifier = Modifier.padding(top = 2.dp).clickable { onOpenArticle(article) },
+            )
+        }
     }
 }
+
+private fun DigestArticle.toArticle(): Article = Article(
+    id = id,
+    title = title,
+    tldr = tldr,
+    summary = summary,
+    url = url,
+    sourceLabel = sourceLabel,
+    sourceDomain = sourceDomain,
+    category = category,
+    date = date ?: kotlinx.datetime.LocalDate(2026, 1, 1),
+    readTimeMinutes = readTimeMinutes,
+    cleanContent = cleanContent,
+    hasReadabilityContent = hasReadabilityContent,
+)
