@@ -17,4 +17,9 @@ class RemoteArticleRepository(
         runCatching {
             apiClient.fetchArticleReader(id.toInt()).readabilityContent
         }
+
+    override suspend fun getCleanContent(id: String): Result<String?> =
+        runCatching {
+            apiClient.fetchArticleExtract(id.toInt()).cleanContent
+        }
 }

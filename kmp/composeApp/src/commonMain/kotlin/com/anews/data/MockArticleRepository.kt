@@ -10,4 +10,7 @@ class MockArticleRepository : ArticleRepository {
 
     override suspend fun getReadabilityContent(id: String): Result<String?> =
         Result.success(null)
+
+    override suspend fun getCleanContent(id: String): Result<String?> =
+        Result.success(null)
 }

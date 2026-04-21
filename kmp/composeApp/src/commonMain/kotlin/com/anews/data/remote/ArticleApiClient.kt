@@ -1,6 +1,7 @@
 package com.anews.data.remote
 
 import com.anews.data.dto.ArticleDto
+import com.anews.data.dto.ArticleExtractDto
 import com.anews.data.dto.ArticleReaderDto
 import com.anews.data.dto.DigestDto
 import com.anews.data.dto.PodcastEpisodeDto
@@ -15,6 +16,10 @@ class ArticleApiClient(
 ) {
     suspend fun fetchArticleReader(id: Int): ArticleReaderDto {
         return httpClient.get("$baseUrl/articles/$id/reader").body()
+    }
+
+    suspend fun fetchArticleExtract(id: Int): ArticleExtractDto {
+        return httpClient.get("$baseUrl/articles/$id/extract").body()
     }
 
     suspend fun fetchArticles(category: String? = null): List<ArticleDto> {

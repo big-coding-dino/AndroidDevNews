@@ -2,17 +2,9 @@ from fastapi import APIRouter, HTTPException, Query
 from urllib.parse import urlparse
 
 from api.db import get_conn
-from api.schemas import ArticleReaderResponse, ArticleResponse
+from api.schemas import ArticleReaderResponse, ArticleExtractResponse, ArticleResponse
 
 router = APIRouter()
-
-WORDS_PER_MINUTE = 200
-
-
-def _read_time(clean_content: str | None) -> int:
-    if not clean_content:
-        return 1
-    return max(1, len(clean_content.split()) // WORDS_PER_MINUTE)
 
 
 def _source_domain(url: str) -> str:
@@ -41,7 +33,6 @@ def get_articles(
                         f.name        AS source_label,
                         f.slug        AS source_domain,
                         t.slug        AS category,
-                        a.clean_content,
                         (a.readability_content IS NOT NULL) AS has_readability_content
                     FROM resources r
                     JOIN articles a  ON a.resource_id = r.id
@@ -70,7 +61,6 @@ def get_articles(
                         f.name        AS source_label,
                         f.slug        AS source_domain,
                         COALESCE(best.slug, 'android') AS category,
-                        a.clean_content,
                         (a.readability_content IS NOT NULL) AS has_readability_content
                     FROM resources r
                     JOIN articles a  ON a.resource_id = r.id
@@ -113,9 +103,9 @@ def get_articles(
             source_label=row[6] or "",
             source_domain=_source_domain(row[2]),
             category=row[8],
-            read_time_minutes=_read_time(row[9]),
-            clean_content=row[9],
-            has_readability_content=row[10],
+            read_time_minutes=max(1, len((row[5] or "").split()) // 200),
+            clean_content=None,
+            has_readability_content=row[9],
         )
         for row in rows
     ]
@@ -135,3 +125,19 @@ def get_article_reader(article_id: int):
         raise HTTPException(status_code=404, detail=f"Article {article_id} not found")
 
     return ArticleReaderResponse(readability_content=row[0])
+
+
+@router.get("/articles/{article_id}/extract", response_model=ArticleExtractResponse)
+def get_article_extract(article_id: int):
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT clean_content FROM articles WHERE resource_id = %s",
+                (article_id,),
+            )
+            row = cur.fetchone()
+
+    if row is None:
+        raise HTTPException(status_code=404, detail=f"Article {article_id} not found")
+
+    return ArticleExtractResponse(clean_content=row[0])

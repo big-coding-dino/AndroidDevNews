@@ -20,6 +20,10 @@ class ArticleReaderResponse(BaseModel):
     readability_content: str | None = None
 
 
+class ArticleExtractResponse(BaseModel):
+    clean_content: str | None = None
+
+
 class PodcastEpisodeResponse(BaseModel):
     id: int
     title: str

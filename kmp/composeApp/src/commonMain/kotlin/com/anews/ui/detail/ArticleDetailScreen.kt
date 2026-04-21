@@ -84,6 +84,7 @@ fun ArticleDetailScreen(
 
     var activeTab by remember(article.id) { mutableStateOf(visibleTabs.first()) }
     var readabilityHtml by remember { mutableStateOf<String?>(null) }
+    var extractText by remember { mutableStateOf<String?>(null) }
     val colors = DsTheme.colors
     val uriHandler = LocalUriHandler.current
     val repository = koinInject<ArticleRepository>()
@@ -94,8 +95,18 @@ fun ArticleDetailScreen(
         .collectAsState(initial = 1f)
 
     LaunchedEffect(activeTab) {
-        if (activeTab == DetailTab.Reader && readabilityHtml == null) {
-            repository.getReadabilityContent(article.id).onSuccess { readabilityHtml = it }
+        when (activeTab) {
+            DetailTab.Reader -> {
+                if (readabilityHtml == null) {
+                    repository.getReadabilityContent(article.id).onSuccess { readabilityHtml = it }
+                }
+            }
+            DetailTab.Extract -> {
+                if (extractText == null) {
+                    repository.getCleanContent(article.id).onSuccess { extractText = it }
+                }
+            }
+            else -> {}
         }
     }
 
@@ -134,7 +145,7 @@ fun ArticleDetailScreen(
                     onSwitchToReader = { activeTab = DetailTab.Reader },
                 )
 
-                DetailTab.Extract -> ExtractTab(article = article)
+                DetailTab.Extract -> ExtractTab(article = article, cleanContent = extractText)
             }
         }
 
@@ -526,13 +537,13 @@ private val PROMPT_PRESETS = listOf(
 )
 
 @Composable
-private fun ExtractTab(article: Article) {
+private fun ExtractTab(article: Article, cleanContent: String?) {
     val colors = DsTheme.colors
     val clipboard = LocalClipboardManager.current
     val uriHandler = LocalUriHandler.current
     val scope = rememberCoroutineScope()
 
-    val rawText = article.cleanContent?.takeIf { it.isNotBlank() }
+    val rawText = cleanContent?.takeIf { it.isNotBlank() }
 
     if (rawText == null) {
         var urlCopied by remember { mutableStateOf(false) }
