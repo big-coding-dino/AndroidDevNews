@@ -214,6 +214,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--episode", type=int, help="Process a specific episode number")
     parser.add_argument("--list", action="store_true", help="List episodes needing transcription and exit")
+    parser.add_argument("--limit", type=int, default=None, help="Only process the N most recent pending episodes")
     args = parser.parse_args()
 
     step("Fetching RSS feed...")
@@ -230,6 +231,8 @@ def main():
             [n for n in rss if not has_transcript(n)],
             reverse=True,
         )
+        if args.limit:
+            pending = pending[:args.limit]
 
     if args.list:
         if not pending:

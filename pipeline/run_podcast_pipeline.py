@@ -16,6 +16,7 @@ Cron (weekly, Mondays 3am):
 """
 import argparse
 import os
+import shutil
 import subprocess
 import sys
 from datetime import datetime
@@ -23,6 +24,8 @@ from pathlib import Path
 
 # Always run from the project root regardless of cwd
 os.chdir(Path(__file__).parent.parent)
+
+UV = shutil.which("uv") or "/root/.local/bin/uv"
 
 
 def ts():
@@ -59,17 +62,17 @@ def main():
     print(f"[{ts()}] Podcast pipeline starting", flush=True)
 
     if not args.skip_transcribe:
-        run_step("transcribe", ["uv", "run", "podcast/batch_transcribe.py"])
+        run_step("transcribe", [UV, "run", "podcast/batch_transcribe.py", "--limit", "5"])
     else:
         print(f"\n[transcribe] SKIPPED")
 
     if not args.skip_import:
-        run_step("import", ["uv", "run", "pipeline/import_podcasts.py"], dry_run=args.dry_run)
+        run_step("import", [UV, "run", "pipeline/import_podcasts.py"], dry_run=args.dry_run)
     else:
         print(f"\n[import] SKIPPED")
 
     if not args.skip_summarize:
-        run_step("summarize", ["uv", "run", "pipeline/summarize_podcasts.py"], dry_run=args.dry_run)
+        run_step("summarize", [UV, "run", "pipeline/summarize_podcasts.py"], dry_run=args.dry_run)
     else:
         print(f"\n[summarize] SKIPPED")
 
