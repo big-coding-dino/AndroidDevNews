@@ -31,11 +31,15 @@ def current_issue() -> int:
     resp = requests.get(ARCHIVE_URL, timeout=15)
     resp.raise_for_status()
     soup = BeautifulSoup(resp.text, "html.parser")
-    # Archive lists items like "04/12/2026 - Kotlin Weekly #506"
-    numbers = re.findall(r"Kotlin Weekly #(\d+)", soup.get_text())
+    # Search link text to avoid get_text() merging issue numbers with adjacent date text
+    numbers = []
+    for a in soup.find_all("a"):
+        m = re.search(r"Kotlin Weekly #(\d+)", a.get_text())
+        if m:
+            numbers.append(int(m.group(1)))
     if not numbers:
         raise RuntimeError("Could not determine current Kotlin Weekly issue number")
-    return max(int(n) for n in numbers)
+    return max(numbers)
 
 
 def _fetch_issue(n: int) -> list[Resource] | None:
