@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Query, Response
+from fastapi import APIRouter, Query, Request, Response
 from urllib.parse import urlparse
 import hashlib
 
@@ -22,9 +22,10 @@ def _compute_etag(category: str | None, period: str | None, max_period: str | No
 def get_digests(
     category: str | None = Query(default=None, description="Tag slug to filter by"),
     period: str | None = Query(default=None, description="Period in YYYY-MM format"),
+    request: Request = None,
     response: Response = None,
 ):
-    if_none_match = response.headers.get("If-None-Match") if response else None
+    if_none_match = request.headers.get("If-None-Match") if request else None
 
     with get_conn() as conn:
         with conn.cursor() as cur:
@@ -65,8 +66,7 @@ def get_digests(
     etag = f'"{_compute_etag(category, period, max_period)}"'
 
     if if_none_match == etag:
-        response.status_code = 304
-        return []
+        return Response(status_code=304)
 
     response.headers["ETag"] = etag
 

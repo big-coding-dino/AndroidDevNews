@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Query, Response
+from fastapi import APIRouter, Query, Request, Response
 import hashlib
 
 from api.db import get_conn
@@ -16,9 +16,10 @@ def _compute_etag(limit: int, offset: int, max_date: str | None) -> str:
 def get_podcasts(
     limit: int = Query(default=50, ge=1, le=200),
     offset: int = Query(default=0, ge=0),
+    request: Request = None,
     response: Response = None,
 ):
-    if_none_match = response.headers.get("If-None-Match") if response else None
+    if_none_match = request.headers.get("If-None-Match") if request else None
 
     with get_conn() as conn:
         with conn.cursor() as cur:
@@ -52,8 +53,7 @@ def get_podcasts(
     etag = f'"{_compute_etag(limit, offset, max_date)}"'
 
     if if_none_match == etag:
-        response.status_code = 304
-        return []
+        return Response(status_code=304)
 
     response.headers["ETag"] = etag
 

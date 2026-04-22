@@ -18,6 +18,9 @@ class ArticleApiClient(
     private val baseUrl: String,
 ) {
     private val etagStore = mutableMapOf<String, String>()
+    private val articlesCache = mutableMapOf<String, List<ArticleDto>>()
+    private val digestsCache = mutableMapOf<String, List<DigestDto>>()
+    private val podcastsCache = mutableMapOf<String, List<PodcastEpisodeDto>>()
 
     private fun cacheKey(path: String, vararg params: Pair<String, String?>): String {
         val query = params.filter { it.second != null }.joinToString("&") { "${it.first}=${it.second}" }
@@ -46,14 +49,13 @@ class ArticleApiClient(
         }
 
         if (r.status == HttpStatusCode.NotModified) {
-            return FetchResult.NotModified
+            return FetchResult.Ok(articlesCache[key] ?: emptyList())
         }
 
-        r.headers[HttpHeaders.ETag]?.let { newEtag ->
-            etagStore[key] = newEtag
-        }
-
-        return FetchResult.Ok(r.body())
+        val body: List<ArticleDto> = r.body()
+        r.headers[HttpHeaders.ETag]?.let { newEtag -> etagStore[key] = newEtag }
+        articlesCache[key] = body
+        return FetchResult.Ok(body)
     }
 
     suspend fun fetchDigests(category: String? = null): FetchResult<List<DigestDto>> {
@@ -67,14 +69,13 @@ class ArticleApiClient(
         }
 
         if (r.status == HttpStatusCode.NotModified) {
-            return FetchResult.NotModified
+            return FetchResult.Ok(digestsCache[key] ?: emptyList())
         }
 
-        r.headers[HttpHeaders.ETag]?.let { newEtag ->
-            etagStore[key] = newEtag
-        }
-
-        return FetchResult.Ok(r.body())
+        val body: List<DigestDto> = r.body()
+        r.headers[HttpHeaders.ETag]?.let { newEtag -> etagStore[key] = newEtag }
+        digestsCache[key] = body
+        return FetchResult.Ok(body)
     }
 
     suspend fun fetchPodcasts(): FetchResult<List<PodcastEpisodeDto>> {
@@ -88,14 +89,13 @@ class ArticleApiClient(
         }
 
         if (r.status == HttpStatusCode.NotModified) {
-            return FetchResult.NotModified
+            return FetchResult.Ok(podcastsCache[key] ?: emptyList())
         }
 
-        r.headers[HttpHeaders.ETag]?.let { newEtag ->
-            etagStore[key] = newEtag
-        }
-
-        return FetchResult.Ok(r.body())
+        val body: List<PodcastEpisodeDto> = r.body()
+        r.headers[HttpHeaders.ETag]?.let { newEtag -> etagStore[key] = newEtag }
+        podcastsCache[key] = body
+        return FetchResult.Ok(body)
     }
 }
 

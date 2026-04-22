@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Query, Response
+from fastapi import APIRouter, HTTPException, Query, Request, Response
 from urllib.parse import urlparse
 import hashlib
 
@@ -23,9 +23,10 @@ def get_articles(
     category: str | None = Query(default=None, description="Tag slug to filter by"),
     limit: int = Query(default=50, ge=1, le=200),
     offset: int = Query(default=0, ge=0),
+    request: Request = None,
     response: Response = None,
 ):
-    if_none_match = response.headers.get("If-None-Match") if response else None
+    if_none_match = request.headers.get("If-None-Match") if request else None
 
     with get_conn() as conn:
         with conn.cursor() as cur:
@@ -105,12 +106,11 @@ def get_articles(
                     raise HTTPException(status_code=404, detail=f"Unknown category: {category!r}")
 
     # Compute ETag from max published_at across result set
-    max_date = max((row[12].isoformat() if row[12] else "" for row in rows), default=None)
+    max_date = max((row[11].isoformat() if row[11] else "" for row in rows), default=None)
     etag = f'"{_compute_etag(category, limit, offset, max_date)}"'
 
     if if_none_match == etag:
-        response.status_code = 304
-        return []
+        return Response(status_code=304)
 
     response.headers["ETag"] = etag
 
