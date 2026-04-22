@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, Response
 from urllib.parse import urlparse
+import hashlib
 
 from api.db import get_conn
 from api.schemas import DigestArticleItem, DigestResponse
@@ -12,11 +13,19 @@ def _source_domain(url: str) -> str:
     return host.removeprefix("www.")
 
 
+def _compute_etag(category: str | None, period: str | None, max_period: str | None) -> str:
+    key = f"{category}:{period}:{max_period}"
+    return hashlib.sha256(key.encode()).hexdigest()
+
+
 @router.get("/digests", response_model=list[DigestResponse])
 def get_digests(
     category: str | None = Query(default=None, description="Tag slug to filter by"),
     period: str | None = Query(default=None, description="Period in YYYY-MM format"),
+    response: Response = None,
 ):
+    if_none_match = response.headers.get("If-None-Match") if response else None
+
     with get_conn() as conn:
         with conn.cursor() as cur:
             cur.execute(
@@ -28,7 +37,8 @@ def get_digests(
                     r.url,
                     r.title,
                     COALESCE(r.tldr, '') AS tldr,
-                    COALESCE(best.slug, t.slug) AS category
+                    COALESCE(best.slug, t.slug) AS category,
+                    MAX(d.period) OVER () AS newest_period
                 FROM digests d
                 JOIN tags t ON d.tag_id = t.id
                 LEFT JOIN digest_resources dr ON dr.digest_id = d.id
@@ -49,9 +59,20 @@ def get_digests(
             )
             rows = cur.fetchall()
 
+    # Compute ETag from max period
+    periods = [row[7] for row in rows if row[7]]
+    max_period = max(periods, default=None)
+    etag = f'"{_compute_etag(category, period, max_period)}"'
+
+    if if_none_match == etag:
+        response.status_code = 304
+        return []
+
+    response.headers["ETag"] = etag
+
     # Group rows into DigestResponse objects preserving order
     seen: dict[int, DigestResponse] = {}
-    for digest_id, tag, period_val, url, title, tldr, article_category in rows:
+    for (digest_id, tag, period_val, url, title, tldr, article_category, _newest) in rows:
         if digest_id not in seen:
             seen[digest_id] = DigestResponse(id=digest_id, tag=tag, period=period_val, articles=[])
         if url:

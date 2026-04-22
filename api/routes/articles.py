@@ -1,5 +1,6 @@
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Response
 from urllib.parse import urlparse
+import hashlib
 
 from api.db import get_conn
 from api.schemas import ArticleReaderResponse, ArticleExtractResponse, ArticleResponse
@@ -12,12 +13,20 @@ def _source_domain(url: str) -> str:
     return host.removeprefix("www.")
 
 
+def _compute_etag(category: str | None, limit: int, offset: int, max_date: str | None) -> str:
+    key = f"{category}:{limit}:{offset}:{max_date}"
+    return hashlib.sha256(key.encode()).hexdigest()
+
+
 @router.get("/articles", response_model=list[ArticleResponse])
 def get_articles(
     category: str | None = Query(default=None, description="Tag slug to filter by"),
     limit: int = Query(default=50, ge=1, le=200),
     offset: int = Query(default=0, ge=0),
+    response: Response = None,
 ):
+    if_none_match = response.headers.get("If-None-Match") if response else None
+
     with get_conn() as conn:
         with conn.cursor() as cur:
             if category:
@@ -33,7 +42,9 @@ def get_articles(
                         f.name        AS source_label,
                         f.slug        AS source_domain,
                         t.slug        AS category,
-                        (a.readability_content IS NOT NULL) AS has_readability_content
+                        a.clean_content,
+                        (a.readability_content IS NOT NULL) AS has_readability_content,
+                        MAX(r.published_at) OVER () AS newest_at
                     FROM resources r
                     JOIN articles a  ON a.resource_id = r.id
                     JOIN feeds f     ON f.id = r.source_id
@@ -61,7 +72,9 @@ def get_articles(
                         f.name        AS source_label,
                         f.slug        AS source_domain,
                         COALESCE(best.slug, 'android') AS category,
-                        (a.readability_content IS NOT NULL) AS has_readability_content
+                        a.clean_content,
+                        (a.readability_content IS NOT NULL) AS has_readability_content,
+                        MAX(r.published_at) OVER () AS newest_at
                     FROM resources r
                     JOIN articles a  ON a.resource_id = r.id
                     JOIN feeds f     ON f.id = r.source_id
@@ -85,12 +98,21 @@ def get_articles(
             rows = cur.fetchall()
 
     if category and not rows:
-        # Distinguish bad slug from empty result
         with get_conn() as conn:
             with conn.cursor() as cur:
                 cur.execute("SELECT 1 FROM tags WHERE slug = %s", (category,))
                 if not cur.fetchone():
                     raise HTTPException(status_code=404, detail=f"Unknown category: {category!r}")
+
+    # Compute ETag from max published_at across result set
+    max_date = max((row[12].isoformat() if row[12] else "" for row in rows), default=None)
+    etag = f'"{_compute_etag(category, limit, offset, max_date)}"'
+
+    if if_none_match == etag:
+        response.status_code = 304
+        return []
+
+    response.headers["ETag"] = etag
 
     return [
         ArticleResponse(
@@ -105,7 +127,7 @@ def get_articles(
             category=row[8],
             read_time_minutes=max(1, len((row[5] or "").split()) // 200),
             clean_content=None,
-            has_readability_content=row[9],
+            has_readability_content=row[10],
         )
         for row in rows
     ]

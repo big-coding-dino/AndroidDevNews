@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, Response
+import hashlib
 
 from api.db import get_conn
 from api.schemas import PodcastEpisodeResponse
@@ -6,11 +7,19 @@ from api.schemas import PodcastEpisodeResponse
 router = APIRouter()
 
 
+def _compute_etag(limit: int, offset: int, max_date: str | None) -> str:
+    key = f"{limit}:{offset}:{max_date}"
+    return hashlib.sha256(key.encode()).hexdigest()
+
+
 @router.get("/podcasts", response_model=list[PodcastEpisodeResponse])
 def get_podcasts(
     limit: int = Query(default=50, ge=1, le=200),
     offset: int = Query(default=0, ge=0),
+    response: Response = None,
 ):
+    if_none_match = response.headers.get("If-None-Match") if response else None
+
     with get_conn() as conn:
         with conn.cursor() as cur:
             cur.execute(
@@ -23,7 +32,8 @@ def get_podcasts(
                     f.name              AS show,
                     pe.episode_number,
                     pe.duration_seconds,
-                    r.tldr
+                    r.tldr,
+                    MAX(r.published_at) OVER () AS newest_at
                 FROM resources r
                 JOIN feeds f ON f.id = r.source_id
                 JOIN podcast_episodes pe ON pe.resource_id = r.id
@@ -36,6 +46,16 @@ def get_podcasts(
                 (limit, offset),
             )
             rows = cur.fetchall()
+
+    # Compute ETag
+    max_date = max((row[8].isoformat() if row[8] else "" for row in rows), default=None)
+    etag = f'"{_compute_etag(limit, offset, max_date)}"'
+
+    if if_none_match == etag:
+        response.status_code = 304
+        return []
+
+    response.headers["ETag"] = etag
 
     return [
         PodcastEpisodeResponse(
