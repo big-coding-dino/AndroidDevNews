@@ -116,7 +116,7 @@ def get_articles(
 
     response.headers["ETag"] = etag
 
-    total = rows[0][13] if rows else 0
+    total = rows[0][12] if rows else 0
 
     articles = [
         ArticleResponse(
