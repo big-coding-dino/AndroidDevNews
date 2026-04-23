@@ -30,6 +30,10 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
+import androidx.savedstate.serialization.SavedStateConfiguration
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
+import kotlinx.serialization.modules.subclass
 import com.anews.ds.DsTheme
 import com.anews.ui.components.DsAppHeader
 import com.anews.ui.detail.ArticleDetailScreen
@@ -40,7 +44,19 @@ import com.anews.ui.search.SearchScreen
 
 @Composable
 fun MainScreen() {
-    val backStack = rememberNavBackStack(FeedTab)
+    val navModule = SerializersModule {
+        polymorphic(NavKey::class) {
+            subclass(FeedTab::class)
+            subclass(DigestTab::class)
+            subclass(PodcastTab::class)
+            subclass(SearchDestination::class)
+            subclass(ArticleDetail::class)
+        }
+    }
+    val backStack = rememberNavBackStack(
+        SavedStateConfiguration { serializersModule = navModule },
+        FeedTab,
+    )
 
     NavDisplay(
         backStack = backStack,
