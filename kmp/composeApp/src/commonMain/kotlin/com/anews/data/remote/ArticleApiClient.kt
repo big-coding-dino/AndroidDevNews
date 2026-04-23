@@ -4,6 +4,7 @@ import com.anews.data.dto.ArticleDto
 import com.anews.data.dto.ArticleExtractDto
 import com.anews.data.dto.ArticleReaderDto
 import com.anews.data.dto.DigestDto
+import com.anews.data.dto.PaginatedArticlesResponse
 import com.anews.data.dto.PodcastEpisodeDto
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -37,25 +38,34 @@ class ArticleApiClient(
         return httpClient.get("$baseUrl/articles/$id/extract").body()
     }
 
-    suspend fun fetchArticles(category: String? = null): FetchResult<List<ArticleDto>> {
+    suspend fun fetchArticles(category: String? = null, offset: Int = 0, limit: Int = 50): PaginatedArticlesResult {
         val path = "$baseUrl/articles"
         val key = cacheKey(path, "category" to category)
-        val etag = getStoredEtag(key)
+        val etag = if (offset == 0) getStoredEtag(key) else null
 
         val r = httpClient.get(path) {
-            parameter("limit", 200)
+            parameter("limit", limit)
+            parameter("offset", offset)
             if (category != null) parameter("category", category)
             if (etag != null) header(HttpHeaders.IfNoneMatch, etag)
         }
 
         if (r.status == HttpStatusCode.NotModified) {
-            return FetchResult.Ok(articlesCache[key] ?: emptyList())
+            return PaginatedArticlesResult.NotModified
         }
 
-        val body: List<ArticleDto> = r.body()
-        r.headers[HttpHeaders.ETag]?.let { newEtag -> etagStore[key] = newEtag }
-        articlesCache[key] = body
-        return FetchResult.Ok(body)
+        if (offset == 0) {
+            r.headers[HttpHeaders.ETag]?.let { newEtag ->
+                etagStore[key] = newEtag
+            }
+        }
+
+        val response: PaginatedArticlesResponse = r.body()
+        return PaginatedArticlesResult.Ok(
+            articles = response.articles,
+            total = response.total,
+            hasMore = response.offset + response.articles.size < response.total,
+        )
     }
 
     suspend fun fetchDigests(category: String? = null): FetchResult<List<DigestDto>> {
@@ -102,4 +112,13 @@ class ArticleApiClient(
 sealed class FetchResult<out T> {
     data class Ok<T>(val value: T) : FetchResult<T>()
     data object NotModified : FetchResult<Nothing>()
+}
+
+sealed class PaginatedArticlesResult {
+    data class Ok(
+        val articles: List<ArticleDto>,
+        val total: Int,
+        val hasMore: Boolean,
+    ) : PaginatedArticlesResult()
+    data object NotModified : PaginatedArticlesResult()
 }

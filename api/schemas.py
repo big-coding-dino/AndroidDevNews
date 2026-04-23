@@ -24,6 +24,13 @@ class ArticleExtractResponse(BaseModel):
     clean_content: str | None = None
 
 
+class PaginatedArticlesResponse(BaseModel):
+    articles: list[ArticleResponse]
+    total: int
+    limit: int
+    offset: int
+
+
 class PodcastEpisodeResponse(BaseModel):
     id: int
     title: str

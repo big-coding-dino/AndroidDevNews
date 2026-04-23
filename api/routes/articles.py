@@ -3,7 +3,7 @@ from urllib.parse import urlparse
 import hashlib
 
 from api.db import get_conn
-from api.schemas import ArticleReaderResponse, ArticleExtractResponse, ArticleResponse
+from api.schemas import ArticleReaderResponse, ArticleExtractResponse, ArticleResponse, PaginatedArticlesResponse
 
 router = APIRouter()
 
@@ -18,14 +18,14 @@ def _compute_etag(category: str | None, limit: int, offset: int, max_date: str |
     return hashlib.sha256(key.encode()).hexdigest()
 
 
-@router.get("/articles", response_model=list[ArticleResponse])
+@router.get("/articles", response_model=PaginatedArticlesResponse)
 def get_articles(
     category: str | None = Query(default=None, description="Tag slug to filter by"),
     limit: int = Query(default=50, ge=1, le=200),
     offset: int = Query(default=0, ge=0),
     request: Request = None,
     response: Response = None,
-):
+) -> PaginatedArticlesResponse:
     if_none_match = request.headers.get("If-None-Match") if request else None
 
     with get_conn() as conn:
@@ -45,7 +45,8 @@ def get_articles(
                         t.slug        AS category,
                         a.clean_content,
                         (a.readability_content IS NOT NULL) AS has_readability_content,
-                        MAX(r.published_at) OVER () AS newest_at
+                        MAX(r.published_at) OVER () AS newest_at,
+                        COUNT(*) OVER () AS total_count
                     FROM resources r
                     JOIN articles a  ON a.resource_id = r.id
                     JOIN feeds f     ON f.id = r.source_id
@@ -75,7 +76,8 @@ def get_articles(
                         COALESCE(best.slug, 'android') AS category,
                         a.clean_content,
                         (a.readability_content IS NOT NULL) AS has_readability_content,
-                        MAX(r.published_at) OVER () AS newest_at
+                        MAX(r.published_at) OVER () AS newest_at,
+                        COUNT(*) OVER () AS total_count
                     FROM resources r
                     JOIN articles a  ON a.resource_id = r.id
                     JOIN feeds f     ON f.id = r.source_id
@@ -114,7 +116,9 @@ def get_articles(
 
     response.headers["ETag"] = etag
 
-    return [
+    total = rows[0][13] if rows else 0
+
+    articles = [
         ArticleResponse(
             id=row[0],
             title=row[1] or "",
@@ -131,6 +135,8 @@ def get_articles(
         )
         for row in rows
     ]
+
+    return PaginatedArticlesResponse(articles=articles, total=total, limit=limit, offset=offset)
 
 
 @router.get("/articles/{article_id}/reader", response_model=ArticleReaderResponse)

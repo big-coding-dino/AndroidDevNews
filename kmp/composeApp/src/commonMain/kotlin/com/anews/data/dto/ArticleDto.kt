@@ -22,6 +22,14 @@ data class ArticleDto(
     @SerialName("has_readability_content") val hasReadabilityContent: Boolean = false,
 )
 
+@Serializable
+data class PaginatedArticlesResponse(
+    val articles: List<ArticleDto>,
+    val total: Int,
+    val limit: Int,
+    val offset: Int,
+)
+
 fun ArticleDto.toDomain(): Article = Article(
     id = id.toString(),
     title = title,

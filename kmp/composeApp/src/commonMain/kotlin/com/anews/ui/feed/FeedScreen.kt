@@ -6,14 +6,20 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anews.ds.DsTheme
 import com.anews.ui.components.DsArticleCard
@@ -49,7 +55,8 @@ fun FeedScreen(
             is FeedUiState.Success -> FeedArticleList(
                 state = state,
                 spacing = spacing,
-                onArticleSelect = onArticleSelect
+                onArticleSelect = onArticleSelect,
+                onLoadMore = viewModel::loadMore,
             )
         }
     }
@@ -82,8 +89,28 @@ private fun FeedArticleList(
     state: FeedUiState.Success,
     spacing: com.anews.ds.DsSpacings,
     onArticleSelect: (com.anews.model.Article) -> Unit,
+    onLoadMore: () -> Unit,
 ) {
+    val listState = rememberLazyListState()
+
+    val shouldLoadMore by remember {
+        derivedStateOf {
+            val layoutInfo = listState.layoutInfo
+            val totalItems = layoutInfo.totalItemsCount
+            if (totalItems == 0) return@derivedStateOf false
+            val lastVisible = layoutInfo.visibleItemsInfo.lastOrNull() ?: return@derivedStateOf false
+            lastVisible.index >= totalItems - 3
+        }
+    }
+
+    LaunchedEffect(shouldLoadMore, state.isLoadingMore) {
+        if (shouldLoadMore && state.hasMore && !state.isLoadingMore) {
+            onLoadMore()
+        }
+    }
+
     LazyColumn(
+        state = listState,
         verticalArrangement = Arrangement.spacedBy(spacing.cardGap),
     ) {
         state.groupedArticles.forEach { (_, articles) ->
@@ -97,6 +124,19 @@ private fun FeedArticleList(
                 )
             }
             item { Spacer(Modifier.height(spacing.sm)) }
+        }
+
+        if (state.isLoadingMore) {
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(vertical = 16.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    CircularProgressIndicator(color = DsTheme.colors.accentPrimary)
+                }
+            }
         }
     }
 }

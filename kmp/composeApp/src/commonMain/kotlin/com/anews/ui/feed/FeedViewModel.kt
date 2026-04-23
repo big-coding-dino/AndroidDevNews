@@ -3,12 +3,15 @@ package com.anews.ui.feed
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anews.domain.ArticleRepository
+import com.anews.domain.NotModifiedException
 import com.anews.model.Article
 import com.anews.model.Category
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+
+private const val PAGE_SIZE = 50
 
 class FeedViewModel(
     private val repository: ArticleRepository,
@@ -17,36 +20,75 @@ class FeedViewModel(
     private val _uiState = MutableStateFlow<FeedUiState>(FeedUiState.Loading)
     val uiState: StateFlow<FeedUiState> = _uiState.asStateFlow()
 
+    private var currentOffset = 0
+    private var currentCategory: Category = Category.All
+
     init {
         loadArticles()
     }
 
     fun selectCategory(category: Category) {
-        loadArticles(category)
+        currentCategory = category
+        currentOffset = 0
+        loadArticles()
     }
 
     fun refresh() {
-        val current = _uiState.value as? FeedUiState.Success
-        loadArticles(current?.selectedCategory ?: Category.All)
+        currentOffset = 0
+        loadArticles()
     }
 
-    private fun loadArticles(category: Category = Category.All) {
-        val slug = if (category == Category.All) null else category.slug
+    fun loadMore() {
+        val current = _uiState.value as? FeedUiState.Success ?: return
+        if (current.isLoadingMore || !current.hasMore) return
+
         viewModelScope.launch {
-            _uiState.value = FeedUiState.Loading
-            repository.getArticles(slug)
-                .onSuccess { articles ->
-                    _uiState.value = FeedUiState.Success(
-                        articles = articles,
-                        selectedCategory = category,
-                        groupedArticles = groupArticles(articles),
-                        filterCategories = Category.entries.filter { it.showInFilter },
+            _uiState.value = current.copy(isLoadingMore = true)
+
+            val slug = if (currentCategory == Category.All) null else currentCategory.slug
+            repository.getArticles(slug, currentOffset, PAGE_SIZE)
+                .onSuccess { page ->
+                    currentOffset += page.articles.size
+                    val newArticles = current.articles + page.articles
+                    _uiState.value = current.copy(
+                        articles = newArticles,
+                        groupedArticles = groupArticles(newArticles),
+                        isLoadingMore = false,
+                        hasMore = page.hasMore,
                     )
                 }
-                .onFailure { throwable ->
-                    _uiState.value = FeedUiState.Error(
-                        throwable.message ?: "Unknown error"
+                .onFailure {
+                    _uiState.value = current.copy(isLoadingMore = false)
+                }
+        }
+    }
+
+    private fun loadArticles() {
+        val previousState = _uiState.value
+        viewModelScope.launch {
+            _uiState.value = FeedUiState.Loading
+
+            val slug = if (currentCategory == Category.All) null else currentCategory.slug
+            repository.getArticles(slug, offset = 0, limit = PAGE_SIZE)
+                .onSuccess { page ->
+                    _uiState.value = FeedUiState.Success(
+                        articles = page.articles,
+                        selectedCategory = currentCategory,
+                        groupedArticles = groupArticles(page.articles),
+                        filterCategories = Category.entries.filter { it.showInFilter },
+                        isLoadingMore = false,
+                        hasMore = page.hasMore,
                     )
+                    currentOffset = page.articles.size
+                }
+                .onFailure { throwable ->
+                    if (throwable is NotModifiedException && previousState is FeedUiState.Success) {
+                        _uiState.value = previousState
+                    } else {
+                        _uiState.value = FeedUiState.Error(
+                            throwable.message ?: "Unknown error"
+                        )
+                    }
                 }
         }
     }

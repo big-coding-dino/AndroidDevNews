@@ -14,6 +14,8 @@ sealed interface FeedUiState {
         val groupedArticles: List<Pair<Int, List<Article>>>,
         /** Only categories where showInFilter == true */
         val filterCategories: List<Category>,
+        val isLoadingMore: Boolean = false,
+        val hasMore: Boolean = true,
     ) : FeedUiState
 
     data class Error(val message: String) : FeedUiState
