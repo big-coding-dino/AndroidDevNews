@@ -10,6 +10,7 @@ import com.anews.domain.PodcastRepository
 import com.anews.ui.digest.DigestViewModel
 import com.anews.ui.feed.FeedViewModel
 import com.anews.ui.podcast.PodcastViewModel
+import com.anews.ui.search.SearchViewModel
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
@@ -51,4 +52,5 @@ val appModule = module {
     viewModel { FeedViewModel(get()) }
     viewModel { DigestViewModel(get()) }
     viewModel { PodcastViewModel(get()) }
+    viewModel { SearchViewModel(get()) }
 }

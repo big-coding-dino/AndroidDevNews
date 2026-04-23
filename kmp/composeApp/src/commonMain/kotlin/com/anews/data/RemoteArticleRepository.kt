@@ -7,6 +7,7 @@ import com.anews.domain.ArticleRepository
 import com.anews.domain.ArticlesPage
 import com.anews.domain.NotModifiedException
 import com.anews.model.Article
+import com.anews.data.dto.SearchResultDto
 
 class RemoteArticleRepository(
     private val apiClient: ArticleApiClient,
@@ -21,6 +22,11 @@ class RemoteArticleRepository(
                 )
                 is PaginatedArticlesResult.NotModified -> throw NotModifiedException()
             }
+        }
+
+    override suspend fun search(query: String): Result<List<Article>> =
+        runCatching {
+            apiClient.fetchSearch(query).map { it.toDomain() }
         }
 
     override suspend fun getReadabilityContent(id: String): Result<String?> =

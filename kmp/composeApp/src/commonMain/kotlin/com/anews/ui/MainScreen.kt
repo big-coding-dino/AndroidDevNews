@@ -36,6 +36,7 @@ import com.anews.ui.detail.ArticleDetailScreen
 import com.anews.ui.digest.DigestScreen
 import com.anews.ui.feed.FeedScreen
 import com.anews.ui.podcast.PodcastScreen
+import com.anews.ui.search.SearchScreen
 
 @Composable
 fun MainScreen() {
@@ -59,6 +60,20 @@ fun MainScreen() {
             entry<PodcastTab> {
                 TabShell(activeTab = PodcastTab, backStack = backStack) {
                     PodcastScreen()
+                }
+            }
+            entry<SearchDestination> {
+                val colors = DsTheme.colors
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(colors.backgroundScreen)
+                        .safeDrawingPadding(),
+                ) {
+                    SearchScreen(
+                        onArticleSelect = { backStack.add(ArticleDetail(it)) },
+                        onBack = { backStack.removeLastOrNull() },
+                    )
                 }
             }
             entry<ArticleDetail> { route ->
@@ -85,7 +100,7 @@ private fun TabShell(
             .background(colors.backgroundScreen)
             .safeDrawingPadding(),
     ) {
-        DsAppHeader(onSearchClick = {})
+        DsAppHeader(onSearchClick = { backStack.add(SearchDestination) })
 
         Box(modifier = Modifier.weight(1f)) {
             content()

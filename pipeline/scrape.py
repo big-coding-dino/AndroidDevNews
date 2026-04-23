@@ -7,7 +7,7 @@ import json
 import os
 import subprocess
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, timedelta
 
 import httpx
 import psycopg2

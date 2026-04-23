@@ -9,6 +9,9 @@ class MockArticleRepository : ArticleRepository {
     override suspend fun getArticles(category: String?, offset: Int, limit: Int): Result<ArticlesPage> =
         Result.success(ArticlesPage(articles = mockArticles, total = mockArticles.size, hasMore = false))
 
+    override suspend fun search(query: String): Result<List<Article>> =
+        Result.success(emptyList())
+
     override suspend fun getReadabilityContent(id: String): Result<String?> =
         Result.success(null)
 

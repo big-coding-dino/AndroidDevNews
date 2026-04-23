@@ -14,4 +14,7 @@ data object FeedTab : NavKey
 data object PodcastTab : NavKey
 
 @Serializable
+data object SearchDestination : NavKey
+
+@Serializable
 data class ArticleDetail(val article: Article) : NavKey

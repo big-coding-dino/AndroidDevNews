@@ -42,6 +42,21 @@ class PodcastEpisodeResponse(BaseModel):
     summary: str            # prose blurb extracted from markdown summary
 
 
+class SearchResultResponse(BaseModel):
+    id: int
+    title: str
+    url: str
+    date: str
+    tldr: str
+    summary: str
+    source_label: str
+    source_domain: str
+    category: str
+    read_time_minutes: int
+    has_readability_content: bool = False
+    score: float
+
+
 class DigestArticleItem(BaseModel):
     url: str
     title: str

@@ -6,6 +6,7 @@ import com.anews.data.dto.ArticleReaderDto
 import com.anews.data.dto.DigestDto
 import com.anews.data.dto.PaginatedArticlesResponse
 import com.anews.data.dto.PodcastEpisodeDto
+import com.anews.data.dto.SearchResultDto
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -86,6 +87,13 @@ class ArticleApiClient(
         r.headers[HttpHeaders.ETag]?.let { newEtag -> etagStore[key] = newEtag }
         digestsCache[key] = body
         return FetchResult.Ok(body)
+    }
+
+    suspend fun fetchSearch(query: String, limit: Int = 40): List<SearchResultDto> {
+        return httpClient.get("$baseUrl/search") {
+            parameter("q", query)
+            parameter("limit", limit)
+        }.body()
     }
 
     suspend fun fetchPodcasts(): FetchResult<List<PodcastEpisodeDto>> {
