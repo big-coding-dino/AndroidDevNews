@@ -148,7 +148,11 @@ internal fun SummaryTab(
                 color = colors.textTertiary,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
-            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) { DsTagChip(category = article.category) }
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                article.categories.forEach { category ->
+                    DsTagChip(category = category)
+                }
+            }
             Spacer(Modifier.height(20.dp))
         }
     }

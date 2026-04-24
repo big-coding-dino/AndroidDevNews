@@ -57,24 +57,19 @@ def search_articles(
                     r.tldr,
                     r.summary,
                     f.name AS source_label,
-                    COALESCE(best.slug, 'android') AS category,
+                    COALESCE(STRING_AGG(t.slug, ',' ORDER BY rt.rank), 'android') AS categories,
                     (a.readability_content IS NOT NULL) AS has_readability_content,
                     rrf.rrf_score
                 FROM rrf
                 JOIN resources r ON r.id = rrf.id
                 JOIN articles a  ON a.resource_id = r.id
                 JOIN feeds f     ON f.id = r.source_id
-                LEFT JOIN LATERAL (
-                    SELECT t.slug
-                    FROM resource_tags rt
-                    JOIN tags t ON t.id = rt.tag_id
-                    WHERE rt.resource_id = r.id
-                    ORDER BY rt.score DESC
-                    LIMIT 1
-                ) best ON true
+                LEFT JOIN resource_tags rt ON rt.resource_id = r.id
+                LEFT JOIN tags t ON t.id = rt.tag_id
                 WHERE r.resource_type = 'article'
                   AND r.tldr IS NOT NULL
                   AND r.published_at IS NOT NULL
+                GROUP BY r.id, r.title, r.url, r.published_at, r.tldr, r.summary, f.name, a.readability_content, rrf.rrf_score
                 ORDER BY rrf.rrf_score DESC
                 LIMIT %s
                 """,
@@ -92,7 +87,7 @@ def search_articles(
             summary=row[5] or "",
             source_label=row[6] or "",
             source_domain=_source_domain(row[2]),
-            category=row[7],
+            categories=[c for c in (row[7] or "").split(",") if c],
             read_time_minutes=max(1, len((row[5] or "").split()) // 200),
             has_readability_content=row[8],
             score=float(row[9]),

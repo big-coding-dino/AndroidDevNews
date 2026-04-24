@@ -12,7 +12,7 @@ data class DigestArticleDto(
     val title: String,
     val tldr: String,
     @SerialName("source_domain") val sourceDomain: String,
-    val category: String,
+    val categories: List<String>,
 )
 
 @Serializable
@@ -35,5 +35,5 @@ fun DigestArticleDto.toDomain(): DigestArticle = DigestArticle(
     title = title,
     tldr = tldr,
     sourceDomain = sourceDomain,
-    category = Category.fromSlug(category),
+    categories = categories.map { Category.fromSlug(it) },
 )

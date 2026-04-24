@@ -42,7 +42,7 @@ def get_articles(
                         r.summary,
                         f.name        AS source_label,
                         f.slug        AS source_domain,
-                        t.slug        AS category,
+                        COALESCE(STRING_AGG(t.slug, ',' ORDER BY rt.rank), '') AS categories,
                         a.clean_content,
                         (a.readability_content IS NOT NULL) AS has_readability_content,
                         MAX(r.published_at) OVER () AS newest_at,
@@ -56,7 +56,8 @@ def get_articles(
                       AND r.tldr IS NOT NULL
                       AND r.published_at IS NOT NULL
                       AND t.slug = %s
-                    ORDER BY r.published_at DESC, rt.rank ASC
+                    GROUP BY r.id, r.title, r.url, r.published_at, r.tldr, r.summary, f.name, f.slug, a.clean_content, a.readability_content
+                    ORDER BY r.published_at DESC
                     LIMIT %s OFFSET %s
                     """,
                     (category, limit, offset),
@@ -73,7 +74,7 @@ def get_articles(
                         r.summary,
                         f.name        AS source_label,
                         f.slug        AS source_domain,
-                        COALESCE(best.slug, 'android') AS category,
+                        COALESCE(STRING_AGG(t.slug, ',' ORDER BY rt.rank), 'android') AS categories,
                         a.clean_content,
                         (a.readability_content IS NOT NULL) AS has_readability_content,
                         MAX(r.published_at) OVER () AS newest_at,
@@ -81,17 +82,12 @@ def get_articles(
                     FROM resources r
                     JOIN articles a  ON a.resource_id = r.id
                     JOIN feeds f     ON f.id = r.source_id
-                    LEFT JOIN LATERAL (
-                        SELECT t.slug
-                        FROM resource_tags rt
-                        JOIN tags t ON t.id = rt.tag_id
-                        WHERE rt.resource_id = r.id
-                        ORDER BY rt.rank ASC
-                        LIMIT 1
-                    ) best ON true
+                    LEFT JOIN resource_tags rt ON rt.resource_id = r.id
+                    LEFT JOIN tags t ON t.id = rt.tag_id
                     WHERE r.resource_type = 'article'
                       AND r.tldr IS NOT NULL
                       AND r.published_at IS NOT NULL
+                    GROUP BY r.id, r.title, r.url, r.published_at, r.tldr, r.summary, f.name, f.slug, a.clean_content, a.readability_content
                     ORDER BY r.published_at DESC
                     LIMIT %s OFFSET %s
                     """,
@@ -128,7 +124,7 @@ def get_articles(
             summary=row[5] or "",
             source_label=row[6] or "",
             source_domain=_source_domain(row[2]),
-            category=row[8],
+            categories=[c for c in (row[8] or "").split(",") if c],
             read_time_minutes=max(1, len((row[5] or "").split()) // 200),
             clean_content=None,
             has_readability_content=row[10],

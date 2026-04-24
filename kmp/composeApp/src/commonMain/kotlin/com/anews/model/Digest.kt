@@ -5,7 +5,7 @@ data class DigestArticle(
     val title: String,
     val tldr: String,
     val sourceDomain: String,
-    val category: Category,
+    val categories: List<Category>,
     val id: String = "",
     val summary: String = "",
     val sourceLabel: String = "",

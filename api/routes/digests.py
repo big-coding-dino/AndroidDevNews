@@ -38,22 +38,17 @@ def get_digests(
                     r.url,
                     r.title,
                     COALESCE(r.tldr, '') AS tldr,
-                    COALESCE(best.slug, t.slug) AS category,
+                    COALESCE(STRING_AGG(t2.slug, ',' ORDER BY rt.rank), t.slug) AS categories,
                     MAX(d.period) OVER () AS newest_period
                 FROM digests d
                 JOIN tags t ON d.tag_id = t.id
                 LEFT JOIN digest_resources dr ON dr.digest_id = d.id
                 LEFT JOIN resources r ON r.id = dr.resource_id
-                LEFT JOIN LATERAL (
-                    SELECT t2.slug
-                    FROM resource_tags rt
-                    JOIN tags t2 ON t2.id = rt.tag_id
-                    WHERE rt.resource_id = r.id
-                    ORDER BY rt.score DESC
-                    LIMIT 1
-                ) best ON true
+                LEFT JOIN resource_tags rt ON rt.resource_id = r.id
+                LEFT JOIN tags t2 ON t2.id = rt.tag_id
                 WHERE (%s IS NULL OR t.slug = %s)
                   AND (%s IS NULL OR d.period = %s)
+                GROUP BY d.id, t.slug, d.period, r.url, r.title, r.tldr
                 ORDER BY d.period DESC, d.id, r.published_at ASC
                 """,
                 (category, category, period, period),
@@ -72,7 +67,7 @@ def get_digests(
 
     # Group rows into DigestResponse objects preserving order
     seen: dict[int, DigestResponse] = {}
-    for (digest_id, tag, period_val, url, title, tldr, article_category, _newest) in rows:
+    for (digest_id, tag, period_val, url, title, tldr, article_categories, _newest) in rows:
         if digest_id not in seen:
             seen[digest_id] = DigestResponse(id=digest_id, tag=tag, period=period_val, articles=[])
         if url:
@@ -81,7 +76,7 @@ def get_digests(
                 title=title or "",
                 tldr=tldr,
                 source_domain=_source_domain(url),
-                category=article_category,
+                categories=[c for c in (article_categories or "").split(",") if c],
             ))
 
     return list(seen.values())

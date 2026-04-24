@@ -10,7 +10,7 @@ class ArticleResponse(BaseModel):
     summary: str            # full structured markdown digest
     source_label: str
     source_domain: str
-    category: str           # tag slug, e.g. "kotlin"
+    categories: list[str]   # tag slugs, e.g. ["kotlin", "performance"], ordered by rank (1=primary)
     read_time_minutes: int
     clean_content: str | None = None          # trafilatura plain-text extract
     has_readability_content: bool = False     # readability.js HTML available
@@ -51,7 +51,7 @@ class SearchResultResponse(BaseModel):
     summary: str
     source_label: str
     source_domain: str
-    category: str
+    categories: list[str]
     read_time_minutes: int
     has_readability_content: bool = False
     score: float
@@ -62,7 +62,7 @@ class DigestArticleItem(BaseModel):
     title: str
     tldr: str
     source_domain: str
-    category: str           # tag slug
+    categories: list[str]   # tag slugs, ordered by rank (1=primary)
 
 
 class DigestResponse(BaseModel):

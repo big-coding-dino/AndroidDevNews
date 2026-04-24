@@ -12,7 +12,7 @@ data class Article(
     val url: String,
     val sourceLabel: String,
     val sourceDomain: String,
-    val category: Category,
+    val categories: List<Category>,
     val date: LocalDate,
     val readTimeMinutes: Int,
     val cleanContent: String? = null,

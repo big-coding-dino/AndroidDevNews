@@ -48,7 +48,9 @@ fun DsArticleCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(spacing.sm),
             ) {
-                DsTagChip(category = article.category)
+                if (article.categories.isNotEmpty()) {
+                    DsTagChip(category = article.categories[0])
+                }
                 Text(
                     text = article.sourceLabel,
                     style = DsTheme.typography.sourceLabel,
