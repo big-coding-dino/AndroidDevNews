@@ -56,7 +56,7 @@ def get_articles(
                       AND r.tldr IS NOT NULL
                       AND r.published_at IS NOT NULL
                       AND t.slug = %s
-                    ORDER BY r.published_at DESC, rt.score DESC
+                    ORDER BY r.published_at DESC, rt.rank ASC
                     LIMIT %s OFFSET %s
                     """,
                     (category, limit, offset),
@@ -86,7 +86,7 @@ def get_articles(
                         FROM resource_tags rt
                         JOIN tags t ON t.id = rt.tag_id
                         WHERE rt.resource_id = r.id
-                        ORDER BY rt.score DESC
+                        ORDER BY rt.rank ASC
                         LIMIT 1
                     ) best ON true
                     WHERE r.resource_type = 'article'

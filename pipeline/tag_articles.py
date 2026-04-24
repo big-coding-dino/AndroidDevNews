@@ -91,16 +91,30 @@ def get_articles(batch_size: int, offset: int = 0) -> list[dict]:
     ]
 
 
-def classify_batch(articles: list[dict]) -> dict[int, list[str]]:
-    """Send batch to claude -p and parse tags. Returns {article_id: [tags]}."""
+def classify_batch(articles: list[dict]) -> dict[int, dict[str, int]]:
+    """Send batch to claude -p and parse tags. Returns {article_id: {slug: rank}}."""
     if not articles:
         return {}
 
     valid_tags = list(TAG_DESCRIPTIONS.keys())
     prompt_lines = [
-        f"Classify each article. Output ONLY valid JSON using these tag slugs: {', '.join(valid_tags)}",
-        'Format: {"<id>": ["tag1", "tag2"]} — use the exact integer article ID as the key.',
-        "Use empty array [] if no tag applies. Brief mentions don't count.",
+        f"Classify each article using these tag slugs: {', '.join(valid_tags)}",
+        "",
+        "Assign tags by relevance rank:",
+        '  "primary"   — the article is clearly and directly about this topic',
+        '  "secondary" — this topic is a significant part of the article, not just mentioned',
+        '  "tertiary"  — this topic appears meaningfully but is not central',
+        "",
+        "Rules:",
+        "- primary is required if any tag applies; secondary and tertiary are optional",
+        "- use at most 3 tags total; omit ranks that don't clearly apply",
+        "- brief mentions don't count; the topic must be substantive",
+        "- output ONLY valid JSON, no explanation",
+        "",
+        'Format: {"<id>": {"primary": "tag", "secondary": "tag", "tertiary": "tag"}}',
+        "         — use the exact integer article ID as the key",
+        "         — omit secondary/tertiary keys if not applicable",
+        "         — use {} if no tag applies at all",
         "",
     ]
     for a in articles:
@@ -125,16 +139,14 @@ def classify_batch(articles: list[dict]) -> dict[int, list[str]]:
     output = result.stdout.strip()
     print(f"  [debug] claude output: {output[:600]}", file=sys.stderr)
 
-    # Try to parse as JSON — strip code fences first
-    parsed = {}
-    # Remove markdown code fences
+    # Strip markdown code fences and parse JSON
     cleaned = re.sub(r"```json\s*", "", output)
     cleaned = re.sub(r"```\s*$", "", cleaned)
     cleaned = cleaned.strip()
+    parsed = {}
     try:
         parsed = json.loads(cleaned)
     except json.JSONDecodeError:
-        # Try line by line for any line that looks like JSON
         for line in output.splitlines():
             line = line.strip()
             if line.startswith("{") and line.endswith("}"):
@@ -144,21 +156,27 @@ def classify_batch(articles: list[dict]) -> dict[int, list[str]]:
                 except json.JSONDecodeError:
                     pass
 
-    # Parse and validate: only keep entries with valid int IDs and valid tags
-    result_map: dict[int, list[str]] = {}
+    rank_keys = {"primary": 1, "secondary": 2, "tertiary": 3}
+    result_map: dict[int, dict[str, int]] = {}
     batch_ids = {a["id"] for a in articles}
-    for key_str, tags in parsed.items():
+    for key_str, ranks in parsed.items():
         try:
             article_id = int(key_str)
         except (ValueError, TypeError):
             continue
         if article_id not in batch_ids:
             continue
-        if not isinstance(tags, list):
+        if not isinstance(ranks, dict):
             continue
-        filtered = [t for t in tags if t in valid_tags]
-        if filtered:
-            result_map[article_id] = filtered
+        tag_ranks: dict[str, int] = {}
+        for rank_name, slug in ranks.items():
+            rank_num = rank_keys.get(rank_name)
+            if rank_num is None or not isinstance(slug, str):
+                continue
+            if slug in valid_tags:
+                tag_ranks[slug] = rank_num
+        if tag_ranks:
+            result_map[article_id] = tag_ranks
 
     return result_map
 
@@ -193,20 +211,20 @@ def main():
 
         assigned = 0
         for a in articles:
-            tags = classifications.get(a["id"], [])
-            if not tags:
+            tag_ranks = classifications.get(a["id"], {})
+            if not tag_ranks:
                 continue
-            for slug in tags:
+            for slug, rank in tag_ranks.items():
                 if slug not in tag_ids:
                     continue
                 tid = tag_ids[slug]
                 if not args.dry_run:
                     with conn.cursor() as cur:
                         cur.execute("""
-                            INSERT INTO resource_tags (resource_id, tag_id, score)
-                            VALUES (%s, %s, 1.0)
-                            ON CONFLICT (resource_id, tag_id) DO UPDATE SET score = 1.0
-                        """, (a["id"], tid))
+                            INSERT INTO resource_tags (resource_id, tag_id, rank)
+                            VALUES (%s, %s, %s)
+                            ON CONFLICT (resource_id, tag_id) DO UPDATE SET rank = EXCLUDED.rank
+                        """, (a["id"], tid, rank))
                 assigned += 1
                 total_assigned += 1
 
