@@ -34,30 +34,37 @@ def get_articles(
                 cur.execute(
                     """
                     SELECT
-                        r.id,
-                        r.title,
-                        r.url,
-                        r.published_at,
-                        r.tldr,
-                        r.summary,
-                        f.name        AS source_label,
-                        f.slug        AS source_domain,
-                        COALESCE(STRING_AGG(t.slug, ',' ORDER BY rt.rank), '') AS categories,
-                        a.clean_content,
-                        (a.readability_content IS NOT NULL) AS has_readability_content,
-                        MAX(r.published_at) OVER () AS newest_at,
+                        id, title, url, published_at, tldr, summary,
+                        source_label, source_domain, categories,
+                        clean_content, has_readability_content,
+                        MAX(published_at) OVER () AS newest_at,
                         COUNT(*) OVER () AS total_count
-                    FROM resources r
-                    JOIN articles a  ON a.resource_id = r.id
-                    JOIN feeds f     ON f.id = r.source_id
-                    JOIN resource_tags rt ON rt.resource_id = r.id
-                    JOIN tags t      ON t.id = rt.tag_id
-                    WHERE r.resource_type = 'article'
-                      AND r.tldr IS NOT NULL
-                      AND r.published_at IS NOT NULL
-                      AND t.slug = %s
-                    GROUP BY r.id, r.title, r.url, r.published_at, r.tldr, r.summary, f.name, f.slug, a.clean_content, a.readability_content
-                    ORDER BY r.published_at DESC
+                    FROM (
+                        SELECT
+                            r.id,
+                            r.title,
+                            r.url,
+                            r.published_at,
+                            r.tldr,
+                            r.summary,
+                            f.name        AS source_label,
+                            f.slug        AS source_domain,
+                            STRING_AGG(t.slug, ',' ORDER BY rt.rank) AS categories,
+                            a.clean_content,
+                            (a.readability_content IS NOT NULL) AS has_readability_content
+                        FROM resources r
+                        JOIN articles a  ON a.resource_id = r.id
+                        JOIN feeds f     ON f.id = r.source_id
+                        JOIN resource_tags rt ON rt.resource_id = r.id
+                        JOIN tags t      ON t.id = rt.tag_id
+                        WHERE r.resource_type = 'article'
+                          AND r.tldr IS NOT NULL
+                          AND r.published_at IS NOT NULL
+                          AND t.slug = %s
+                        GROUP BY r.id, r.title, r.url, r.published_at, r.tldr, r.summary,
+                                 f.name, f.slug, a.clean_content, a.readability_content
+                    ) sub
+                    ORDER BY published_at DESC
                     LIMIT %s OFFSET %s
                     """,
                     (category, limit, offset),
@@ -66,29 +73,36 @@ def get_articles(
                 cur.execute(
                     """
                     SELECT
-                        r.id,
-                        r.title,
-                        r.url,
-                        r.published_at,
-                        r.tldr,
-                        r.summary,
-                        f.name        AS source_label,
-                        f.slug        AS source_domain,
-                        COALESCE(STRING_AGG(t.slug, ',' ORDER BY rt.rank), 'android') AS categories,
-                        a.clean_content,
-                        (a.readability_content IS NOT NULL) AS has_readability_content,
-                        MAX(r.published_at) OVER () AS newest_at,
+                        id, title, url, published_at, tldr, summary,
+                        source_label, source_domain, categories,
+                        clean_content, has_readability_content,
+                        MAX(published_at) OVER () AS newest_at,
                         COUNT(*) OVER () AS total_count
-                    FROM resources r
-                    JOIN articles a  ON a.resource_id = r.id
-                    JOIN feeds f     ON f.id = r.source_id
-                    LEFT JOIN resource_tags rt ON rt.resource_id = r.id
-                    LEFT JOIN tags t ON t.id = rt.tag_id
-                    WHERE r.resource_type = 'article'
-                      AND r.tldr IS NOT NULL
-                      AND r.published_at IS NOT NULL
-                    GROUP BY r.id, r.title, r.url, r.published_at, r.tldr, r.summary, f.name, f.slug, a.clean_content, a.readability_content
-                    ORDER BY r.published_at DESC
+                    FROM (
+                        SELECT
+                            r.id,
+                            r.title,
+                            r.url,
+                            r.published_at,
+                            r.tldr,
+                            r.summary,
+                            f.name        AS source_label,
+                            f.slug        AS source_domain,
+                            COALESCE(STRING_AGG(t.slug, ',' ORDER BY rt.rank), 'android') AS categories,
+                            a.clean_content,
+                            (a.readability_content IS NOT NULL) AS has_readability_content
+                        FROM resources r
+                        JOIN articles a  ON a.resource_id = r.id
+                        JOIN feeds f     ON f.id = r.source_id
+                        LEFT JOIN resource_tags rt ON rt.resource_id = r.id
+                        LEFT JOIN tags t ON t.id = rt.tag_id
+                        WHERE r.resource_type = 'article'
+                          AND r.tldr IS NOT NULL
+                          AND r.published_at IS NOT NULL
+                        GROUP BY r.id, r.title, r.url, r.published_at, r.tldr, r.summary,
+                                 f.name, f.slug, a.clean_content, a.readability_content
+                    ) sub
+                    ORDER BY published_at DESC
                     LIMIT %s OFFSET %s
                     """,
                     (limit, offset),

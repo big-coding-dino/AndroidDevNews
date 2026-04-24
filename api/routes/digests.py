@@ -38,8 +38,7 @@ def get_digests(
                     r.url,
                     r.title,
                     COALESCE(r.tldr, '') AS tldr,
-                    COALESCE(STRING_AGG(t2.slug, ',' ORDER BY rt.rank), t.slug) AS categories,
-                    MAX(d.period) OVER () AS newest_period
+                    COALESCE(STRING_AGG(t2.slug, ',' ORDER BY rt.rank), t.slug) AS categories
                 FROM digests d
                 JOIN tags t ON d.tag_id = t.id
                 LEFT JOIN digest_resources dr ON dr.digest_id = d.id
@@ -56,7 +55,7 @@ def get_digests(
             rows = cur.fetchall()
 
     # Compute ETag from max period
-    periods = [row[7] for row in rows if row[7]]
+    periods = [row[2] for row in rows if row[2]]
     max_period = max(periods, default=None)
     etag = f'"{_compute_etag(category, period, max_period)}"'
 
@@ -67,7 +66,7 @@ def get_digests(
 
     # Group rows into DigestResponse objects preserving order
     seen: dict[int, DigestResponse] = {}
-    for (digest_id, tag, period_val, url, title, tldr, article_categories, _newest) in rows:
+    for (digest_id, tag, period_val, url, title, tldr, article_categories) in rows:
         if digest_id not in seen:
             seen[digest_id] = DigestResponse(id=digest_id, tag=tag, period=period_val, articles=[])
         if url:
