@@ -23,6 +23,15 @@ SKIP_DOMAINS = {
     "campaign-archive.com",
     "eepurl.com",
     "jetbrains.com",
+    "fandf.co",
+    "kotl.in",
+    "ti.to",
+    "vpdae.com",
+    "firebender.com",
+    "runway.team",
+    "maestro.dev",
+    "luciq.ai",
+    "touchlab.co",
 }
 
 

@@ -9,6 +9,19 @@ from .base import BaseScraper, Resource
 # Issue 1 was published on 2011-10-02
 ISSUE_1_DATE = date(2011, 10, 2)
 
+# Links through these domains are skipped (sponsored/tracking links)
+SKIP_DOMAINS = {
+    "fandf.co",
+    "kotl.in",
+    "ti.to",
+    "vpdae.com",
+    "firebender.com",
+    "runway.team",
+    "maestro.dev",
+    "luciq.ai",
+    "touchlab.co",
+}
+
 
 def _issue_to_date(n: int) -> date:
     return ISSUE_1_DATE + timedelta(weeks=n - 1)
@@ -27,12 +40,17 @@ def _current_issue_number() -> int:
 
 
 def _extract_links(html: str, rough_date: date, issue_number: int) -> list[Resource]:
+    from urllib.parse import urlparse
     soup = BeautifulSoup(html, "html.parser")
     resources = []
 
     for a in soup.find_all("a", href=True):
         url = a["href"].strip()
         if not url.startswith("http") or "androidweekly.net" in url:
+            continue
+
+        hostname = urlparse(url).hostname or ""
+        if any(hostname.endswith(d) or hostname == d for d in SKIP_DOMAINS):
             continue
 
         title = a.get_text(strip=True)
