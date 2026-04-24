@@ -1,5 +1,6 @@
 """
 Fetch full content for unenriched resources: trafilatura (clean text) + readability.js (HTML).
+Medium articles are handled via headless Playwright to bypass paywalls/blocks.
 Run: uv run pipeline/scrape.py
 """
 import asyncio
@@ -7,7 +8,7 @@ import json
 import os
 import subprocess
 from dataclasses import dataclass
-from datetime import date, timedelta
+from datetime import date
 
 import httpx
 import psycopg2
@@ -19,8 +20,10 @@ load_dotenv()
 
 FETCH_SEM = asyncio.Semaphore(15)
 NODE_SEM = asyncio.Semaphore(6)
+PLAYWRIGHT_SEM = asyncio.Semaphore(2)
 
-SKIP_DOMAINS = {"medium.com"}
+MEDIUM_DOMAINS = {"medium.com"}
+SKIP_DOMAINS = {"youtube.com", "youtu.be"}
 
 
 @dataclass
@@ -79,12 +82,76 @@ def run_trafilatura(html: str, url: str) -> tuple[str | None, date | None, str |
         return None, None, str(e)
 
 
+async def scrape_medium(url: str) -> tuple[str | None, str | None, date | None]:
+    """Returns (article_text, error, published_date) using headless Playwright."""
+    from urllib.parse import urlparse
+    from playwright.async_api import async_playwright
+
+    scraped_date = None
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=True)
+        context = await browser.new_context(
+            user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        )
+        page = await context.new_page()
+        await page.add_init_script(
+            '() => { Object.defineProperty(navigator, "webdriver", { get: () => undefined }); }'
+        )
+        try:
+            await page.goto(url, wait_until="load", timeout=30000)
+            await page.wait_for_timeout(3000)
+            # Extract publication date from meta tag
+            date_meta = await page.query_selector('meta[property="article:published_time"]')
+            if date_meta:
+                dt = await date_meta.get_attribute("content")
+                if dt:
+                    try:
+                        from datetime import datetime
+                        scraped_date = datetime.fromisoformat(dt[:10]).date()
+                    except ValueError:
+                        pass
+            article = await page.query_selector("article")
+            if article:
+                text = await article.inner_text()
+                return (text, None, scraped_date) if "something went wrong" not in text.lower() else (None, "medium blocked", None)
+            body = await page.inner_text("body")
+            if "something went wrong" in body.lower():
+                return None, "medium blocked", None
+            return body[:500], None, scraped_date
+        except Exception as e:
+            return None, str(e), None
+        finally:
+            await browser.close()
+
+
 async def process_one(client: httpx.AsyncClient, resource_id: int, url: str) -> EnrichResult:
     from urllib.parse import urlparse
-    if urlparse(url).hostname in SKIP_DOMAINS:
+    hostname = urlparse(url).hostname or ""
+
+    # Skip domains that can't be scraped
+    if hostname in SKIP_DOMAINS:
         print(f"  [skip] {url[:80]}")
         return EnrichResult(resource_id=resource_id, fetch_error="skipped: domain not scrapable")
 
+    # Medium: use Playwright instead of HTTP
+    if hostname in MEDIUM_DOMAINS:
+        async with PLAYWRIGHT_SEM:
+            clean_content, fetch_error, scraped_date = await scrape_medium(url)
+            if fetch_error:
+                print(f"  [medium:err] {url[:80]}: {fetch_error}")
+                return EnrichResult(resource_id=resource_id, fetch_error=fetch_error)
+            # Run readability.js on the Playwright content (it gives us HTML)
+            readability_content, readability_error = await run_readability(clean_content or "", url)
+            print(f"  [medium:ok] {url[:80]}  clean={len(clean_content or '')}ch  readability={len(readability_content or '')}ch")
+            return EnrichResult(
+                resource_id=resource_id,
+                clean_content=clean_content,
+                scraped_date=scraped_date,
+                readability_content=readability_content,
+                readability_error=readability_error,
+            )
+
+    # Regular HTTP fetch
     try:
         html = await fetch_html(client, url)
     except Exception as e:

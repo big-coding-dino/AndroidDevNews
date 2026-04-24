@@ -21,8 +21,8 @@ STEPS = [
     ("sync-kotlinweekly",  ["uv", "run", "pipeline/sync_kotlinweekly.py"]),
     ("scrape",             ["uv", "run", "pipeline/scrape.py"]),
     ("embed",              ["uv", "run", "pipeline/embed.py"]),
-    ("tag",                ["uv", "run", "pipeline/tag_articles.py", "--only-untagged"]),
     ("summarize",          ["uv", "run", "pipeline/summarize.py"]),
+    ("tag",                ["uv", "run", "pipeline/tag_articles.py", "--only-untagged"]),
 ]
 
 
