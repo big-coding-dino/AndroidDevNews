@@ -47,7 +47,7 @@ def get_digests(
                 LEFT JOIN tags t2 ON t2.id = rt.tag_id
                 WHERE (%s IS NULL OR t.slug = %s)
                   AND (%s IS NULL OR d.period = %s)
-                GROUP BY d.id, t.slug, d.period, r.url, r.title, r.tldr
+                GROUP BY d.id, t.slug, d.period, r.url, r.title, r.tldr, r.published_at
                 ORDER BY d.period DESC, d.id, r.published_at ASC
                 """,
                 (category, category, period, period),
