@@ -1,0 +1,496 @@
+# ep208
+Podcast: Fragmented Podcast
+
+---
+
+[SPEAKER_00]
+Welcome to Fragmented, a software developer podcast where we talk about building good software and becoming better developers. My name's Don Felker. And I'm Kaushik Gopal. Welcome to the show. Hey everybody, I wanted to take a quick minute before we get going to let you know about the new YouTube channel that I recently started. On this channel, I teach software developers and mobile developers and specifically, how to become independent consultants. If you've ever wanted to become an independent consultant but weren't sure how, then this is the channel for you. I'll talk about the billing rates that you need to set, how to find clients, how to find an evergreen source of clients, how to stay on new technology trends, how to promote yourself, how to market yourself, how to get insurance, you name it. If it's around working for yourself and independent consulting and software, I'll be talking about it. Ultimately, what being an independent consultant will do for you is provide you with more financial freedom and the autonomy to work for yourself and set your own hours. This is something that appeals to a lot of people. And if it appeals to you, then please check out my YouTube channel. And you can see that at donfelker.com slash YouTube, or just check out the link in the show notes. Again, that's donfelker.com slash YouTube. That'll take you directly to the YouTube channel. Thanks for checking it out. Let's get to the show. All right, everybody. Welcome back to the podcast. This week, we have something a little bit different. As you know, Kaushik and I have been changing things up. Unfortunately, Kaushik's not here again this week, but we're rolling solo here. And this week we're going to be talking kind of on a different stories here about kind of some basic startup stories, generalist development, and just kind of all kinds of interesting stuff here. And I've got an old friend here who I haven't spoke to in many years when we recently caught up and I thought it'd be great to get him on the podcast to have him tell his various different stories, which I think everyone will find interesting. So without further ado, Jason, welcome to the show.
+
+[SPEAKER_02]
+Well, thanks for having me on. It's great to actually have to have our conversation with you. It's been, you know, what, eight years or something like that?
+
+[SPEAKER_00]
+Yeah, definitely. We met, I think we met when you first, when you were working on one of your startups, right? Was it Enifu? Is that what it was?
+
+[SPEAKER_02]
+It might have been. Probably. Yeah. Right. Cause we brought you on as our Android expert, right? Cause any food was sort of a, uh, a place you would go to find an expert in a very specialist category and you were the man with Android. So, you know, yeah.
+
+[SPEAKER_00]
+Yeah. Thank you for that. Yeah. I remember, but prior to that, I found out through any food because you actually have a podcast. It's been around for what you over a decade now, right?
+
+[SPEAKER_02]
+Yeah. It's been around for, since 2009.
+
+[SPEAKER_00]
+your journey into uber and i think most people probably have no idea perhaps who you are what you are what you've done what you've built at uber and so i kind of want to dive into that a little bit because that story is very fascinating i mean from what i understand you were you know in the first 10 at uber is that is that a correct assumption yeah um i think i would probably be number seven or eight depending on how you count um So is that when Uber had multiple cities or how big was Uber at the time?
+
+[SPEAKER_02]
+No, I mean, it was just in San Francisco and it was just a, you know, I don't know. I remember when Travis showed me the initial, like we had this very old CEO, right? Travis Kalanick was the original CEO. He showed me the original God view, which is this very rough thing that somebody threw together probably in a few hours. And I think I saw three cars driving around.
+
+[SPEAKER_00]
+Wow.
+
+[SPEAKER_02]
+Just three cars in San Francisco. I mean, that's, that's it. I mean, it was, it was kind of nothing and it was Uber cab, right?
+
+[SPEAKER_00]
+Yeah.
+
+[SPEAKER_02]
+So, so here's the, here's the basic story. You want me to start from.
+
+[SPEAKER_00]
+Yeah. It's interesting. Yeah. Cause it's interesting to see how, where it goes.
+
+[SPEAKER_02]
+Okay. So, um, I had back in the mid two thousands, I was working on a web version of PowerPoint. Yeah. This is back before there was a Google office and all that kind of stuff or Google docs.
+
+[SPEAKER_00]
+Yeah.
+
+[SPEAKER_02]
+It's not the whole nother store we can get to if you want. So I, my wife has said to me, she's like, you know, you need to go in and, talk to people about what you're doing. Cause this, at this time there was no Y comment. There was no hacker news. The web was still pretty much dead. Everybody was still really, it was like a nuclear winter after the whole.com bust in 2001. Right. Which is not much going on. And, um, you know, I've been madly creating this PowerPoint Ajax thing. And Ajax was like this brand, like nobody had seen anything other than Google maps. And it seemed like magic. Right. And so I started experimenting and, Anyway, so skipping ahead, she's like, you know, you need to go talk to somebody. And I said, well, there's, I said, there's this guy with his blog called TechCrunch. And he's, you know, it's been running for like a month or two. And he has like a barbecue type of thing where like a dozen, half a dozen to a dozen people show up and just kind of do a show and tell, talk about what they're doing. And I said, maybe, maybe I'll go up to one of those. That would be cool. And she's like, it sounds like a great idea. So I decided to do that. But that was when it went from a 12 person barbecue to a 400 person mega party. Like it just hit this inflection point. I said, I'm going to the next one. It was literally like a month after that last small one. And I tried to sign up and it was a wiki and you couldn't, I was like refreshed trying to sign up. And it was like, you know, it was like 400 with a limit. It was just like names going to come on 15 minutes. And I was like 378 or something. I get it. And I'm like, yes, I'm in. And so I, um, I get in my car. It was a week later, whatever. Kiss my wife. Drive up there. Drive up to San Francisco. I'm in Pasadena, outside LA. So right near the Rose Bowl and Caltech. And so it's about a six-hour drive. Drive up there. And it's in Los Altos or something? No. Yeah, it's not like that. Really. Atherton. It's in Atherton. That's right. It's in Atherton. And Mike Arrington, who ran the block, he had this gigantic house that he was renting. This beautiful neighborhood. And I had to park like a mile away. There were so many cars. It was, I mean, literally a mile away. It wasn't just down the block. It was so packed. And so I walk up and imagine the biggest frat party you'd ever seen. Like just people piling out of the windows. In fact, like there was no space. So I get to the front door. I'm trying to get in. They look on the guest list. You have these like bouncers. They have all these cameras and people doing video, trying to capture the event. I get in there and I know nobody.
+
+[SPEAKER_00]
+Mm-hmm.
+
+[SPEAKER_02]
+Not a single person. And I'm just like, yeah, maybe this wasn't such a good idea. So I'm like wandering around trying to find anybody. And I had given, I had one name.
+
+[SPEAKER_00]
+Could we grab your mic? It seems to be scratching. Sorry.
+
+[SPEAKER_02]
+Is that okay? Yeah. So eventually I had one person's name that somebody had given me, Chris Messina, who was later the inventor of the hashtag, you know, Chris Messina. Yeah. So I talked – I eventually find him. I talked to him and his then-girlfriend for like five minutes, and then it was like, okay, that ran out of gas. Like they have other people to talk to. So then I'm just like, oh, this is really awkward. You're kind of trying to walk around like you can barely get past people. And finally, I see that there's this kind of fire pit, and I'm like – and it's kind of a cool evening. And so I go stand by the fire pit, and that was perfect because you can stand by a fire pit and do nothing and not look like a moron. Like you really look like – You look like a real weirdo. If you're in a packed party, you're just like standing there. People are like, what is going on with that guy? Right. So I said, all right, I'll go stand by. And then what would happen is somebody would inevitably come up on rotation, be like, Hey man, what are you working on? Perfect. Right.
+
+[SPEAKER_00]
+Conversation.
+
+[SPEAKER_02]
+Tom Conrad, I think who is one of the founders of Pandora. We get to conversation, the guys who started like Google talk or something like that. And yeah, All these interesting people right after, you know, 15-minute conversation, 15-minute conversation. It was perfect. And eventually, this guy walks up, and he has, like, this, like, young, like, VC in tow, and his name's Travis Kalanick. And he's like, hey, man, what are you working on? You know, and I said, well, I'm working on a web version of PowerPoint. He's like, what? That is amazing, you know? And so he gets really kind of excited about that. He's like, man, I would hire you in a minute. Like, oh, we got to stay in touch. And I'm like, you know, okay. And so anyway, we had stayed in contact after that. I co-hosted the Bar Camp LA, which if you remember the food camps and the bar stuff back at the un-conferences. So I co-hosted that with Ian Morris and Kareem Mayan, if you know those names. And he came down. I invited him down. He came down to that. We hung out a bit. But otherwise, we would just talk on the phone. He'd be like, hey. I'm thinking about teaching myself Python. Can you help me learn Python? You know, I'll call you back, you know, and he's like, hey, I got this idea. You know, I'd get these like every three to six months, I'd get some like, you know, random call. And then he calls me up out of the blue and he's like, hey, I got this startup I invested in. It's called Uber Cab. And it's There's a big technology play there, and I'm thinking I'm going to take over as the CEO. Because they initially hired a guy, Ryan Graves, who was more of a just general business guy. And he's like, you know, in order to do the technology play, you need someone who has some real technology chops. He's like, so he's going to be more like the president, and then I'm going to come out of the CEO. And he's like, and you're the CTO. I was like, I am?
+
+[SPEAKER_00]
+Uber, as he said. Oh, my God.
+
+[SPEAKER_02]
+Yeah, he's like, well, Uber Cab, right? Uber Cab, yeah. He's like... He's like, yeah. He's like, yeah, yeah, man. We're going to blow this thing up. He's like, you move up here. We're going to do eight hour weeks. It's like, you know, I'm like, screw that, man. Like eight hour weeks. I mean, I have a wife, three kids. I've done the eight hour thing. You know, by that time I'm, you know, I'm 40. Yeah. So I'd kind of done it. I'm like, I'm not doing 80-hour weeks, especially for someone else's startup in a cab company, right?
+
+[SPEAKER_00]
+Yeah. I mean, there are a couple of cars at that point. It's unproven. It's brand new. No one even knows what it is, really.
+
+[SPEAKER_02]
+It's the cab company. Yeah. I mean, oh, yeah. I want to have Jason Roberts. Oh, my tombstone. Yeah, Jason Roberts. He worked on a cab. He spent his life working on a cab company. I'm like, who wants to... I mean, I was working on, one of the things I had been doing was like machine learning stuff with high frequency trading. I mean, that was cool. Like you could tell me about it. People are like, wow, that's really, like, oh, I worked for this cab company. I mean, it just seemed really, really lame. And one thing I had learned with startups is like, you better work on something you really believe in because if it doesn't work out monetarily, you're going to look back and be really embarrassed if you spent, you know, on something you thought was kind of... dumb or something right that's a good point i think we'll need to have that interest if they're going to be putting that much of their life into it yeah yeah so you know and i had already been working i think on epic night at the time which is my sort of like no code you know um it was bubble before there was a bubble or something like that yeah and i was really excited about that and I'm going to give that away and go in on. I wasn't going to be like a 50-50 partner with him or something, right? I was going to get like, you know, what he said, oh, he's like, you know, low single digits in equity.
+
+[SPEAKER_00]
+What do you think would it turn out to be? I mean, I have no idea what the numbers are, but let's say you did take that and you did have single digits equity. What would it have turned out to be? Was that billions, you think?
+
+[SPEAKER_02]
+Yeah, it would have ended in a B. Oh, jeez.
+
+[SPEAKER_00]
+Oh, man.
+
+[SPEAKER_02]
+Oh, yeah. Oh, yeah. I would have been a big, big, big number. Big number. So I was like, well, you know, and so here's the thing. But the thing was, is he was going to, I said, well, what's, because I asked, I said, what's the deal? He's like, well, you know, probably low single digits equity. I'm imagining that would be three or four percent, five percent, probably in the two to five range, probably in the range, I'm guessing. And I think it was a base salary of like 250. And now I had been scrounging as a freelancer and doing startups for years. So I were walking into the bedroom after getting off the phone with Travis and talking to Sandy about it. And she's like, 250? And I was like, yeah, but we'd have to move up there to San Francisco. And my wife had just been elected to be the president of the Pasadena Junior League, which is kind of a big deal for her. And I don't want to take that away from her. And I didn't want to be the kind of dad who flies out Monday morning and comes back Thursday night to do that. And I say, well, I made a lot of money, but you know, I miss my kids growing up. Like I didn't want that to be my story. So I came in there and I said, and I said, well, I kind of told her about it. And she's like, 250, work it out.
+
+[SPEAKER_00]
+Work it out.
+
+[SPEAKER_02]
+Work it out. And the problem was, I mean, that was a very enticing number. I think I had been making a third of that or something or less.
+
+[SPEAKER_00]
+That's like 12, 10, 12 years ago, right? Right around that area, probably, right?
+
+[SPEAKER_02]
+That would have really been nice. That would have been really nice. It made our lives a lot easier because we were scraping. But the thing is, Travis is like, when I initially got off the phone with him, he's like, I'm flying down. next weekend to convince you. And I was like, Oh shit. You know? So, and Sandy's like, work it out. And I was, I was just like, you know, I'm going to get golden handcuffs here. I'm going to get into, I'm going to work for this cab company. I'm going to get paid a big fat salary. I'm going to be flying. I'm going to spend all my time flying back and forth to San Francisco. And you're in LA. I'm in LA. So, I mean, it's not a long flight, but it's still a pain in the butt. And I don't want to be missing my kids four days a week.
+
+[SPEAKER_01]
+And of course, yeah.
+
+[SPEAKER_02]
+So I sent him an email and I said, hey, Travis, I really appreciate the offer, but I just can't do it. It was a pretty short email. And he was like, okay. And I said, but I know you guys need a lot of help with the – because he had said they had a lot of problem with the architecture. and the algorithms. And I had a background in high frequency trading, so I was building these scalable, very real-time systems, right? So I knew I knew a firm out about efficient algorithms, and I had built this web PowerPoint, you know, about web and stuff. So he was like, okay, this guy's kind of like a generalist, but he also knows how to make stuff really, really fast and scalable. So he was like, so I said, I'll be happy to do some consulting work for you, though. And he was just like, okay. And Then it was like a month. Oh, the funny thing was we were so broke. I had to ask him for a $2,000 advance so we could buy. I'm sorry. So we were so broke. I had to ask him for a $2,000 advance so that we could buy Christmas presents for our kids.
+
+[SPEAKER_00]
+I remember that you talked about that on the podcast. I totally forgot about that. I remember exactly where I was at when I heard that.
+
+[SPEAKER_02]
+That's weird. Yeah. It still makes Sandy cry. Yeah. He's like, yeah, sure. You know, $2,000, you know, whatever. Um, so, um, that's, that's how it all happened. Now, then what the situation was, so Uber, I think had formed like at the, in like April or something, January, April of 2010, this is December of 2010. Yeah. And, um, They had – my understanding is they had outsorted the initial development work to a consulting firm out of Mexico. I think Garrett had some firm that he worked for in the past, and he said they're inexpensive and they do good work and – initially when they were building this, it was, they weren't actually, the initial idea wasn't Uber cab. It was just three or four of these guys were going to get together. These guys had all made, had an exit, all had some money, but they were going to share kind of like a timeshare with a black car and a driver. Their whole thing was how to be baller in San Francisco. And so, you know, cause you can never get a cab in San Francisco. And so that was their idea. And I, the way I heard it, is that Garrett Camp called Travis, and he's like, I'm at the garage. I'm just about to sign the contract where we're going to park the car, that kind of thing. And Travis is like, wait a minute, wait a minute. I got a bigger idea. What if anybody could, rather than just us, could share the car we could share with anybody? Because they were already building an app which would allow you to request the car, and if it wasn't driving it. if it wasn't driving Garrett around or when everybody's in Travis could get it or something like that.
+
+[SPEAKER_00]
+Yeah. It was shared between a few people. Yeah.
+
+[SPEAKER_02]
+Which is why they, it's like, why aren't they going to spend a lot of money building this little simple app? So they just, you know, ship it to this consulting firm in Mexico or wherever. And that's what they did. Now, some of those details could be off because again, that was before my time, but that's what, that's what I had heard about the story. I feel like I read, I'm sorry.
+
+[SPEAKER_00]
+When you joined though, you inherited that code though, didn't you?
+
+[SPEAKER_02]
+Yeah. So yeah, Well, Travis, so they were having a lot of problems with like no dispatches and double dispatches. So someone you'd request a car and the car never show up or you'd request a car and two cars would show up. And there were a lot of problems, even with a small number of cars.
+
+[SPEAKER_00]
+Do you know?
+
+[SPEAKER_02]
+PHP.
+
+[SPEAKER_00]
+So the first version of Uber was written in PHP. Interesting.
+
+[SPEAKER_02]
+Yeah. So I've been planning on writing a blog post about this because I think it'd be kind of fun to read about. But it was about a 2000 line PHP file called CallFlow.
+
+[SPEAKER_00]
+Wow. Wow.
+
+[SPEAKER_02]
+And there was one other, like, I think one other smaller script, like a cron script, but that was basically it. And it was 2,000 lines of the worst spaghetti code you'd ever seen in your life. And I've seen some bad stuff. It was, out of 1 to 10, it was definitely a 1.
+
+[SPEAKER_00]
+Really?
+
+[SPEAKER_02]
+I've seen a 0 before. I've seen a 0, but that was a 1.
+
+[SPEAKER_00]
+It was pretty close, though.
+
+[SPEAKER_02]
+It was like, so I remember, so Travis was like, hey, I'm renting a house for the holidays. I'm renting a house down at Marina del Rey, which is down by the beach in Los Angeles. He's like, I want you to come down and give me the architecture. He's like, I want boxes and arrows and stuff. I'm like, all right, boxes and arrows. You got it, right?
+
+[SPEAKER_00]
+Yeah, sure.
+
+[SPEAKER_02]
+And so I walk in. I knock on the door, and this French guy answers. And I'm like, hey, is Travis here? And he's like, yeah, he's at Staples. I'm like, okay. So I come in, and he's kind of quiet, and we're kind of barely talking, and he's a typical nerdy developer, and he doesn't know who I am or why I'm there, and I didn't really expect. So we're just sitting there, and then Travis comes in, and he has this three-by-four-foot whiteboard.
+
+[SPEAKER_00]
+Oh, he's got a really good one there.
+
+[SPEAKER_02]
+Yeah, and he takes the plastic off and sticks it on a chair, and he's like, all right, give me the architecture. Wow.
+
+[SPEAKER_00]
+Okay, that's kind of cool, though.
+
+[SPEAKER_02]
+Yeah, and the guy who's with him, Curtis, who became the VP of engineering and was sort of his go-to guy in some of his previous projects. I think he had done a lot of work at Expensify and had done a lot of the work on Red Swoos, which is the company that Travis sold to Akamai. So Curtis is just a really nice guy and really, really good developer. And so he's standing with him. Of course, I didn't know he was. And so I'm like, okay, well, first of all, I think we should build this in Node.js. Okay. And there's this brief pause.
+
+[SPEAKER_00]
+This is like when Node 0.4 was out, right? Like really, really.
+
+[SPEAKER_02]
+He's like, what the fuck is Node.js? Yeah. He was expecting me to say C++ or, I don't know, Java or whatever or something, right? Super early. And I'm like, so if you recall, we had done an interview probably not long before that with Amir Selenhefendik who went on to start Todoist. Okay. And he's very successful. And in the interview, he had talked about using Node.js for a real-time social network called Plurk that was big in Japan.
+
+[SPEAKER_00]
+Okay.
+
+[SPEAKER_02]
+And I can't remember the numbers he said, but they had like 200,000 concurrent users or something big. And I was like, wow, that's really cool. And I had seen that same demo from Ryan Dahl where he introduced a node at a meetup or something. And I mean, it was like one of those things that shows up on Hacker News. It's this weird new tech. You look at it, you're like, okay, whatever. That looks kind of cool. And I don't think much about it until they interview with Amir. Okay. And then I'm like, and I'm thinking, okay, so like this thing is real time. So what's happening is you have cars and clients every four seconds sending a request to the server. Every four seconds, I think was the number. And it was just sort of these XML messages basically like, here I am, here's my latitude launch to you. This is my status. If you're a driver, I'm open, I'm off duty, I'm on a trip. And the client could be, I'm looking, I'm requesting a trip. So they would come in and then the call flow script would kind of go and would hit the database and be like, okay, this drive client, it was hitting the database every time, right? And so what happening is once they got to a certain number of users, it's just like, it started just grinding the database, right? And I was like, okay, like, it totally makes sense when you have like four or five people sharing a car, right? It does not make sense once you get to hundreds or thousands of people at all. And so I'm not, I don't mean to throw the original developers under the bus. They will probably just say, Hey, can you give us a little thing, a little, you know, mobile app that does this thing and our budget's $4,000 or whatever. We've all done it, man. Like whatever, like, Hey, you want something in a three weeks or six weeks? And okay. You know, and so, so then I look at this script, you know, and I think, oh, and, and I initially seen a copy before I did the architecture, I'd seen a, I, they'd sent me a, the call flow script and the other two or three. And I initially looked at this thing and I was just like, Ooh, like it was like, if, else, if, F, switch, switch, if, else, for loop, lift, lift. You're just like, I've no idea what's going on.
+
+[SPEAKER_00]
+Just mess.
+
+[SPEAKER_02]
+This is, it is just like, Oh, you know, come on. And, but I had them send me some logs. So every, every outgoing incoming message got written to a log file. Okay. And one thing about the lot of the messages is that one thing was consistent as they were all completely different. Some of it was elements, some of it was attributes. We just, it was like, it's a smattering of everything. There was no schema. There was no schema. It was like, I guess they're just, and it was, it was XML. So it was, it was really hard to read. And then it was just a consistent, it was just, it was, it was, again it was just prototype you know it's just a prototype someone threw together just to get something barely working and amazingly it started to work um and then you have um he had hired this guy conrad and the guy um ryan and conrad was sort of in charge of keeping this thing alive and he's just like doing everything he can't keep this thing running and burning out the database server and stuff and um i remember looking at this and thinking okay so we want like a persistent process running so like my background in hybrid trading it's like okay you subscribe to 100 or 500 different stocks that are just trading and they could get like 20 updates a second or more right a lot more these days but back then that was a lot so you're thousands of updates coming in a quote the bid ask quote trades and all stuff so you're certainly not like sticking stuff in the database and loading it back up
+
+[SPEAKER_01]
+Yeah.
+
+[SPEAKER_02]
+Like that would be stupid. Right. So you have like C plus plus or job or whatever. And it's a continuing running process. It has socket connections. You just update objects. Right. Like this is the, the stock object. And then here's the, this is a new bid ask. And this is the, you know, whatever. And you make decisions and do stuff. And I said, okay, that's essentially what we want to do. One persistent process running. But, but I was like, you know, I don't want to do C plus plus. That's just asking for trouble. Cause you want something. Yeah. Your reaction. I'd done five years. That was my initial language as a professional with C++. It wasn't five years, but doing multi-threaded socket-based stuff with C++ is just... Plus, we didn't need that level of scale, right? It's not that they had like a million cars.
+
+[SPEAKER_00]
+Yeah.
+
+[SPEAKER_02]
+Right? And like 20 cars or 15 cars, and they might get a couple hundred at some point. It's like, okay. And I was like, you know, and I'm not really a Java guy. Back then, it was all like... Remember the enterprise Java beans got like really overdone, over-engineered.
+
+[SPEAKER_00]
+Back then it was huge.
+
+[SPEAKER_02]
+And nobody wanted, I got a point, it was so over-engineered you couldn't even, it was like impossible to even use Java. And so I was like, I don't want any part of that nonsense. So that's when I thought of the Node.js stuff. And I said, okay, that could be the perfect combination because you have this persistent running process with Node as opposed to a script like PHP or Python or Ruby that just gets called upon a web request.
+
+[SPEAKER_01]
+Yeah.
+
+[SPEAKER_02]
+And I said it's just easy and fast to write and much easier to find people who can write that stuff. So that's why I said we should build a Node.js. And after Travis says, what the fuck, Curtis is like, oh, yeah. He's like, yeah, I love JavaScript. And he had built like the – a lot of the real-time distributed stuff for Red Swoosh. So he had done a lot of networking, massively distributed stuff. So he was no – he was not a rookie, and he immediately said, huh. And I remember – so I – we started working out. So it was like half a dozen people at this house, or maybe less, maybe five or something like that. And I tell – first thing I say to Curtis, I said, all right, I don't think we should like – just rebuild the php script i think we should go through a series of refactorings we don't want to fall victim to the second system syndrome are you familiar with that term the spolsky thing right yeah so it's like you know that you've ever heard of netscape 5.0 right yeah but a good background for the folks that are probably not familiar yeah so so netscape 4.0 was very popular and um that's when right in the middle of the browser wars and stuff and Whatever the engineering team, whoever it was at the time, they made an argument to management. It's like, we have to rewrite this stuff. It's all spaghetti code.
+
+[SPEAKER_01]
+Yeah.
+
+[SPEAKER_02]
+And so they tried to rewrite it, I think, from C into C++. And, of course, it never saw the light of day.
+
+[SPEAKER_00]
+Yeah. Typical rewrite problem right there.
+
+[SPEAKER_02]
+Yeah. So you rewrite something from scratch. Yeah. So I'm thinking I'm being really, you know, pragmatic. We're not going to rewrite it. We're just going to kind of refactor and refactor and refactor this and revolve it into something. And so I went back into another room and I'm working on this and I come back and Curtis is like, okay, well, you're doing that. I'm going to try and like do some forensic analysis on these database tables because the database tables were a mess as well. And just like everything else. And I come back to my earlier. I'm like, forget everything. I have no idea what this is doing.
+
+[SPEAKER_01]
+Yeah.
+
+[SPEAKER_02]
+It was like a Rube Goldberg machine. And there's no documentation. It just didn't make any sense. And I said, what I think I should do is I should reverse engineer the expected behavior of the system based on the log of messages, ingoing and outgoing messages. And so that's what I did. I started building a Node.js... dispatch, dispatch server that would, you know, receive and deal with these, these messages. So you have your list, your clients, your list of drivers, you know, message gets from the client looking for a trip. Who's the closest driver, you know, sign it, you know, send out a request to the driver. Hey, you want this trip? No. Okay. Let's do the next closest one. Okay. You want it? You know, okay. That kind of thing.
+
+[SPEAKER_00]
+Did you write to a database a lot during this time or was it all more of like using the same methodologies that you had used in high frequency trading?
+
+[SPEAKER_02]
+Yeah, so no. So at the time, it was a MySQL database. And so what I'm trying to think. Now, when I built this initial version, what I did is I created some sort of like, I can't remember if they're mocks or stubs, but just sort of fake API requests, like save trip or update trip. So I would call some, you know, and essentially would, in theory, would update the database. Yeah. So I just built this thing. But the test is funny. Initially, I built like a little GUI representing the client app and a little GUI representing the driver app. And then you're like, okay, request trip. Okay, go over here and accept or no, reject. Okay, get the next one. And after about an half hour of that, I'm like, this is bullshit. i'm not doing this like this is stupid and so i said all right what i'm going to do is i'm going to build a simulator where i can say okay create 10 drivers and 10 clients and they randomly show up on this latitude longitude grid and they randomly will ask for a trip and then cancel it or then they if they accept it then they want to go from here to some other part and so it's just some basic you know random logic with some randomness thrown in And it would go through all the different behaviors that it could handle. And that turned out to be inadvertently extremely useful. So I was able to build all of these APIs, build all the infrastructure. And you could just turn the simulator and put 100 drivers, 100 clients, and be like, go. And be like, go. And you could see us moving around. And then, of course, eventually something would happen. There'd be some... race condition or some weird situation where somebody accepted and then a drive trip and then cancel it and this and that. And it caught all that. And then what happened later is that the simulator was this like ultimate sanity check. So even if you wrote like some unit test and you check your code, it's like you had to run on the simulator for like 20 minutes to make sure that everything was cool.
+
+[SPEAKER_00]
+Because it just ran different variations and, you know, cancellations. Like you said, race conditions, it would run through everything.
+
+[SPEAKER_02]
+Exactly. And it was basically because I was too lazy to manually test it, but it turned out to be extremely useful for years. So Amos, who was the, he was like a young junior deputy, like two years out of college maybe. And he kind of started to help, you know, when I initially went up to Uber, I hadn't been up there for, so this is like, we go for like call it November, 2011. So almost a year.
+
+[SPEAKER_00]
+So is that, is the thing you created, is that also, was that part of the, the, you know, the higher end, like God view thing or no? Which we'll get to later.
+
+[SPEAKER_02]
+No, Godview was also something I built during that time. So I should back up a little bit, though, first.
+
+[SPEAKER_00]
+Because that's all over the news and everything.
+
+[SPEAKER_02]
+Yeah, okay, so I'll get to Godview in a second. So I'm building this starting in, like, December, January.
+
+[SPEAKER_01]
+Yeah.
+
+[SPEAKER_02]
+And I have, like, three other clients. Yeah. Like I'm building Uber's real time system and it's just one of three or four clients. And Sandy would rather come in every, as she would do like once a week. So are you finished with that? Cause we need to send an invoice cause we got to pay our mortgage. Right. And so I'm like, Oh yeah, I got to get back on Uber. Right. I got it. I got it. Cause you know how it is when you're a freelancer, you always have two or three projects and no matter what you're doing, you're always behind on one.
+
+[SPEAKER_00]
+Yeah.
+
+[SPEAKER_02]
+Before you send an invoice, you got to make sure it works. I mean, you got to make sure you've done your stuff. So yeah. So I'm building this with these other projects. Finally, we launch it. I send the code up to, or we commit the code and Curtis kind of does his thing. We kind of merge it with his connection node stuff, which was sort of a distributed, horizontally distributed thing that would send, it would take in connections and sort of, if it needed to buffer them before going into the actual dispatcher, it would. And we turn this thing on and it was so fast that, people thought it was broken like it was like zero percent cpu oh really wow like you couldn't even tell it was working or 0.1 or something was like so small and it was so fast because typical the drivers and the clients would typically there's a lot of delay lag you know there was a four and you'd have to wait and so would like you request trip and it's like immediately you're like whoa some something's not working that's too fast it was like something broken you know it was so and it was just because of node right you're not hitting the database and of course we would asynchronously fire off you know you know update database methods but it wasn't like the synchronous php type of thing so that was really amazing that worked great and um so i had So I was funny because they launched it when my wife and I went to a wedding in Europe. So we were gone for like two weeks and it was all on Curtis to kind of like do all the air handling and bring it to life, which he did. But I had never been up to San Francisco, right?
+
+[SPEAKER_00]
+Even at that point you hadn't? Wow. Okay.
+
+[SPEAKER_02]
+Curtis would fly down about once every three to four weeks and hang out with me for like four or five days. And we would kind of brainstorm and come up with ideas because he's writing the connection node stuff. And we just making this crap up.
+
+[SPEAKER_00]
+You guys are, you and him are writing this whole, the entire early Uber dispatch system. You and him just packing away in your, in your little office.
+
+[SPEAKER_02]
+That's right. My little, my little condo. office in pasadena was it was not in this like co-working space in san francisco san francisco with a bunch of 20 something engineers it's like you know middle-aged guy and you know we're just making this stuff up going to lunch and play a loco every day and you know so um I remember calling him one time and I'm like, hey, what's, you know, just, hey, what's up? He's like, oh, I'll have to call you back later. I got an interview. I'm like, interview for what? He's like, oh, for developers. I'm like, what do you mean? I was like, he's like, we got hired developers. We got this. What are you talking about? Like, we don't need other developers.
+
+[SPEAKER_00]
+Look at the CPU usage. We're good.
+
+[SPEAKER_02]
+Look at this, man. I mean, that was four other, three other projects. I mean, what are you even talking about? You know? And he's like, he just laughed. He's like, no, Travis wants X number of developers by the end of the year. And I'm like, I had never thought about it that way. Like I want X number of developers. Yeah.
+
+[SPEAKER_00]
+Which is interesting because, I mean, I'm kind of jumping ahead here, but I know you were at Uber for multiple years, but towards the end of your time there, you had told me that you would go into the office and walk floors of engineers and be like, I don't know anybody here. There's so many people. And it happened to be that you were one of the first there to develop the reason why all those people were there. It's just amazing.
+
+[SPEAKER_02]
+Yeah, well, it was... Yeah. You're referring to a particular or a specific instance in like April, I think it was April, 2016 was my last trip up there. I had already excited that was going to, you know, peel off because all my options had vested, but that's a whole nother story. And it was impossible.
+
+[SPEAKER_00]
+You're still consulting. So I want people to remember that, right? You're still consulting.
+
+[SPEAKER_02]
+I was consulting.
+
+[SPEAKER_00]
+But you had a weird option agreement, which we can get to another time. Yeah.
+
+[SPEAKER_02]
+Yeah, but later at the end of the – when I left or when I was – there was like 1,000 developers, and I didn't know anybody. I walked for three floors for an hour. I didn't run into a single person I knew. I was like, wow. This is – I said, this is clearly the time to go. But so going back to 2011, when I was going to fly up there, they were all like, oh, you got to come up, man. You got to meet the team. And I'm like, there's a team? They're like, there's a team. Yeah. What? What team? What are you talking about? And they're like, yeah. I'd be talking to Curtis on Skype or something, and Travis is like, yeah, man, what's up? What's up? You got to come up. And I'm like, all right.
+
+[SPEAKER_01]
+And so I figured, well, and Sandy's like, you really should go up there. You should go up there and see what's going on.
+
+[SPEAKER_02]
+Because I'm happy to just sit in my hobbit hole and do my thing. And she's always like, you need to get out and talk to human beings. So she's like, Well, if you're going to go up there, you're going to need an iPhone because you can't use your flip phone to get an Uber. I love flip phones.
+
+[SPEAKER_00]
+In 2011? That's funny.
+
+[SPEAKER_02]
+Clamshell. Yeah, she's just like, so she's like, don't worry, I'll go buy it and I'll figure out how it works for you.
+
+[SPEAKER_00]
+That's funny.
+
+[SPEAKER_02]
+So she gets me the iPhone and I finally, like the day before I go up there and then I go up there and install the Uber app. And remember, I get to the SFO, San Francisco Airport. I get there, and I'm like, how the hell does this thing work? Because I never actually use the app.
+
+[SPEAKER_00]
+You've worked on the background dispatch for so long.
+
+[SPEAKER_02]
+Yeah, and I call up Curtis. I'm like, Curtis, what is this flag thing? What is this pin? How do I... And you hear him, and he kind of repeats it, and you hear these people laughing in the background. It's like, Jason doesn't know how to use the app.
+
+[SPEAKER_00]
+That's so funny.
+
+[SPEAKER_02]
+So... Yeah, so I came up there, and that was around the time early on, and we don't have to go that into it, but Travis, he said, hey, listen, you've done a lot of great stuff. You deserve some equity.
+
+[SPEAKER_00]
+Yeah.
+
+[SPEAKER_02]
+Great. Thanks. I mean, because I thought I'd missed that. Curtis would come down and be like, oh, we just got a round of funding from Benchmark. We raised... 10 million dollars and i'm just like oh oh that i miss i missed this didn't i you know because initially he'd say oh we have like 100 users or a thousand i'm like wow people our code's working people are use it using it and then i'd hear the money that was coming and i was just like oh my god i really really really miss this but i could have jumped on then i could say travis for what i said back in december i'm in right yeah but i was too stubborn I was too stubborn. And eventually I think Travis, I think one, he probably wanted to lock me in full time, you know, cause I had built a lot of the core stuff. It's like, Hey, you probably want this guy around for a while, you know? And two, he's, I think he's, you know, he said, good guy. Travis gets a little bit of a bad rap sometimes in the press, but I think he was like, Hey, you deserve some equity. I mean, you know, this would be pretty, you know, and pretty bad if you didn't. And so he comes back and he gives me, uh, an option grant.
+
+[SPEAKER_00]
+Okay.
+
+[SPEAKER_02]
+And it's, and I think the total value, I think it was like 7,000 options for like a $2 strike or something, $14,000. Yeah.
+
+[SPEAKER_00]
+Yeah.
+
+[SPEAKER_02]
+And it was like a four year vest.
+
+[SPEAKER_00]
+You're like for $14. Oh gosh. Yeah.
+
+[SPEAKER_02]
+I'm not sticking around here for four years or $14,000. Right. I mean, right. Come on, come on. You know, I mean, I'm like, it was, it was nice though. When it was like, it was like, if somebody comes to me and say, Hey Jason, Hey, I'm not going to use this. Here's a hundred dollar Amazon gift card. And you're like, thanks. Yeah. And then you put it in your wallet and you forget about it. Cause that's what you do. And, and then to you remember to do it, you get it. And then it's expired or whatever. And so I, I, I was like, I'll probably stick around here for probably on and off consulting for six months or a year or something. So a little bit of a vest and that'll be it. But it was around, I think maybe 2012 or 13. And I was like, I'm going to turn to Sandy and I go, have you seen that option grant?
+
+[SPEAKER_00]
+Because things are going to Uber at that point, right?
+
+[SPEAKER_02]
+I'm like, oh my God. And You know, because I would fly. And one part of the agreement was that I would fly up there once a month or once every three weeks. And so I'm seeing this thing like a stop motion would just like boom, boom, like double in size every month. It was crazy. Right. And I'm seeing this thing go. We're in San Francisco. Now we're in Boston and Seattle. And now we're in New York and London and L.A. You're just like, holy crap. And so I'm like, so I asked her if she'd seen it because I couldn't find my option grant.
+
+[SPEAKER_01]
+Oh.
+
+[SPEAKER_02]
+I put it on my desk with my pile of papers. You know how that is, and then it gets thrown away or something. And so I'm like, isn't that perfect? I lost my option grant. I know what's going to happen. I'm going to call them up, and they're going to be like, yeah, we don't have a record of that. That's kind of up to you to keep track of. You just expect that kind of thing.
+
+[SPEAKER_00]
+You just know that's going to happen.
+
+[SPEAKER_02]
+So I call up Jesse, who was then the manager. He was like the... director of finance or finance manager or something. I'm like, Hey Jesse, um, do you have a copy of my consulting agreement? He's like, Oh yeah. Yeah. And I go in my option grant.
+
+[SPEAKER_01]
+He's like, Oh yeah, I'm sure I do.
+
+[SPEAKER_02]
+Yeah. So I was like, Oh, thank God. You know? So luckily I was like, Ooh, you know, so that $14,000 obviously became worth quite a bit more. I was like, Oh, this, we might be able to send our kids to college with this money. Like this could be real, you know? And, um, You know, and it turned out to be even better than that. But I mean, again, compared to the, what if I had taken a CTO position, it was, it was, it was nothing, you know, not even rounding error.
+
+[SPEAKER_00]
+So, but, you know, that's amazing that the CTO thing and that I'm glad you're able to get that, that stock option granted back. Because otherwise that would have been like just a really sad ending of the story.
+
+[SPEAKER_02]
+Oh, so sad. I know. It was so sad. Yeah. Oh, you asked about Godview?
+
+[SPEAKER_00]
+Yeah, that's interesting. So what was Godview? I mean, it did show up in the news for a while because a lot of people were freaking out about it that everyone knew where all the cars were at. But back then when you guys built Godview, that was never the intention. And I kind of want to see if you could give a little rundown of that.
+
+[SPEAKER_02]
+Yeah. So, I mean, pretty early on, I started working on Godview as well as Dispatch. I mean, you got to remember that there was like Jordan and... God view is just a way of look. You can look at a city. And at the time when we first started, it was only San Francisco. And you could see the cars driving around where they were. And you could see clients were like, I were like little eyeballs looking. And then you could see, oh, this is this client is on a trip and they're driving around. So you could kind of see a real time snapshot of what the heck was going on.
+
+[SPEAKER_00]
+Yeah.
+
+[SPEAKER_02]
+So really it was like. Yeah. It was like a debugging tool. It was a tool for operations to see what's going on. So if a client comes up and says, my Uber is supposed to be here 10 minutes ago, it's done right here. They could say, oh, he's three blocks away, or you could see what's going on, right? You could see a list of names of the clients and drivers on the side. I kind of built it. I kind of... stole the look and feel of like google i mean yeah google maps and you know you have that kind of slide out and you can see like restaurants and stuff i kind of use their design as a template for what i did and it was cool you know you know once later you'd have so many cars that looked like flies on a carcass like you couldn't even see the city it was just all just, you know, and, and, you know, and it was, it was, it was neat. And then you could see, you could select the only show me cars that are on trips or that are on duty or whatever. And, and you could, and it would have their names next to it. So you could see like, okay, so this guy's driving here. I could see what the problem is, you know?
+
+[SPEAKER_00]
+Okay.
+
+[SPEAKER_02]
+I mean, imagine, imagine if you, um, you know, you order something from Amazon and they have no idea where your order is. Cause they don't look at orders. Like it's, I don't know. Like, Somebody has to look at, be able to track this stuff. Right. Like it's in the database. It's in, so our stuff is not only in the database, but it's in the real time system. And so it was built as a, just to stay on top of things is where operations people could solve problems for the drivers and the clients. Right.
+
+[SPEAKER_00]
+And you had to maintain it though. Right. For a long time. Right.
+
+[SPEAKER_02]
+Yeah. I want to say probably. And through like mid. Yeah. 2013, 2014 kind of range.
+
+[SPEAKER_00]
+So at that point, did you just stop working on it or what happened after that to, or did it morph into something else?
+
+[SPEAKER_02]
+Yeah. So it was like, I went on my monthly trip and this is when we had, we had moved over. This is like our third office since I had been there. We were in the Yelp office, Yelp's old office. And the real time team had expanded to like probably 30, 30 people at that point, just the real time people. So this is just the stuff that I built. right was now like you know uh i just expanded out and um and i come up and i look and i see this kind of thing it looks like god view but it's like way slicker i'm like whoa what's that and nobody says anything all these like coder was just like quietly coding and i'm like what's up like wait what's this And someone goes – finally someone goes, yeah, so we built a new version of Godview. And there was like a team of seven of us, and we worked on it for the last couple of months. Nobody really knew how to break the news to you.
+
+[SPEAKER_01]
+I'm like, I don't care. It looks awesome.
+
+[SPEAKER_02]
+I don't have to babysit this thing anymore. It's like my buddy Phil always says, yeah, don't write – never write code that you don't want to maintain for the rest of your life.
+
+[SPEAKER_00]
+It's true. I think in a previous conversation, we talked about how that was built with all kinds of bells and whistles and different technologies and stuff like that. And yours was a much more simpler thing. And it would kind of beckon to the discussion that we got into at the time, which was kind of like generalist software development versus specialized software development. And I was wondering how you felt about that. Are you more of a generalist or specialist? And what's your thoughts on that? Yeah.
+
+[SPEAKER_02]
+Yeah, well, I think you and I are similar in that way is that I'm a definitely generous. I'm not great at any one thing. I could do a lot of things passively well from UI... you know, stuff to database to everything in between. And I'm more like about this, like, let's get something working. I mean, let's write clean code. Let's use the right tools for the job and stuff. But it's more like, okay, we have like two weeks or two months or whatever it is. Let's get something up. Right. And I always just refer myself as special forces. Like, okay, you get like a small team of like highly trained, people who are highly trained or at least trained across a variety of specialties. And they can do all kinds of things. You drop them in, they can do a lot of damage. five or six or 10 of them or whatever it is. Regular army, you have these people really just do one thing and that's what they're trying to do well. And that's what scales, right? It gives people who are amazing front-end developers or amazing UI designers or UX people or... amazing node people or whatever. And that's just a different type of person. And those are the kind of people who tend to be more comfortable and more successful at larger, larger companies or larger startups, because like I can slot in here and I can do my magic and I can really make this. Yeah. this thing well but if someone says hey i'm a guy called hey jason like we need like a whole new dispatcher can you build that and uh yeah oh and here's a god view and could you you know could you build a god view for us and i'm like all right just just get it done yeah get it done and ship it and i think that's the thing you said is like you get in there you're able to ship it and being a generalist that gives you that ability because you have that experience with
+
+[SPEAKER_00]
+And I'm not, no one's going to hire me to, to optimize a Postgres database. That's not my thing, but I can get in there and I know exactly how to build one and set it up and use it. But I may not be the person to talk to about optimizing a trigger. Like, I don't know. I'll have to dig into that for a while.
+
+[SPEAKER_02]
+Well, and see when you're starting out. You really need to be able to have all of these different skills available so you can connect them all up and say, okay, this is how I want everything to work. It doesn't have to be a series of meetings and memos and – I can just put it in my head and be like, okay, this is what we're going to do and get something working. And eventually stuff gets rebuilt and rebuilt again and rebuilt again. I mean if you go look at Uber – I mean, the code that I had originally written had been rebuilt numerous times. Because when you go from 10 cars to 100 cars to 1,000 cars to 10,000, it's like now you're in multiple cities and you have all this kind of stuff. It's like just different solutions are needed. But you don't try and build that solution at first because, first of all, you can't even test it really. It's like, well, you don't need it. We need something like now. I don't need something that can run this space shuttle. I just need something that's going to work in a month.
+
+[SPEAKER_00]
+It goes back to the company that built the app before you were there. They built the exact thing that they needed for three or four cars or three or four people, and that worked. I think a lot of engineers suffer from that problem of just trying to optimize too early of like, well, we're going to need to make sure we can scale this way and scale that way. I think some of the best advice I can get is like, no, you don't need that. Yagni applies right there. You're not going to need that right now. Don't worry about it. We'll worry about that later. I think there's an arc to that.
+
+[SPEAKER_02]
+yeah yeah solve today's problem you can look a little bit ahead say well we're going to just get a little bit but you got to be careful when you're trying to predict the future um i mean it's 37 signals they've talked a lot about that which is like make small decisions don't make big decisions make lots of small decisions you have more because you have more if you wait you'll have more information yeah exactly about the problem so Yeah. You know, I mean, I had done this in the high future trading world before, you know, where I had built like the entire platform of order servers and quote servers and trading UIs and trading it. I mean, and I had to do it all myself.
+
+[SPEAKER_00]
+Yeah.
+
+[SPEAKER_02]
+Right. So guess what? I built it in visual basic.
+
+[SPEAKER_00]
+That's what worked at the time, right?
+
+[SPEAKER_02]
+Yeah. I mean, I built it in VB6. It was like visual basic. And I'm like, dude, because I can write this at like 10 times faster than C++. Yeah. And I was a C++ developer. I can write this multi-threaded, multi-processed, socket-based, blah, blah, blah. I can write the server code. I can write the UIs and all that stuff in Visual Basic. And Visual Basic was kind of like a poor man's Python. You could do object-oriented programming. And you didn't have inheritance, but you could implement interfaces. And you could write clean object-oriented stuff. Well, you look at it, you'd be like, oh, yeah, it looks kind of like Python, a little more verbose. But it's pretty simple. And it compiled down, used the C front compiler. So it compiled down to C or C++. Yeah.
+
+[SPEAKER_00]
+So it was fast.
+
+[SPEAKER_02]
+And it worked.
+
+[SPEAKER_00]
+Yeah. I think some of the first apps I wrote were in VB6 as well. So that's a little throwback there. Well, Jason, where's that?
+
+[SPEAKER_02]
+You remember how productive you were. You remember how productive you were at that stuff, right? Yeah.
+
+[SPEAKER_00]
+Yeah, there's so much stuff that we shipped. I mean, very early on, one of my first jobs in tech was working for Target, which was Target's credit card. And we wrote a bunch of apps in VB6 to automate all kinds of internal processes for their credit division. I mean, that's just what allowed us to ship it because otherwise their internal teams that were up in Minneapolis at the time just couldn't get to it for six to 10 months. So we just learned it and shipped it. It is what it is. Yeah.
+
+[SPEAKER_02]
+That's right. That's right. So I don't think, you know, I think a lot of people get really kind of embarrassed about using certain tools as opposed to other ones. It's like, oh, you know, real menu, C++ or whatever it is. And it's like, you know, real coders ship. They ship stuff that works. They ship it on time and they ship stuff that doesn't crack. And, and, uh, that's, that's, that's really what you want. And, you know, obviously you try and write the cleanest code you can with the tools you have. Um, but you know, you don't, like you said, you don't want to, um, jump the gun in terms of premature optimization or premature generalization. All those things are kind of roads to, um, to hell, you know, those are what the junior devs who do, who are like one or two years out. They're like, I'm going to generally make this whole thing. And you're just like, please don't, please don't.
+
+[SPEAKER_00]
+They require a little bit of guidance to kind of get them back on the rails. I like the enthusiasm, but we have to kind of help reel them in. That's kind of the key there. Jason, we could talk about Office G2, which is a product that you built, your multiple other things you've worked on and Math Academy, but we're running out of time today. I'm going to have to bring you back to talk about these other ones because I really want to pick your brain about just starting these projects, which have been things you have built yourself and have grown them to either point of almost acquisition or acquisition or even the things you're working on right now with your Math Academy. So we'll have to bring you back for another episode. But before we get on, is there, um, if folks wanted to get ahold of you or see what you're working on, or if you want to talk a little bit about where you're working on, uh, how can they get in contact and what are you working on?
+
+[SPEAKER_02]
+So, um, well, first I just say, I just brought my Twitter account back to life. So you can come to XO Jason, E XO Jason. Um, I have like 250 followers. So get in early, get a seat at the table. um yeah so that has that'll have link i'm trying to post pretty regularly on the stuff i'm working on and things it has links to the podcast and to my you know my website codisoperandi.com and and all that um so my current project um is a math academy which is i guess what i would say is think of duolingo but for math okay you know But where Duolingo is kind of like not super serious in terms of like, it tries to get you to be fluent, but it's more about gamification and make as much progress as you can. Our system is like really serious. But yeah, it sets everything from fifth grade math up through, you know, things like differential equations and abstract algebra. So it's... And we're going to be launching it later this summer. So I've been working on that for years. So that's probably a whole other long discussion. But if that thing sounds interesting to you, come to my Twitter account. You can kind of keep abreast of that.
+
+[SPEAKER_00]
+Yeah, and if you have any links or whatever, we'll add them to the show notes. We'll put links to your social handle, your website, and stuff like that. And we'll have to get you back on so we can discuss more of this stuff. So you have a lot of interesting insights that I want to dig further into. So thanks for coming on the show.
+
+[SPEAKER_02]
+Thanks for having me. It's been a lot of fun.
+
+[SPEAKER_00]
+Well done. Folks, thanks for listening and we'll catch you next time. Everybody, thanks for staying on and listening to the show. Before we get going here and head on out, just want to remind you to please check out the YouTube channel. That's going to be at donfelker.com slash YouTube. You're going to learn everything you need to know about how to become an independent consultant as a mobile developer or just even a software developer in general. I'll teach you from the ground up everything you need to know and that much more. I look forward to seeing you over there. Again, that's going to be at donfelker.com slash YouTube or just check the link in the show notes. Thanks again, everyone. Have a good day.
+
+[SPEAKER_01]
+That's it for the show, folks. Fragmented is hosted by Don Felker and me, Kaushik Gopal. We edit and produce all the episodes here on Fragmented. You can find more Fragmented episodes at fragmentedpodcast.com. Thanks for listening, and we will catch you in the next episode.

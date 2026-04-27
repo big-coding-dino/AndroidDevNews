@@ -1,0 +1,382 @@
+# ep222
+Podcast: Fragmented Podcast
+
+---
+
+[SPEAKER_00]
+Welcome to Fragmented, a software developer podcast where we talk about building good software and becoming better developers. My name's Don Felker. And I'm Kaushik Gopal. Welcome to the show.
+
+[SPEAKER_02]
+Hey, folks. So in this episode, we're going to do something a little different. One of my good friends and I happened to be chatting over dinner once, and he told me about this really interesting project that he was working on. And it was Android related. And it has to do more with this concept of enterprise mobile management. And it's been an area where I've always been curious, but I haven't actually sort of worked in it. And so I had a whole bunch of questions and we started, yeah, we were chatting for quite some time about some of the crazy powerful things happening. that Android devices allow and offer. And so this is just an episode where I had like a conversation with him at my place. And we talked about the different things that Android allows. And I hope you enjoy it. Don obviously couldn't make this because we are recording very, very late. In this episode, I'm going to introduce my good friend. His name is Prabhjot. So welcome to the show, Prabhjot.
+
+[SPEAKER_01]
+Thank you, Kaushik. Happy to join.
+
+[SPEAKER_02]
+All right. So for our listeners, can you tell us a little about what you do, where you work? So yeah, just tell us a little about yourself. Sure. So I work as a principal software engineer at Salesforce.
+
+[SPEAKER_01]
+And currently, my role is looking at the architecture, making the application for revenue management, and making sure our customers are having a solid platform where they can actually manage their revenue technologies.
+
+[SPEAKER_02]
+This is why it was surprising because in our circles, I'm usually the only one who does Android development, but you told me that you actually worked on the side project for Android. Can you just talk to us about this use case that you had and what you specifically did with Android?
+
+[SPEAKER_01]
+Sure. The time when I worked upon the Android project was basically when I was on my paternity leave. It was a very interesting one. A good friend of mine came and said that, okay, we want to develop something. We want to have an automated process where we can install an application that they don't own on the company-owned devices. So he was running with Amazon. He was a partner with Amazon and was running a delivery service program with Amazon. And Amazon has a Flex app. It's not there on the Google Play. And Amazon owns it. So the standard EMM solutions won't install that app because they provide a managed Google Play or they provide a capability that if you own the app, it can be installed through the private Play Store.
+
+[SPEAKER_02]
+So there's a whole bunch of terms in there. Before we even start, I want to get right to the definition. So the first thing is with Android devices, there are specific kinds of devices. So there is a device that I own. There's my personal device, my phone that I have here. So this is my own Android device. There are devices that the company owns and gives you. So let's talk about those definitions. And I mean, even stepping back, you said EMM. So what is EMM?
+
+[SPEAKER_01]
+So EMM is enterprise mobile management solution. So coming to your devices, overall, we can say that there are five different things in Android in terms of devices. The very first thing is the personal phone for personal use.
+
+[SPEAKER_02]
+Okay, so this is like, yeah, straight up, like if I have my own phone that I use, that's like, yeah, so bring your own device.
+
+[SPEAKER_01]
+It's not even bring your, it's basically your phone, you are the one who are working on it. So it's as simple as that. The second is bring your own device, which is what we call BYOD.
+
+[SPEAKER_02]
+Okay.
+
+[SPEAKER_01]
+And that is the phone belongs to you, but you want to install some personal apps or some work apps on it. Okay.
+
+[SPEAKER_02]
+aha okay and this is interesting because at instacart we have the same thing like recently with android what's happened is if you want to use like company services like you say you want to use like the gmail app like you know if i have like an at instacart address or like at my company at salesforce or some address right i've noticed that with my device There are times where it actually partitions it. There's two kinds of profiles. There's personal and there's work. They're like sandbox. So this is done. Why would somebody do this?
+
+[SPEAKER_01]
+So the Google basically says that because it's your device, they want you to have a full control over your privacy. Got it. Okay. The work will have no visibility or access on your device's personal profile. So they can't really read or see or what you are doing.
+
+[SPEAKER_02]
+So if like I have a Gmail app or like a Bitcoin app or something, there's no chance that that information is being exchanged. And then comes the realm of company-owned devices.
+
+[SPEAKER_01]
+So in company-owned devices, the very first use case we can talk about is company has the device, the device is owned by the company.
+
+[SPEAKER_02]
+but they are giving it for both personal and work use okay so this is basically the companies i said hey company i need a device i don't want to use like a device that i buy with my money so they say okay fine we'll we'll purchase a device so they own this device is this like a special kind of device like do you have to buy from like or is it any just like any device but basically the thing is the company can say it is owned by them So this is like software that's installed that basically says, okay.
+
+[SPEAKER_01]
+No, no, no. It's not any software or anything. It's basically just that it's owned by them. The company has paid for the device and that's why they can claim it's their device. So there is nothing that needs to be installed as of now.
+
+[SPEAKER_02]
+Okay. So there's nothing like fancy about this. It can be. And I think this is an advantage too because... One of the advantages with the Android ecosystem in general is Android devices, you have access to a lot of cheap devices, right? So it could be like $50 devices or $100 or something, right? And you could use this. If you think about them, they're like mini computers with sensors, right? You know, you have like GPS sensors and like altitude, temperature, you have all these things. And for $50, that's, yeah, you can collect that information and actually use that if you care about it.
+
+[SPEAKER_01]
+Absolutely. So the devices for the company owned devices, which are for personal use, you get a little bit more control. The company gets a little bit more control. So things like what you can say, even now the personal data is not going to be visible, but they can set policies like a disallow certain apps. say they don't want one app to be installed like a tiktok or something else and because the device is owned by the company they can they are allowed to set those policies like a little bit more rigorous policies over the phone oh my god okay so this so this is actually what this is where it got really interesting the reason i got pravjadan is he told me some things that sounded very scary like you know the things that you can do and i'm talking scary things
+
+[SPEAKER_02]
+So this might almost be like an advertisement to like why you wouldn't want to ever use. If your company gives you a device, know that there are like some really crazy, shady things that can happen. And we'll obviously get to that because my good friend, Prabhjot here, who like is known as a hustler, has like definitely done some pretty crazy things. Okay, sorry, I'm going to recap quickly. So we started with, okay, there's your own device. It has nothing to do with enterprise management. I use it. Then there is like, OK, it is my device, but I want to use some aspects of like the company's stuff. And so this is like the personal work profile division thing.
+
+[SPEAKER_01]
+And OK, what are the third one is basically company's device. They are telling you that you can use it for personal use. The next is basically the fully managed device.
+
+[SPEAKER_02]
+Okay, this is where we get into scary territory, right?
+
+[SPEAKER_01]
+Or not yet?
+
+[SPEAKER_02]
+Kind of.
+
+[SPEAKER_01]
+So the fully managed devices, they are telling don't use it for personal reasons. So Android gives a lot of capabilities for a fully managed device. And these devices are basically intended for work purposes only. And the last type is what they called it the fully managed dedicated devices. These are the devices, like for example, if we go to the airport and there's a cover there and they say, do you pin the app?
+
+[SPEAKER_02]
+Oh, this is the case where if you have like a tablet, an Android tablet or something, you can literally affix it to a frame and then run a kiosk and you have like a running kiosk.
+
+[SPEAKER_01]
+And like one or subset of the apps are only what the user can interact with. And there can be all other apps that are installed and the user won't be able to use any of them. So these are the five categories.
+
+[SPEAKER_02]
+What was the difference between the last two? There's like fully managed. Is the difference just the kiosk mode where it's like a fully managed?
+
+[SPEAKER_01]
+There are a little bit more differences. So for example, like let's say if it is a dedicated app, then there are policies like what they call it, the freeze time that the application, the software updates won't happen within this time frame. So you get much more control over the phone. The notification bar, you can disable the notification bar.
+
+[SPEAKER_02]
+Wait, what? Yeah. So you can essentially just disable the notification bar. You can essentially prevent any app updates going, OS updates, I presume, or even app updates during certain. Okay. And what kind of device is this? Any device, like any Android device.
+
+[SPEAKER_01]
+If it is set in the dedicated device mode, These are the capabilities that the end user or the IT admin can put on.
+
+[SPEAKER_02]
+Why? So there's two aspects. I want to first talk about maybe like the use cases around like when you would use one thing or the other. Or maybe you just talk about your use case first, right? Like what were you trying to achieve specifically and what solution like did you use? Fully managed, like a device owned, a company owned device. Yeah, just... Talk to me about this.
+
+[SPEAKER_01]
+So basically there are two things, right? If the phone that you are giving is only for work purposes, then there are two options. Either use it for dedicated or use it as a fully managed phone. If the phone that is there is going to be used for both personal and work purposes, then you can, either it's a company on phone or a personal phone, you can use one of the two options there. So that is basically the main difference. which one to use and when. And this basically boils down to the security and the compliance needs of the company. If there is some very critical data and the phone only needs to be worked for the work phone, so for example, let's say in Kaiser or some other medical, there is a HIPAA compliance and all those things, and they want that this particular device to be only used for these purposes, then you would actually use the fully managed device or the dedicated device mode. compared to the say if as an uber driver i want to run the application on my own phone then i can use the byod or if uber is giving up the phone then it can be the company-owned device that other people can leverage for personal use.
+
+[SPEAKER_02]
+What was the use case that you were basically aiming at?
+
+[SPEAKER_01]
+So the use case that I was aiming was a company-owned phone where we wanted to have some capabilities that are not coming out of the box.
+
+[SPEAKER_02]
+To start, you are giving devices. You're giving this device to employees or whoever.
+
+[SPEAKER_01]
+The friend of mine, he runs a company. He owns the devices. And those devices were only going to be used for the work purposes.
+
+[SPEAKER_02]
+And can you define what work purposes is? Which means, is there an app that you guys have? They have a couple of apps.
+
+[SPEAKER_01]
+They have two or three apps. They have an e-mentor app that they use to... They have Android Flex app. They have ADP app, like a couple of apps. Got it. But only these apps for the work purposes only.
+
+[SPEAKER_02]
+Okay. So your friend's company had these devices and those specific devices should only allow three or four of these apps to ever be run on those devices. And you give it to employees so that they can use it in order to achieve whatever the company's work is. Okay. That makes sense. So what solution did you pick then?
+
+[SPEAKER_01]
+First, let's talk about what the solutions can be. The ways we can achieve this is there are a couple of options. Originally, Google came up with what we call the Play EMM API.
+
+[SPEAKER_02]
+EMM being Enterprise Mobile Management. This is similar to what some folks call MDM too.
+
+[SPEAKER_01]
+Yeah, so it is still the MDM, but it got a little changed after 2017. So this was originally what Google was giving, but now Google is no longer accepting applications for that.
+
+[SPEAKER_02]
+Okay, so it isn't deprecated. It's just that Google clearly wants you to change direction. And what is the replacement that they're coming out with?
+
+[SPEAKER_01]
+In December 2017 or early 2018, Google came up with what they call the Android Management API.
+
+[SPEAKER_02]
+Android Management API. These terms, they're very generic sounding terms. But okay, I'm with you so far. Android Management API.
+
+[SPEAKER_01]
+And the Android Management API was a game changer because what Google claimed was... You can manage devices and you don't need to write code or an Android app, to be precise. You don't need to write an Android app on the phone to manage your devices.
+
+[SPEAKER_02]
+So actually, maybe let's step back. Previously... you actually had to write an Android app that you would install on those phones?
+
+[SPEAKER_01]
+Yes. So previously, what used to happen was in the architecture, right? You used to have a management service. Management server, sorry. You have a management server. This is like a web server. This is right, a web server. And then you have what they call it, the device policy client, the DPC, that is installed over the phone. That gets installed and it talks to the management server and it applies the policies on the management device. But lately, because when Google came up with the Android management API, Google said, you don't need to do it. There is no app that you need to install on the device. And this is specifically because of the versions that are there for Android devices. It was becoming very tricky for them to even manage it out. The last I remember, basically, I think Google claimed that it supports over 80 plus devices. I don't know if that changed. And the basic part is the Android management API that they have, it supports all the four devices. modes that we talked before like BYOD which is bring your own device company owned you phones for personal fully managed phones and dedicated devices so all four of them can be managed through android management api and the emm provider does not even need to write a single line of code for them
+
+[SPEAKER_02]
+Well, that's pretty cool. Okay. So that does really make it easy for enterprise people who are wanting to use fonts.
+
+[SPEAKER_01]
+Okay. Okay. The only thing is because it's out of the box, the policy manager can only do so much. The third way.
+
+[SPEAKER_02]
+Well, actually, before we go there, why can't we just end the story there? Why can't we just say, okay, this is all you need?
+
+[SPEAKER_01]
+There are limitations here. With every out-of-the-box system, it can do only so much, right?
+
+[SPEAKER_02]
+Can you talk about what some of these limitations are?
+
+[SPEAKER_01]
+I was giving an example from Amazon, right? Amazon has a Flex app. And my good friend, he wanted to have the phones provisioned.
+
+[SPEAKER_02]
+Okay.
+
+[SPEAKER_01]
+And... He doesn't own the app.
+
+[SPEAKER_02]
+He doesn't own the Amazon Flex app. That is, okay, yes.
+
+[SPEAKER_01]
+So he cannot put the app in the private managed Play Store.
+
+[SPEAKER_02]
+Amazon has the Flex app. And I presume this is an APK. This is not something that's distributed from the Play Store.
+
+[SPEAKER_01]
+No, it is not something that is from the Play Store. It's an APK that you can download it from the website. Then you have to go to settings. You have to go to developer mode, enable the developer mode, then install the APK. And the problem that comes is if you enable the developer mode, Basically, now the end user can install anything on the phone.
+
+[SPEAKER_02]
+On Android, technically, even today, I could enable developer settings. And I do this by doing the whole five taps on settings. And at that point, I can install APKs. I think it gives you a warning or something saying like, hey, remember.
+
+[SPEAKER_01]
+For what you are talking about is a developer mode.
+
+[SPEAKER_02]
+Correct.
+
+[SPEAKER_01]
+What I'm talking about is install unauthorized APK for unfind APK from the website. So you don't need to go to the developer mode per se, but Amazon will say you go to your settings, then go to security, then turn on the unknown sources. So that is what I'm talking about, the unknown sources.
+
+[SPEAKER_02]
+That's scary.
+
+[SPEAKER_01]
+That is scary for an enterprise. But there is a use case where you need to install one app. You trust the enterprise. You need to install it for scenarios like those. But you can't. The EMM solution doesn't give that because Android management API doesn't give that because... It can say either you go do the managed play store where you can install the app that you own. or you can enable the apps that are already lifted on the Play Store.
+
+[SPEAKER_02]
+Okay, so I just pulled out my phone here, and I'm trying to see where this option is. And it looks like it's at settings, apps and notifications. There's an advanced menu. I'm clicking advanced. Special app access. Install unknown apps.
+
+[SPEAKER_01]
+Okay, got it. Depending upon the device and the operating system that we have, right? For the menu, you can change from one location to another. That makes sense. So the easiest way I would say is just...
+
+[SPEAKER_02]
+Search it. Yeah, just search for uninstalled.
+
+[SPEAKER_01]
+First unknown app in the search bar end. This makes sense. So like to provision every single device, you can either go and do all these settings, enable it, install the app and all, or you can go with what the third option is, which is called the device owner app.
+
+[SPEAKER_02]
+And this is the scary territory that we're having. Okay, fine.
+
+[SPEAKER_01]
+And there are like other use cases also, like for example, if I need to send the device location every five minutes, every two minutes, every minute to the back end, I want to register it.
+
+[SPEAKER_02]
+Okay, so let's talk about that. Today, locations is like a hot topic where... it's pretty restrictive. And Google is doing a very good job now of restricting it, where if I want to send background location information, I cannot do this. And this is actually how our original conversation spawned, where you started telling me about these things that you did. In the background, if I wanted to send locations, Google basically at some point will terminate, or they don't even allow you to send unless you have a foreground notification. So you have to have, if you've used Google Maps or one of these foreground services, you have that notification to say, hey, somebody's collecting your location. And then you're able to send your location information even in the background. But you're saying that you can actually circumvent this somehow. Yes.
+
+[SPEAKER_01]
+Okay. Like the foreground notification, I can put whatever. I can just put hello if I want to. But if needed, I can't even stop it. Basically, there's a thing that is called device owner app.
+
+[SPEAKER_02]
+Okay. Let's talk about device owner app. So the device owner app is only for...
+
+[SPEAKER_01]
+the devices that are company owned, which should not be used for any personal purposes. The device owner app basically has a lot of power that is given to the admins. They can install an app. They can uninstall an app. They can see what apps are running currently. They can monitor the network traffic. Oh boy. Okay. There is some advanced network settings and all. They can say Wi-Fi to connect and all. They can look at your IMEI number, phone number, SIM number, contact, account. And there is a service. You can just run a service, a background service that never dies.
+
+[SPEAKER_02]
+Wait, what? Okay, so you can basically run a service. This is like Android service object, whatever. Yeah, okay.
+
+[SPEAKER_01]
+But this is basically an Android service. There's a perm that is called device admin service, I believe. And you can attach it to the device on our app. And basically what Android says is this is a service that I always need to run in foreground.
+
+[SPEAKER_02]
+Okay.
+
+[SPEAKER_01]
+And the service, you can just build it in a way that it never dies. You can't kill it. And even if it gets killed for some reason, the phone will restart it. The phone will restart the service. Even if the phone you restart, the service gets killed. started automatically you can basically listen to every single intent the implicit intent and this is like pretty amazing because like this this enables the app to receive implicit broadcast that can no longer be received by manifest receivers by app targeting like Android version O, I believe. So the recent change that Google put in Android O, right? That's right. This can all circumvent that because your app is running in the foreground. So you can basically listen to anything.
+
+[SPEAKER_02]
+So this is like almost, okay, hey, I own this device, unlock, give me complete control over this device. I can send the location. I mean, obviously there's battery implications. It's going to like destroy your battery or something in all likelihood, but whatever. But you can also do some of these things saying like, hey, everyone...
+
+[SPEAKER_01]
+one hour give me a location ping and then yeah the app that i built right i'm build it in a way it's completely customizable like the on the end user there's a console back-end console the end user says okay give me a device location every five minutes you can just say A Firebase event will push a notification to the phone. The phone will then check the policy back to the server and will say, okay, now I'm going to give a location after five minutes.
+
+[SPEAKER_02]
+Is this an app you have to write? Yes. Okay, so this is a special kind of app.
+
+[SPEAKER_01]
+Yes, that is one of the pain points for this, for the device owner app is...
+
+[SPEAKER_02]
+everything that we need to do if we have to code i see okay oh so this goes back to the point you're saying previously where google's trying to make a whole bunch of these things easier but if you want to go into guard mode at this point you have to write your own app to be able to do things okay yeah the thing i'm learning from this is like you as my friend if you ever give me an android device i'm never taking that device basically Talk to me about what the device owner have you built and like, you know, how you built it. Like, cause there's some level of backend components in this as well, right? It isn't something that you can just write on your phone. How do you distribute it? Yeah. Let's talk about that.
+
+[SPEAKER_01]
+There are like FEMPL codes all over the world. all over the internet and we can start from there but basically all it takes is like to make any app a device owner app all it takes is like six lines of code in the manifest five to six lines of code in the manifest most important thing is there's a permission that is called bind device admin so that is what it basically makes it as a device owner the thing about the device admin is it has to be installed during the phone setup
+
+[SPEAKER_02]
+Ah, I see. And so that's one of the limitations.
+
+[SPEAKER_01]
+And that is how they're safeguarding. Android is actually safeguarding it. Which makes sense. Like I cannot install once the phone is set up. I cannot install. It needs to be installed as part of the phone setup. And then you have a bind service and the bind service goes to the device admin receiver. And from there on, we can do whatever we want to do. But this is a permission that we give as part of the manifest file. And basically we build up the QR code. Like the way I defined it is I build up a QR code and as part of the setup on blue screen or the white screen, the very first screen that you see that says next on the side, not on the next button, but on the side, tap it like six times and a camera will either install or if the camera of QR app is already installed in the phone, which comes by default in all the new Android devices.
+
+[SPEAKER_02]
+device is pre-installed just to back up this is when you are trying to install the google sorry the device owner app owner app so how does it look like so when i like usually when i install like when i'm like wiping my device right google takes you through a bunch of steps like oh go next language blah blah you know wi-fi and all this
+
+[SPEAKER_01]
+in this is this like a custom setup or can you insert at one point so there's an insertion point so the very first screen that you will see which says we are setting up the phone press next correct there click on the empty space six times And a camera will open where we can scan the QR code.
+
+[SPEAKER_02]
+Oh, I see. And this is all built in. You don't have to do anything. This is Google's mechanism of setting up a device on an existing Android device.
+
+[SPEAKER_01]
+Yes. And we scan the QR code. In the QR code, you can pass whatever parameters you want to pass, like enterprise name and all those things. and then there are certain mandatory fields basically saying that okay this is the device owner app this is the location of the apk this is my ah i see okay so this qr code embeds information that's needed by uh the phone to understand what how to set these things okay and then that installs the app and now the app installs it app can now go to the internet and can do the rest of the provisioning on its own so In nutshell, we can provision the whole phone with one QR code.
+
+[SPEAKER_02]
+Okay. So I have this QR code. I scan this QR code. You do all the provisioning it installs, and it just goes into Android. And at this point, your app will be started as a foreground service, essentially. The app that you have claimed to be the device owner app.
+
+[SPEAKER_01]
+Yes. So we can have a service out that runs in foreground and that form.
+
+[SPEAKER_02]
+You talked about where you have like location pings and all this thing that you needed for as the company owner of the device. This app now holds all that logic where you can start. Yes. Interesting. Okay. That's pretty cool. It sounds like there's also like some interesting things happening in the backend to set this up, right? Yeah.
+
+[SPEAKER_01]
+Yes, so there are a couple of options, right? So the way I did it is I did it from Oracle Cloud.
+
+[SPEAKER_02]
+So this is also something funny you told me. I've never heard of that as being a solution, but like... Like the Amazon Cloud front, right?
+
+[SPEAKER_01]
+Every cloud basically, say Amazon, Oracle, etc., they charge you for the network outbound. If I'm holding my APKs and I want people to download them, then there is a network out that is...
+
+[SPEAKER_02]
+getting correct correct so if i have like an s3 or s3 setup or in azure or like something where i'm hosting in apk which i obviously want to add some level of authentication to because i don't want to like have it outside i will be charged for that throughput yes that's how it works okay that makes sense and there's a free limit too right yeah they're like the amazon gives like the cloud front gives like 50 gb oracle gives 10 tv 10 gb 10 tv 10 tv as in terabytes yeah Because I know Oracle database is really expensive.
+
+[SPEAKER_01]
+The databases are expensive. Like for example, like for my use case, I didn't even put a credit card there.
+
+[SPEAKER_02]
+Oh, wow. Okay. So you just have an APK hosted in this place.
+
+[SPEAKER_01]
+And not just mine. I can even host like other APKs out there and I can put them on Parf. Parf are basically what they call the pre-authenticated request.
+
+[SPEAKER_02]
+Okay, so you're probably providing a link. Your QR code has a link which has a PAR code or whatever. We're not dealing with the whole authentication thing.
+
+[SPEAKER_01]
+Exactly. At this stage, this is just installation of the app, right? If someone else is installing, it's okay. But again, if you want, we can have another setup. At the runtime, the QR codes generate and generates a par at 13 and all. So personally, I didn't want to go to that complexity. Like they have a similar solution to what we have in AWS S3. So there are also buckets you can put the policies out there and it works out there. So that is there for the hosting part. For the management part, the setup part, right? So when the enterprise is going to come, they are going to sign up. on the page that, yes, we want to leverage the service. So as part of the sign up, there are things, the configuration, like what all policies you want to have on your phones. So we stored that.
+
+[SPEAKER_02]
+This is the part that you're saying that Google makes it easy with the device policy manager stuff. This is like that aspect of what you need to be doing.
+
+[SPEAKER_01]
+No, no, no. Google, what Google makes it easy is basically managing the device. Like you have a policy, applying the policy on the device. Google does not come into the picture of managing or how the policy needs to be written or the user interface and all those things. Those are still handled by the EMMs. So again, coming back to the setup. So the very first thing the person is going to come if they're going to create the fine up. Once the signup is created, we ask the user, okay, what are the policies you want? And those are stored in Dynos. The next thing we do is we want to charge the users. So we create a Stripe customer. So Stripe is our payment partner to make sure that no user is actually over-consuming the APIs to the limit. So as part of the user signup, we create the usage plan. We create the API key for the user in Amazon Gate. API Gateway at runtime. And that API key is what we actually added in the QR code.
+
+[SPEAKER_02]
+Oh, interesting.
+
+[SPEAKER_01]
+So now, when the phone goes back to the API it calls back, we know exactly what the user is, what are the limits it has, and whether it is not overcharging its own limits and all.
+
+[SPEAKER_02]
+This is almost like identifying the device and now you're fingerprinting it to the point where now you can start to enforce all the policies that you otherwise want.
+
+[SPEAKER_01]
+And what we have done so far is we have fingerprinted the tenant or which enterprise it is. And then from there, because we have access to IMEIs, so we basically just can from then on roll to IMEI because that is not changing.
+
+[SPEAKER_02]
+So you no longer need, like, users, yeah, forget the user credential. At this point, you have, like, fingerprinted the device.
+
+[SPEAKER_01]
+And we can actually, in real time, see what all apps are installed, what packages are installed, each and everything. Okay, so that, like, connects the story.
+
+[SPEAKER_02]
+And you said this is serverless? Like, all this stuff is serverless?
+
+[SPEAKER_01]
+Yes, we manage nothing. Like, literally for the last four or five months, I've been charged, like, zero dollars.
+
+[SPEAKER_02]
+Oh, this is pretty cool, I guess.
+
+[SPEAKER_01]
+Yes, and, like, with the serverless pieces, like... How complicated was that? The serverless, like AWS was pretty straightforward in my opinion. Like the reason is like we have, the AWS provides the capability to write Lambda in Java, Python, Go, Node and all. Like any, like any language that we know, we can just write the Lambda. They get natively integrated with the API gateway and API gateway does all the rate limiting usage management, And now you have a Lambda. From the Lambda, you get integrated with the Dynamo. And that takes care of the end-to-end process. And even the QR codes, you can just upload it right to the F3.
+
+[SPEAKER_02]
+That makes perfect sense. Okay. This is awesome. I learned a lot of stuff that I've otherwise probably never have realized. Because as most Android developers, and probably a lot of listeners, they're like app developers as in... They build apps that you deploy in the Play Store. Very rarely do you have device management. So this is a good insight that I've got. So thanks, Prabhjad, for sharing a lot of this information. Any last thoughts? Thanks for hoofing me.
+
+[SPEAKER_01]
+And I will probably get an Android phone for you.
+
+[SPEAKER_02]
+So that's my learning. I was like, if, I mean, I know Pravjot well enough where like, if he's giving me a gift, I'm going to be suspicious. But if it's a mobile device, now I know exactly why he's giving me an Android device. So if people wanted to reach out to you, do you have like any account or profile that you want to share?
+
+[SPEAKER_01]
+Sure. They can reach out to me on Twitter.
+
+[SPEAKER_02]
+And your handle, if I remember right, is Singh Prabhjot. So that's at Singh, S-I-N-G-H underscore Prabhjot. P-R-A-B-H-J-O-T. Let me put this in the show note in case you have difficulty spelling that out. But okay, I will put that. Thanks a lot for all the information. And people, if Prabhjot ever sends you a device, don't ever accept that device. Thank you all for listening and I will catch you all in a future episode.
+
+[SPEAKER_01]
+Thank you.
+
+[SPEAKER_02]
+That's it for the show, folks. Fragmented is hosted by Don Felker and me, Kaushik Gopal. We edit and produce all the episodes here on Fragmented. You can find more Fragmented episodes at fragmentedpodcast.com. Thanks for listening and we will catch you in the next episode.

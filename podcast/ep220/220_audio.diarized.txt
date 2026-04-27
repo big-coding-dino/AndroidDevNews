@@ -1,0 +1,256 @@
+# ep220
+Podcast: Fragmented Podcast
+
+---
+
+[SPEAKER_01]
+Welcome to Fragmented, a software developer podcast where we talk about building good software and becoming better developers. My name's Don Felker. And I'm Kaushik Gopal. Welcome to the show. Before we get started here today, I wanted to tell you about the relaunch of androidjobs.io. Android Jobs is a job board that I launched many years ago and I just recently relaunched it with a brand new design and on a brand new platform. If you're looking to hire an additional Android team member or you know of somebody that wants to hire an Android professional of any sort, that includes developers, designers, anything of that nature, then please let them know about androidjobs.io. All job postings are free at this time during the early release phase. Eventually they'll be paid, but right now they're all free at the time of this recording. So please go to androidjobs.io and you can post a job for free. Or if you're looking to see what other jobs are available, you can also go there and plug your email address in. And we'll start emailing you here very soon, letting you know weekly about the new jobs that are available on androidjobs.io. Again, check it out at androidjobs.io. Everybody, welcome back to the show. It's been a couple weeks since we've had a guest here in the show. Unfortunately, Kaushik's not here with us. Hopefully he'll be returning soon. But in the meantime, I am very excited to be joined by today's guest because it's a topic that I've been wanting to talk about for quite some time. It's around web, but it's also around mobile. So it's something I'm very passionate about and excited to talk about it. So today I have Jay Ohms on the show. Jay, welcome to the show. Thanks. Glad to be here. So I connected with you a while back while I was kind of doing some research around some... Ruby on Rails stuff and found out that you happen to work on a library that we're going to be talking about today. But before we dive really into that library, its origin, why you want to use it and all that kind of good stuff, if you could explain to the audience for folks that aren't familiar with who you are, maybe where you work, your background, kind of how you got to where you are, and then we'll take it from there. Yeah, sure.
+
+[SPEAKER_02]
+Yeah, so I'm an Android programmer at Basecamp and been there about six years. And before Basecamp, a long time ago, I also had a web background, a bit of web background. And it's been kind of an interesting from web stuff to Android. And now at Basecamp, it's this interesting hybrid of web and mobile stuff because of the nature of the company. Yeah, actually my very first Android project, believe it or not, was in college in 2007 with the original SDK when there weren't any devices yet. It was just the emulator back in the day. So I forget what version it was, 0.6 or whatever it was.
+
+[SPEAKER_01]
+Oh, real early then. Yeah.
+
+[SPEAKER_02]
+Yeah. So I did that. And then, you know, then I graduated and then there weren't really jobs, career paths on mobile yet. So I just kind of put that aside, did web stuff for a while and then made my way back to Android.
+
+[SPEAKER_01]
+And so you've been at Basecamp for six years now. Is that what you said?
+
+[SPEAKER_02]
+Yep.
+
+[SPEAKER_01]
+Yep. So for folks that aren't familiar with Basecamp, what is Basecamp really?
+
+[SPEAKER_02]
+Well, Basecamp, the product, is a team collaboration software tool. It's a collection of tools. So it's got chats called campfires, to-dos, message boards, docs and files. So it's a collection of tools to stay in communication with your team, which is great for remote working, which happens to be great the last...
+
+[SPEAKER_01]
+year or so yeah it does definitely the way that i know about um base camp was of course using the product i remember using it very early on but it was actually um i learned about it because i got into ruby on rails development uh probably version two or three and um and ended up just following the you know the creator of ruby on rails which happens to be i think that's your cto right that's david hannemeyer hansen right yep yep So I think that's how a lot of people end up bumping into Basecamp unknowingly is just seeing things through David or the other founder, Jason Fried. And they've written books and so forth and all kinds of stuff like that. But that kind of leads me into today's topic is I've been a big... user of rails for years just simply because for me it works it's if i want to build a web app i can literally scaffold something up and i can be focused on business problems in minutes and not have to worry about plumbing and it's one of the biggest reasons i love rails is it's just super productive i enjoy developing in it And one of the things that I've always been a proponent of, especially and very vocal of in the mobile community, is that I've always felt that web was going to win eventually. Now, what does that look like? I don't know. I just always had this inkling inclination that web was going to start taking over. How would that be? I don't know. And when, again, I'm always working in Rails, and I ended up bumping into something very recent that came out called Hotwire, which kind of just changed the paradigm. I mean, it's not really super complicated from what I read and understood, but it kind of brought back a lot of the old principles that we had a decade or plus ago. and made them more feasible now with internet speeds and so forth. And that led into some stuff with Android that you can be done with Hotwire. And then I bumped into your name from a library that I found on GitHub. And so here we are, I wanted to talk to you today about Hotwire, about the integration with Android. and maybe kind of talk about things you can build with it, why you would want to build with it, you know, some of the limitations, if there's any benefits, cons, all that kind of stuff. So let's just kind of start from the top.
+
+[SPEAKER_02]
+Yeah, yeah. What is Hotwire? Yeah, Hotwire is an umbrella of a few different technologies, and Hotwire stands for HTML over the wire. Yeah. And so it's a mindset that we have at Basecamp. Whenever possible, we like to render UI on the server, which is quite different from a lot of web development approaches where JavaScript is doing all the work on the client and the server is simply passing data back and forth. So very similar to, I mean, mobile development, which is typically the case. You have tons and tons of code and business logic on the client in a lot of setups. I guess a bit of background is helpful at Basecamp. Basecamp is primarily a web company. It's background. It wasn't until I actually arrived that we formally formed a proper mobile team with Android and iOS. We had had some apps available before that, but it was just random people in the company were working on it without a ton of expertise in the area. So Basecamp was kind of winging it a little bit before we started having a dedicated mobile team. So we were kind of late to the game as far as that goes. And one thing you mentioned is being productive in Rails. And we have some of the most experienced Rails developers around at Basecamp since we drive a lot of the features that actually end up in Rails. over the years. It's amazing what just a handful of Rails developers can do compared to the mobile side of things. It really is staggering. Part of that is just the way the database layer, the modeling, the You render UI. It's a collection that works together. And it feels on mobile, it feels more so that you're kind of stringing things together a little bit. On mobile? Quite often. I mean, things have improved so much with Jetpack and so many other different technologies. But you're still kind of putting it all together yourself. And every Android app is going to look... very different from the next Android app. That seems to be pretty common based on my experience. Anyway, so that's the background about the type of company we are. And so Basecamp, the product, is a really large app. It's a really large web app. We have something somewhere close to 200 screens throughout the app. So that's everything from product features, like admin screens, payment screens, just a lot of different stuff. So you can imagine how large of a mobile team you would need. to build fully featured apps to do that. We would be huge. And Basecamp has never had more than two Android programmers and two iOS programmers at the same time.
+
+[SPEAKER_01]
+Oh, really?
+
+[SPEAKER_02]
+Yeah. And I don't think ever more than probably half a dozen Rails programmers at the same time. Yeah. So, yeah. So we've always done a lot with a little. And our approach with Hotwire is the culmination of our approach over the last five or six years, trying to get to a point where we've standardized and dimensionized everything we do to merge web and native more seamlessly. So... I'll talk a little bit about some of the parts of Hotwire just briefly. There's way too much to give a comprehensive overview, but just so people have a little bit of a taste. The main piece of Hotwire is turbo.
+
+[SPEAKER_01]
+Okay.
+
+[SPEAKER_02]
+Turbo is, think of it as a JavaScript library in your web app. And it is pretty much all about navigation. So it brings a lot of single-page application information. features to a Rails app or any app, really. But I just want to say Hotwire will work with any web app. It doesn't just need to be for Rails. But we have built Rails-specific extensions for for Hotwire. So for example, we have a demo app for our mobile app, and that's just built on a tiny web server. It's not a Rails app at all, but it still demos using everything. So Rails is kind of the... It was built in the Rails community. It's going to be part of a future version of Rails by default. They're not tightly coupled, but their relationship is strong there. Turbo is all about navigation in a single page application kind of way. So instead of every time you click a link on the web, what Turbo does in the background is it intercepts every link request. it will go fetch the contents of that request and it will update the webpage with the new contents in just swapping out the body with the new contents. So you're not actually using the browser's... technologies to navigate links turbo is handling all that on its own and that's a very that's a very simplified version of what it's doing but it allows us to do a lot of things like handle handle form submissions in uh more advanced ways handle redirects in particular ways There's just a lot of things that Turbo gives us. On the web, it improves speed. You don't have to... The browser isn't having to reparse your styles and CSS and other JavaScript assets. You're staying in the same page context. But you get all that for free, basically, just by installing Turbo in your web app. And then Turbo also lets you have... some hooks on the mobile side, which is a huge, huge benefit as well. So that's Turbo. We can set that aside for a moment. And then there's also Stimulus, which is another library under Hotwire. And Stimulus is a JavaScript convention-based library that lets you progressively enhance features for your web app. So we're very big believers in progressive enhancement at Basecamp. By default, most of our features work just by typical... If you turned off your JavaScript, most of the features would just work with normal link navigation, form submissions, everything. But Stimulus lets you sprinkle interactivity on top of your... DOM in a convention-based way. So it's really powerful, but that's what Stimulus does. And then there's Strata. And Strata is the final piece. And this is a mobile, specifically for mobile. And Strata is a bridge layer between web and native for communication. Okay. So that library is not currently open source yet, but we're going to do that probably later this year. Okay. So those are the three main, main parts. So I know that's really high level and people are probably not clear on what it is yet, but let's go to turbo. So turbo is where it gets really interesting with web and mobile. Okay.
+
+[SPEAKER_01]
+Turbo is the part, just to recap, is where it's replacing part of the actual HTML DOM when I click a link or something like that, right?
+
+[SPEAKER_02]
+Yeah, correct. So we have native libraries for Turbo for Android and iOS. And they are libraries that control the navigation in your app using the web and also using native as well. So let me give an example. So say you've got a Rails app with Hotwire installed and you've not done anything with mobile at all yet.
+
+[SPEAKER_01]
+So you've got a regular Rails app, right?
+
+[SPEAKER_02]
+Rails app and you've got Turbo on there. So if you take the Turbo library and plug in a URL to point to your web app...
+
+[SPEAKER_01]
+Let me interject here. Is this a web library? Is this a mobile library? Or where are we at here?
+
+[SPEAKER_02]
+It's in Android. I'm talking about the Android library here. So let's say we've got a demo app in the library that you can see that shows the structure of the app. If you were just to replace in that demo app your web URL with the demo apps, it would just work. It would just work. You would load your initial screen and every time you visited a new link, it would pop a new fragment onto the stack. It would show that web view and it would create a native backstack like you would expect on mobile. If you're just using a straight web view, you're not going to get any of those features. If you just had a single activity with a web view in it, you're not going to get the same type of backstack.
+
+[SPEAKER_01]
+And I'm kind of like mind blown here. So you're saying just from my own sanity, I have a Rails app. It's got Hotwire installed. I decided to take your, I guess this is like a Turbo Android library. Yep, Turbo Android. And then I take the demo you have. I have my Rails app. It's running my own domain or whatever. I clone that repository that's basically, from what I understand, is going to build me an Android app. But inside of there, I say, hey... internally i said hey there's a url and i said hey you're going to basically run off of this url and i'm going to point to my rails app and then since it's running hotwire there's stuff in there that we'll get to but it's going to intercept all these link clicks through turbo whatever and then start creating that whole back stack and all those everything for you is that what you're saying yep yep that's amazing
+
+[SPEAKER_02]
+Everything about the Turbo library is URL-driven. The great thing about the web is it's URLs. You've got a permalink for everything, which is great. We've lost a lot of that on mobile. So if you're running a hotwire app with Turbo, Android, then you're going to still respect that URL-driven nature of navigation. And the way we do that is a path configuration file that's just JSON. So what that looks like in the Turbo library. So your Android app will have a path configuration file. We actually recommend having a path configuration file that's remote, like on your server. That way you can update it at any time. and you can actually modify your app's behavior remotely. So for example, one thing here, by the way, too, is we don't think it's necessarily a great experience to just have your web app, just plug in your URL into the Turbo Android library and ship that app. You can totally do that. But there are going to be areas of your app that are... really frequently used, like your home screen, like the landing screen of your app, or maybe some interactive screens, you should probably just write those natively if you want the highest fidelity, the best experience on those screens. So Turbo Android and Turbo iOS make it really easy to decide what screens are native and what screens are web. So... the path configuration file lets you say what URLs point to what fragments on Android or view controllers in iOS. Okay. So, for example, let's say you have a... Let's say you have... Let's say your web team ships a new feature, and the URL is... literally slash feature. That's the path to the URL. So that shows that if you're running Turbo Android, then that feature will just show up in the app because it's a web app. And when you go to the slash feature URL, it will just load a web fragment by default. But now say the Android team wants to, they decide that it's a feature that's important enough to make native. you would create a native fragment in the app, and then you would point the URL slash feature to your new fragment, and then it would just work. So every time you tap a link or a button that goes to slash feature throughout your app, it will automatically load the correct fragment, and that will be native. Let's say you shipped a bug in the native screen. You could simply just update your path configuration file on your server and point it back to the web fragment. And you could do that seamlessly.
+
+[SPEAKER_01]
+That would be a temporary fix until you fixed your bug or whatever and got your new fragment out.
+
+[SPEAKER_02]
+Yeah, I mean, that's not necessarily a common use case or anything. But yeah, I'm just demonstrating how it can be used. And what happens a lot of times at Basecamp is we try not to create a lot of dependencies between teams for shipping new features. So a lot of times the web team will ship new things and then we will come in later... or soon after, and we might replace that web screen with a native screen. But customers were able to use the web version right away. So let me ask a question.
+
+[SPEAKER_01]
+How does that work? And maybe I'm jumping ahead. If I am, please let me know. Let's say I got that situation where you want to replace, you know, the home screen of the app because it's the most popular and we want the most fidelity, as you rightly said. I guess at that point, I probably still need an API. I still need a way to interact with that. Maybe I need an API key, authentication tokens or stuff like that. Am I able to kind of bridge that gap between maybe I've already logged into my app through the web portion? Is there a way I can kind of hook into, hey, give me that authentication token that's buried down somewhere in there or so I can talk to the API or how do you handle that kind of stuff?
+
+[SPEAKER_02]
+Yeah, you can handle a couple different ways depending on your setup. We actually have native login screens in our apps. So those are handled through native screens, native APIs. and then one of the APIs will return a cookie value that we can set in the web view so that the web app is authenticated. You could also do that in the reverse. You could authenticate through the web, and you could get the authentication cookie that's being used for authentication for API requests if you wanted to. It really depends on the setup and what you're building and what's important to you. The key thing is that I think some things I've seen as Rails devs start using the Turbo iOS and Android libraries. Oh, I didn't know I had to write... some Android code to use this. But you do. The whole point is to leverage the web to allow the mobile teams to, like mobile developers, to gain a huge productivity boost. and get features for free. So you still do need to have Android skills or someone on your team or iOS to do that. So using native... I actually spend most of my day writing native code. I do work on the web app as well when necessary, which is semi-frequent. But to build robust apps, you still do need... You would still want to write native Android code. The big thing is you don't need a massive team to do it. And that's, I think, the big pitch. You can have a much smaller mobile team, make the really important parts of your app native, and lean on your web app for other things. Does that make sense?
+
+[SPEAKER_01]
+No, it completely... To me, as someone who's a very... A big proponent of the web, this makes absolute sense because I can now ship the feature in the web. It just shows up and starts working on the mobile clients. Yes, I understand it's not native. I get it. And I think that's the thing that needs to be stated here. It's not native. It might act like native with the backstack, which is fantastic. But it allows me to kind of get that feature out there. And then I can focus my time, my native development skills on the core components, which are going to give me the most bang for the buck, which is going to be the most valuable. It's kind of the question I actually have now is, do you have any set of heuristics that you follow to determine what screens should be native versus what should not? Is there any guidance you can give? I know it's going to be generalized. Yeah.
+
+[SPEAKER_02]
+Yeah. For us, to be honest, it's a gut feel for us. But I will say, we've gotten a lot better as a company at shipping web screens that look natural on mobile. The Hey email app is a great example of that. Yeah. Unless you're really trying to dig in and figure it out, you'd be hard-pressed to tell what screens are web and what's native.
+
+[SPEAKER_01]
+Oh, really? That's cool.
+
+[SPEAKER_02]
+Yeah. And it's not a thing that feedback that we get from customers. Hey, why is this screen web and this screen native? We literally never hear that feedback. So we've gotten pretty good at... Because really, unless a screen is quite interactive... a lot of screens are just displaying information. And those screens are the ones that are perfectly fine being web. The more interactivity you have, the more I think you need to think about converting that to a native screen. If you want to have gestures, if you want to have swipeable rows, that type of stuff, you're going to need to do that natively. But there are a lot of apps out there that have screens that you just need to present information and maybe have a couple buttons on there. And those take you to other screens. So those are the ones that I would say keep web. And your landing screen hopefully should be important. If your landing screen isn't important in your app, you may want to consider redesigning your app. Yeah. But that's always a great one to make native just because you can cache the data in a way that you open up the app and it's all there even if you're offline, for example. So that would be another area. When we first started, all these technologies were extractions from building Basecamp and Hay. and figuring out what worked and what didn't. And I always had the tendency to want to nativize everything. And I'm a mobile developer. That's where my bias is. But as I've been here longer, the thing that I've realized is actually it's worth investing in making the web screens look more natural on mobile. We can... change them immediately on the server. We can fix bugs easier. We can support them for the long term easier. One thing at Basecamp that we do is we have apps from 15 years ago that we're still running for customers that we haven't added any new features, but we're still running them. And so we're very much in the mindset of... building apps that we can maintain for the long term. And having dozens and dozens or hundreds of screens in a mobile app is really hard to maintain, especially with small teams.
+
+[SPEAKER_01]
+I've been there. It's very hard.
+
+[SPEAKER_02]
+Yeah, yeah. So, yeah, so it's...
+
+[SPEAKER_01]
+If you want to have that seamless integration, to me, it sounds like you probably have, and I'm just guessing here, at Basecamp and at Hay, you probably have a design language that you follow on both the native and web platforms. So it looks seamless to the end user that... this native button looks exactly like the web button. Is that how you kind of help bridge that gap for the end users so they don't see this battleship gray button versus some purple button on the website?
+
+[SPEAKER_02]
+Yeah, Hay is there. We were very intentional about that when building Hay. Basecamp 3, which is the current version... goes back five or six years now. And so we weren't as disciplined about that then, but we've gotten a lot better and we're actively working on that now. So bringing all the Hotwire features... back to Basecamp 3. Really, the first opportunity we got to use everything fresh was with Hay. There's nothing like a fresh start that lets you reevaluate how you're building things. start with a clean slate. We're in the middle of bringing a lot of the design cohesiveness back into Basecamp. That's our goal. You'll see that the designs are very similar. We worked with the web team and the mobile teams together to have... UI paradigms that are very similar. But also, it's not like the Android app looks like the iOS app. We customize it so it looks natural on the platform as well.
+
+[SPEAKER_01]
+Okay. Speaking of platforms, one of the questions that I had here too is, since I have an Android app and it's running native code, can I subscribe and have native notifications for my mobile app? Is that possible?
+
+[SPEAKER_02]
+You would have to do that all natively. So that would be something that we don't give any tools for that in Hotwire or anything. So yeah, those are the things too that that's part of the reason why you want a native app. There are all these hooks into the OS and different things that really make a native app feel natural on the platform. And Hotwire... And Turbo do not give you those hooks. Google does a great job giving you tools to build those. And a lot of those setups can be quite complex. So what's your push notification provider? We're fine saying that all the hooks into the OS, you need to write native code for that, just like you normally would.
+
+[SPEAKER_01]
+Okay. So I know that I purchased a Hay account a while back, and I get native notifications. And as you had stated, Hay is a hotwire-based app. How does that work from the Android perspective? It's going to be native, so you've written that native notification code. And when someone... I get a new email, perhaps... and I tap on that notification, how are you directing the user to go to the correct screen if it's URL-based? How does that work?
+
+[SPEAKER_02]
+Yeah, it's quite easy. So you're going to launch an intent with the URL in there. It's going to open up your activity and it will turbo... You do need to write the code to say, hey, is there an intent URL provided? Just like you normally would in an activity. If there is, we just... Literally, it's a one-line call. You just call navigate to that URL. And Turbo, the library is going to take care of navigating to the correct screen, whether it's web or native, based on your path configuration setup.
+
+[SPEAKER_01]
+Nice.
+
+[SPEAKER_02]
+So it'll automatically do that. It'll add that URL into the backstack if you want. It's really easy. If you wanted to clear the backstack before you navigate it, that's super easy as well. I should say Turbo Android library is built on Google's navigation framework library. It is a wrapper around that. So Google has a capability of associating fragments with URIs. Mm-hmm. There's a deep link feature for the navigation library. And what you're doing in the path configuration file is actually assigning one or more URL paths to a URI that maps to your fragment.
+
+[SPEAKER_01]
+Okay.
+
+[SPEAKER_02]
+So the nice thing is you're going to have a single activity architecture with the navigation library. The navigation library, well, you're going to use Turbo Android directly, but it is just sitting right on top of Google's navigation library. And there's lots of things that we do in there to make URL navigation dead simple and automatic. Google's navigation library, one of the criticisms has been, it felt very rigid. You have to define, okay, this screen maps to this screen. And you essentially create these hard links between one screen to another. When you have a web app that URLs can come from anywhere and navigate to anything, that doesn't work well at all. So Turbo Android takes care of mapping the URIs to the fragments and creating the back stack and all that stuff.
+
+[SPEAKER_01]
+That's nice. So it kind of simplifies a lot of the approach for you that you don't have to do a lot of that plumbing work right out of the gate, right? Yep. How does this... Okay, so to kind of rewind this again to take it to a simple approach, we have the Rails app we talked about. It's got Hotwire. I've replaced the URL. I've got it up and running. Things work. Maybe I've built a couple of... I've replaced my login screen so it's native, my home screen, if it's whatever, to be native. And I got that working and I got my notifications working. What about the kind of like, I call it the Chrome of the application, like the action bar or anything like that? Is there anything that's, do we get an action bar? Do I need to worry about an action bar? Or what is even that whole scenario look like? Or is it just kind of wild west? You could deal with it on your own.
+
+[SPEAKER_02]
+Yes, the answer is all of it. By default, the Turbo Android library will give you a toolbar on top that has the back arrow for navigation or the up arrow, whatever they call it now.
+
+[SPEAKER_01]
+Yeah. And so by default, it will give you the toolbar.
+
+[SPEAKER_02]
+It will display the title. It'll grab the title from the web view for that page and put that in the toolbar. And so it will look like an Android app. And so on native screens, that's all you. Yeah. you're going to have whatever UI you want to see there for native fragments. Beyond web ones, you can also fully customize it. So you can say, well, I actually don't want... Well, an example is we use scrolling app bar layouts for some of our screens. So when you scroll the web view... it will collapse the toolbar. So we actually swap out the toolbar in our web fragments a lot of times. But that's dead simple to use. All you do is include a layout file that's provided from the library in whatever Chrome you want around it.
+
+[SPEAKER_01]
+Okay. And then if I wanted to add anything to the toolbar, is that something that's easy to do or difficult or what?
+
+[SPEAKER_02]
+So this is actually where Strata comes in a little bit. So, yeah. So Strata is, so we've talked about writing all native screens or all web screens. Strata lets you have kind of the best of both. So let's say you have a web screen. I'll give a simple example first. So a standard paradigm for a lot of Android apps and iOS apps to have, if you've got a screen that's a form, in the top right corner, you'll have a submit button for that form up in the toolbar. You can't do that if you just have a web screen because you've got a native toolbar. You can't put a submit button up there. What Strata lets you do is mark up, add attributes to your DOM elements. your web screen and when that screen loads it will find it will it will see the markup and it will find components that you've registered in your android app so for example in my android app i say i support a form component and i know that form components have a submit button So when Strata on the web and the screen loads, when that screen loads, Strata is going to say, hey, there's a form component on this screen. And here's the details about that form. So for example, say here's the title of the submit button. And it will pass a message to the Android app. So let's say the title of the submit button is post. So the form component on Android will add a toolbar button and give it the title post. When the user clicks that, so you're on a web view screen, when the user clicks the native post button, we pass the message that we received back to Strata on the web, and it will submit the form. for the button associated with the native button that we just pressed. So it'll submit the form for you, and then the form submission will submit to the server, the server will send back a URL, and then the Android app will navigate to wherever the server tells you to after the form submission is complete. So that's one example, actually a pretty simple example of what Strata does and how you can blend native and web. You can put UI Chrome anywhere. On your web screen. So for example, on Hey, we have... When you're looking at an email, that's a web view. But at the bottom, there's an action bar that has some buttons. That's all native. And when you tap that, that's just... When you tap it, it tells the web, Hey, I tap this button. The web will perform whatever action it needs to. And then it will... perform a navigation or whatever your web app is telling it to do. One thing I should say Strata is great for is the quickest way to break the illusion of a web app not feeling native is if you have pop-ups and menus on the web. That is a perfect way to break the illusion of the screen not feeling native. So for example, and hey, whenever you tap, whenever we show a button, or sorry, whenever we show a menu, Strata, we actually do that through Strata and show a bottom sheet or show a pop-up. And so you get those native dialogues and it feels very native. But... We don't have to have any business logic in the Android app at all. I think that's one of the really big, powerful things about our approach is we have very, very little business logic in our apps. Because every time we have a web screen, that was rendered on the server. And if we want to add native features, Strata is just describing UI to show. And the Android app doesn't need to know any business logic because the server is already deciding whether that button should be visible, what users have access to it, down the line. So I think that's one of the powerful things is keeping your business logic... on the server is a really powerful mindset.
+
+[SPEAKER_01]
+As a mobile developer, have you found that to be challenging? I think the reason why I ask is because I feel like for me, it's just natural to want to just solve something in code. Have you had to change your mindset around how you're developing maybe about, hey, oh, I need to actually handle this on the server versus on the client?
+
+[SPEAKER_02]
+Yeah. Yeah. I have had to change my mindset for sure. You know, like I said, like I mentioned earlier, I have a bias to wanting, want to write things natively, but I've... seeing how much easier it is, for example, in Rails, to keep business logic there and keep the Android app, the client, as simple as possible. There is that tension there of what to do. Certainly, the more native screens you add, the more business logic you're going to introduce into the app. Which is okay, but I think, for example, I don't think it makes any sense to write admin-style screens fully natively, where you're getting JSON and you have to add all this logic and tests around data that the server already knows about. And the web screen is probably already there already. So those are the types of things where, we don't spend any time converting those to native screens because they're the screens that you look at once every few months maybe for a typical person. And a lot of times they're fairly static screens. It's just options to click some buttons to change some permissions or whatever it is. Having to do that all natively is a ton of work.
+
+[SPEAKER_01]
+As you're speaking, I'm actually looking at the Hey app and it's actually kind of amazing. I'm seeing that I'm opening up an email and I'm seeing the, I don't know what you call it, but it's like an action panel down at the bottom where you can reply and have some more options. And I clicked more and boom, a bottom sheet like thing pops up and it's got a bunch of options and... You're right. To me, I don't feel like I'm in a mobile web app at all. I really just feel like I'm in a native app. And I think that's probably surprising.
+
+[SPEAKER_02]
+Yeah. And on that screen, zero business logic in the app, zero.
+
+[SPEAKER_01]
+And that's just through Strata too, right? Because you're just intercepting those events and, hey, these buttons just opened up this bottom sheet and then it's just going to display. How do you determine what things go inside of that bottom sheet?
+
+[SPEAKER_02]
+Well, that's really... In that example, the UI was already built on the web. And so that was a menu that was already available when they were building the product. So it's literally the same menu on the web has data attributes on it. for Strata that just says, hey, this element or collection of elements represents a menu. And so when this appears on the screen, let the Android app know and display a menu component. And so built in the Android app is a menu component that just takes JSON and displays menu items. It doesn't know anything about what those menu items represent.
+
+[SPEAKER_01]
+Oh, wow. So it's completely configurable from the server technically then, right?
+
+[SPEAKER_02]
+Yep. So say, for example, we want to add a new menu item to that screen. All server. It'll just be added on the server and it'll just show up in the Android app.
+
+[SPEAKER_01]
+You might just send down like an SVG icon, some text, and then what happens when it's clicked on. And then it's just a URL and it just goes from there. Yep. It's amazing. Yeah, because I can't even tell that this is any web stuff. I mean, the only way that some people are like, well, how can you even tell that the email is web? And the best way I always say is, well, just pinch and zoom. You can see that it zooms in like a web view. Yeah.
+
+[SPEAKER_02]
+Well, the funny thing is that we typically don't let you zoom in. But that was specifically for that screen. Email is something that a lot of people do want to zoom in on because a lot of emails are formatted terribly. So that screen, we actually do let you zoom in on. But all the other web screens, you cannot.
+
+[SPEAKER_01]
+Okay, so that's configurable then too, I take it. You can just tell which ones you can zoom or not zoom in on.
+
+[SPEAKER_02]
+Yeah, that's actually a Strata component that we built. that says whether the screen should be zoomable or not.
+
+[SPEAKER_01]
+So when I'm looking at, for example, inside of my settings and I go to, let's just say, count setup or something like that, it says edit your profile and I open that edit your profile. I'm actually looking at a web view at that point then too, huh? Yes, you are. Yep. Love it.
+
+[SPEAKER_02]
+Yeah, and Turbo Android has support built in for bottom sheets as well. So say you want some screens to just be viewed as a bottom sheet, like a web bottom sheet. That is very easy. All you do is point your URL to a web bottom sheet fragment instead of a web fragment. So there's some nice things like that that we've added in there. Wow.
+
+[SPEAKER_01]
+That's absolutely amazing. And so you said Strata is not something that's open source yet, but later on this year, you're hoping that you and your team will be able to get that out?
+
+[SPEAKER_02]
+Yep. Yeah, it's mostly done. But open sourcing, getting over that last mile is quite a bit. But we've been using it in production. you know for the last year uh in hay and it's been great we're bringing that over to we had this pseudo version in in base camp that we were using before and um strata was a extraction from some of the concepts from base camp 3 but when we were building hay we knew that we wanted a better approach to blend native and hybrid
+
+[SPEAKER_01]
+That's really cool. So yeah, that was one of the questions I had is where's, where is this being used in a real world? But I think you've answered that already is the Hey app is probably used quite significantly. I mean, it's huge, you know, probably the biggest one out there that's using it and it's used every day by many, many people. I mean, I don't know your user base, but I assume it's large. And, um, It looks like Basecamp's going to be coming out with it. So I imagine there's other people out there using it. I've heard of a couple people implementing it on their iOS side, and I'll be diving in very soon with an Android project that I need to implement on Android, actually. Cool. So for people that have maybe some older Rails apps, and like you said, it's not required that it... your apps in Rails, but it does have a strong relationship. If I do have an older Rails app, I could simply upgrade it and then start incorporating Hotwire and start getting these features. Is that correct?
+
+[SPEAKER_02]
+That's correct, yeah. And so Rails for many years has shipped a feature called Turbolinks, which was the predecessor to Turbo. And Turbo was a rewrite of Turbolinks, given some of the new modern JavaScript APIs that are available. And so if you have older Rails on Turbolinks, the libraries will actually do a lot of this stuff as well. Our adapters that we have, our JavaScript interface between the native and website, is actually backwards compatible to Turbolinks. But you're going to miss out on features. And it's not going to be the full experience, but it will work for most apps. And then I think Turbo and Hotwire, the whole umbrella, I think will be part of Rails 7 when that comes out.
+
+[SPEAKER_01]
+And that'll come out soon. We've mainly been talking about hotwire for Android, but you mentioned this earlier on, there's actually a hotwire for iOS too. So if folks are wanting to build their iOS app, they can look at the iOS version of Turbo as well, correct?
+
+[SPEAKER_02]
+Yep. The libraries are fully written in Kotlin and Swift. So those aspects should feel natural to mobile developers. And yeah, I mean, the... It uses the conventions on each platform. So Fragments on Android and... view controllers on iOS and eventually on the Android side of things I'm starting to get a pulse on what it might look like in a composed world going forward but I feel good knowing that it's written on the navigation it's just a wrapper on the navigation framework and fragments are not required for the navigation framework on Google's end so we'll see as Android development continues to progress. But really, fragments for the web, web fragments are really just a container for your web view.
+
+[SPEAKER_01]
+That's fantastic.
+
+[SPEAKER_02]
+I should also, one technical detail that you might find interesting is so... Turbo creates a single web page, single page application, but we're actually loading different fragments. So what we do is we actually swap the web view between fragments as you're navigating the back stack. So we have a single shared web view. So you don't need to load the full page every time on each screen. So when you go from page A to page B, we're actually Snapchatting the DOM. It's put in a cache in the web view. And when you visit page B, we'll load the new contents. Turbo will load that into the body. And then when you hit the back button, it will actually load the... snapshotted contents from the previous page directly into the into the web view so it's uh super fast like that oh wow that's uh well it matters quite a bit too because that's one of the big problems with people have with web apps with wrappers is it just seems really slow and clunky and it seems like you're getting around that with this caching that's pretty cool
+
+[SPEAKER_01]
+Well, Jay, this has been fantastic. Before we hop into getting your social links, where can folks learn more about Hotwire, how to implement it? Is there any websites or anything you can point people to or anything like that?
+
+[SPEAKER_02]
+Yeah, I mean, the best place to start out is hotwire.dev. And there we point to... We have a handbook there. There's quite a bit of detail and a lot of documentation about turbo, stimulus. and strata will be coming so yeah that's where i would start and then we've got all the github repos linked we've got repos for the web for mobile um for rail stuff there's uh quite a bit if you look in the hotwired if you go to github.com hotwired you will see all the repos that are associated with the whole hotwire umbrella okay
+
+[SPEAKER_01]
+I'll add all these links to the show notes so people can navigate and check out all the resources there.
+
+[SPEAKER_02]
+Is there anything that you'd like to mention before we get going or anything like that?
+
+[SPEAKER_01]
+I'll open the floor to you.
+
+[SPEAKER_02]
+Well, if anyone has any questions about it, hit me up on Twitter. I can leave a link in the show notes. And I'd be happy to answer questions. Check out the repo. We've got a steady flow of people submitting issues and pull requests. And I guess the only other thing is we'll be hiring soon on the mobile team.
+
+[SPEAKER_01]
+at Basecamp.
+
+[SPEAKER_02]
+So if you are interested, if what we do sounds interesting to you, then the way we work, then shoot me an email, jay at basecamp.com. And I'd be happy to have a conversation and we'll be opening up job applications soon.
+
+[SPEAKER_01]
+Fantastic. We'll put that in the show notes and make sure we obfuscate your email enough so we don't get a bunch of spam. Yeah. But yeah, so we'll add that in there. And then if folks, like I think, said they want to get a hold of you, would you say Twitter is the best way or would email be the best way or how can people find you online?
+
+[SPEAKER_02]
+Yeah, Twitter either way is fine. I don't tweet a ton, but I always make a point to respond to people.
+
+[SPEAKER_01]
+Okay. We'll add a link to your Twitter. And then, of course, we'll add a link to Basecamp and to Haye as well. Jay, thank you for joining the show. Thanks for this super deep dive on everything that's involved in Hotwire and Turbo and everything. There's a lot of moving parts, but this is super interesting. As a proponent of web technologies and mobile, this seems like a very good blend and I'm excited to see where it goes. So thank you for joining us.
+
+[SPEAKER_02]
+Thanks, Dan. Appreciate it.
+
+[SPEAKER_01]
+All right, everybody. Thanks for listening and we'll catch you in the next episode. Hey folks, before you get going, don't forget to check out androidjobs.io. All job postings are now currently free during the early release phase. And if you're looking to see what other jobs are available, you'd be surprised at some of the jobs that are out there. Almost all of them are remote friendly. Tons of great companies posting there. You can sign up and get notified of new job postings on a weekly basis. Check it out at androidjobs.io. Thanks.
+
+[SPEAKER_00]
+That's it for the show, folks. Fragmented is hosted by Don Felker and me, Kaushik Gopal. We edit and produce all the episodes here on Fragmented. You can find more Fragmented episodes at fragmentedpodcast.com. Thanks for listening, and we will catch you in the next episode.

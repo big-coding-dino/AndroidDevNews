@@ -1,0 +1,265 @@
+# ep206
+Podcast: Fragmented Podcast
+
+---
+
+[SPEAKER_02]
+Welcome to Fragmented, a software developer podcast where we talk about building good software and becoming better developers. My name's Don Felker. And I'm Kaushik Gopal. Welcome to the show. Hey everybody, I wanted to take a quick minute before we get going to let you know about the new YouTube channel that I recently started. On this channel, I teach software developers and mobile developers and specifically how to become independent consultants. If you've ever wanted to become an independent consultant but weren't sure how, then this is the channel for you. I'll talk about the billing rates that you need to set, how to find clients, how to find an evergreen source of clients, how to stay on new technology trends, how to promote yourself, how to market yourself, how to get insurance, you name it. If it's around working for yourself and independent consulting and software, I'll be talking about it. Ultimately, what being an independent consultant will do for you is provide you with more financial freedom and the autonomy to work for yourself and set your own hours. This is something that appeals to a lot of people. And if it appeals to you, then please check out my YouTube channel. And you can see that at donfelker.com slash YouTube, or just check out the link in the show notes. Again, that's donfelker.com slash YouTube. That'll take you directly to the YouTube channel. Thanks for checking it out. Let's get to the show. Everybody, welcome back to the show this week. We're missing Kaushik again. He'll be back soon enough. But in the meantime, there's a topic that I've been wanting to talk about for quite a while that comes up in every single company that I worked for since, you know, working for any company in general. And that is DevOps. And a lot of times DevOps is delegated to a particular system administrator or someone who just happens to know more than another person, meaning the developer just happens to be good at it and it's kind of handed off to them. And I thought this would be a great opportunity to bring on a friend of mine who has been my basically DevOps person that I use for all of my own personal projects, as well as many other clients that I've had. I've referred him over to. So without further ado, I'd like to welcome Will Button to the show. Welcome to the show, Will.
+
+[SPEAKER_01]
+Hey, thanks man. Thanks for having me on.
+
+[SPEAKER_02]
+Yeah, definitely. So one of the reasons why I wanted to bring you on is because anytime I run into a situation that requires any type of DevOps, it could be, hey, I have something in the back end. I don't know how to handle this or how do I monitor this situation or whatever that's not developer related. I usually reach out to you and you've been my go to person for a number of years in that regard. And we've actually worked together at a couple of clients. So I think you have the most experience out of anybody I know of in regards to DevOps. So I wanted to bring you on to talk about it. But before we get into kind of like some nitty gritty, I was wondering if you might be able to, in your own words, explain what DevOps is.
+
+[SPEAKER_01]
+yeah so to me devops i think the whole concept of devops has been a failed marketing opportunity because a lot of people have this conception that devops specifically with the title of devops engineer is something that you hire someone for when really it goes much further beyond that devops itself is not really who does what, but it's how we go about the business of getting code from a developer's workstation into production. And it just, it kind of defines the way that we want that to happen. And it can be different for every company. You know, everyone, every company may have a different Git workflow, definitely has a different infrastructure. But what are the key points that we hit along that path to make sure that you know we're hitting hitting everything consistently and when we deploy it's being done the same way it's being done reliably and there's monitoring and logging around that so that when things don't go right everyone knows about it And it's just kind of automating both the technology that makes that happen and automating the workflow so that it integrates into the developer's daily routine and happens just through automation rather than someone having to remember, oh, I gotta go do this thing.
+
+[SPEAKER_02]
+That's a good point. And I've seen this stuff happen in action at one of the previous clients we both worked at. So the majority of folks that listen to this show are probably mobile devs, though we do have a number of web devs as well. And I know that you've worked at various startups that have had mobile applications and stuff. Now, in the context of mobile development, I guess we could kind of lump in APIs there too. What does DevOps mean in the context of mobile? Or what are some of the things that people have to think about in regards to DevOps from a mobile perspective?
+
+[SPEAKER_01]
+The one that jumps out to me immediately is a consistent deployment process, you know, so that as a mobile developer, whenever new features are built on the back end, that they go out to a staging environment where you can start developing your code against those and then a high level of confidence that whatever you wrote with against staging is going to operate the same out in production.
+
+[SPEAKER_02]
+Okay. So like if I have, maybe I make an API change and, or I'm a backend developer, I make an API change and I push it up to a new branch that somehow gets into a staging environment. Does it get its own staging environment or does it just kind of go into a common one?
+
+[SPEAKER_01]
+It really depends on the team and the complexity of the environment. There's some places I've worked that have been smaller applications. It just goes into a staging environment that's shared by everyone. Other places as teams have grown and they've broken from like a monolith type environment into more of a microservices type environment. then it will be specific to that microservice. And then I've also built it out so that it can be specific to a feature. So when a developer creates a new feature branch for an API and they push that code up to the repo, then it launches a new version of the API from that feature branch. So you can test out that specific branch of code before it's merged anywhere.
+
+[SPEAKER_02]
+So, okay. I guess that would mean it has its own URL somewhere just for that particular branch.
+
+[SPEAKER_01]
+Yeah, yeah. So what we do there in that case is it's built into the CI CD workflow and just triggers off of GitHub. So whenever a new merge request or pull request is opened up on a specific branch, that triggers the GitHub that causes a CI CD server to go out and build an environment. And when it builds that, it builds the Docker images that are necessary, launches the containers, sets up the load balancers. And then finally creates a DNS name where the DNS name, the first part of the DNS name is just the name of the feature branch from GitHub.
+
+[SPEAKER_02]
+Okay, so maybe if you just kind of replace anything that had like slashes with like hyphens or something like that to give it a URL name?
+
+[SPEAKER_01]
+Yeah, exactly.
+
+[SPEAKER_02]
+So you brought up a couple of interesting technologies there, namely Docker, and this seems like it's very popular in the DevOps world. Why is Docker so popular in DevOps? Is it because it enables these types of environments or what's the allure for it?
+
+[SPEAKER_01]
+I think there's a couple of reasons that everyone gets excited about Docker. One of the primary reasons is it helps break that works on my machine syndrome. You know, if you've got specific packages or software configuration on your local workstation, your code may work fine. But then when you put that out on a staging or production server, if you're missing that configuration, it fails. But now you're already in production, so you've got an outage potentially and you have to roll back. So with Docker, what that allows you to do is use the same Docker image or the same base image on your workstation that you're going to use out in production. So you're mimicking the production environment very, very closely when you're doing your local development and can identify any changes or updates that are needed while you're still in development mode rather than once you've gone to production mode.
+
+[SPEAKER_02]
+So it seems like it would be pretty easy for me to, I mean, if I know how to work with Docker, which I do, but for folks that don't, but if they were able to learn about it, they could then basically clone a repository, tell Docker to fire up, which would probably be through Docker Compose, I guess. And then at that point, it would have almost like a mimicked version of production running that they could interact with, correct?
+
+[SPEAKER_01]
+Yeah, exactly. And I think that's one of the best metrics. If you are trying to actively integrate DevOps into your engineering team, I think that's one of the best metrics to determine success is think about... onboarding a new developer, what's the length of time measured in hours from handing that developer their laptop to their first commit to the repo? And Docker really enables you to do that. Prior to Docker, it may be something like, oh, the developer has to download this, they've got to install this, they've got to install MySQL, and they've got to install Node.js, and they've got to get their... mobile development environment set up, you know, whether that's Android Studio or Flutter or something like that and build all these different pieces and magically get them sealed together inside of their laptop. Whereas if you go with a more DevOps oriented approach, you know, you could get it down to where it's as simple as here's your laptop, install Docker, check out this repo and type make dev up and it just brings everything up for them.
+
+[SPEAKER_02]
+Okay, you said make. What is make? I know a lot of folks are familiar with things like Gradle and they're familiar with NPM and various things like that. But I mean, I hear make, I think of like C++, right?
+
+[SPEAKER_01]
+Yeah, that's exactly where it's from. It's the old C++ compiler, which seems out of context to use here, but it's really powerful and works on so many different systems. And it just gives you a way to simplify multiple complex commands so that everyone can use the same command.
+
+[SPEAKER_02]
+So if I type make and you said dev up, is that something that's built into to make or what is that?
+
+[SPEAKER_01]
+Now, whenever you type make, it looks in whatever directory you're currently in and looks for what's called a make file. And inside the make file is where you'll define your arguments for the make command. So in that example, one of the things I commonly do is create a command called dev op. And then that dev op command runs the Docker Compose command. And Docker Compose looks through the Docker Compose file to find out what all containers and networks it needs to bring up. And then each of those containers has different specifications. Like one, if it's a node API, it'll run the npm start command. Or if it's a Postgres database, it'll launch Postgres. And so just using make abstracts all of that away down to a single command.
+
+[SPEAKER_02]
+So I know what a lot of people are probably thinking right now, like, all right, well, why not just use like some Ruby script or why not use a JavaScript file? Like what, you know, what is the, why should I use make? Is it because it's, is it installed by default or what's the lure there?
+
+[SPEAKER_01]
+That's exactly why it's already there. No dependencies required. If you do NPM scripts, you've got to have node installed, or if you have, you know, Ruby scripts, you've got to have Ruby installed and it makes just agnostic and exists everywhere.
+
+[SPEAKER_02]
+Oh, so you could, okay, so that makes sense. And you could just, do you check that make file? I guess it's almost like a, I think of it like a, almost like an alias or almost like a build file in itself, or it's, do you check that into the source control too?
+
+[SPEAKER_01]
+Yeah, absolutely.
+
+[SPEAKER_02]
+So let me walk through the scenario here. I'm a new developer. I show up first day on the job. I'm an Android developer. And I already know how to set up Android Studio. That's all cake to me. But I don't know how to set up the local dev environment because for whatever reason, I can't connect staging or I need to do something special. So I clone the API repo or whatever it is. And from there, there's just a make file in there. And then what you're saying is all I have to do is go into my command line and just type make space dev, what is it? D-E-V up. It's all one word, make dev up and then hit enter and everything should just fire up is what it should be, huh? Yep, exactly. Seems kind of magical almost.
+
+[SPEAKER_01]
+it is once you get it working well yeah yeah once you get it working it is and it's not really um any great feat of technology to get it working it's just taking a step back and saying how can i make this easier and you know the technology i use to make it work is is just using make which has been around since what the 80s i think
+
+[SPEAKER_02]
+Yeah, it's been around a long time. So let's say I got this up and running and now I'm done for the day and I need to shut my laptop down or whatever. I need to reboot some updates. How do I turn all this stuff off?
+
+[SPEAKER_01]
+There is another command called make dev down. And what does that one do? That one tears down all of the dependency environments. It's all built into the command. So depending on what dependencies you have, it will take care of all of those for you. It'll do a Docker Compose shutdown. If there's Docker networks and Docker volumes that need to be cleaned up, that'll be built into it as well. interesting okay so that's an easy way to set up your local dev environment for you know web stuff like that have you seen anybody do this a similar type of thing for mobile or no not really so much for mobile because it's um you know you're heavily dependent on the emulators or having a local device plugged in and doing the yeah you know the deployment over usb
+
+[SPEAKER_02]
+Okay. Interesting. Um, back to the, I'm really interested in the whole developing, um, making a change to the API, pushing it out to a branch and that branch becomes a, a new DNS entry and all that's like automated, you said. And so I imagine there's a number of tools that are involved in this process. What are some of the common tools that you use to automate all of these things? Like if I wanted to get that type of scenario up and running,
+
+[SPEAKER_01]
+Yeah, so it depends a little bit on where your infrastructure is hosted, whether you're using AWS or GCP or you have your own data center. For AWS, I rely on cloud formation heavily for that because it knows. about all of the dependencies. So if you have Docker containers and load balancers and DNS entries, AWS is aware of the relationships between those. And so just defining it in the CloudFormation template, it'll look through there and say, oh, well, I can't do this until I do this. So it takes care of a lot of that for you. Outside of that, you can use tools like Ansible or Terraform to do the same thing, which gets you into a more cloud agnostic situation where you can use that across different cloud providers.
+
+[SPEAKER_02]
+Okay, so even if I had, maybe I'm in a big corporation and we don't use cloud providers and I have my own infrastructure internally, I could use something like Ansible or Terraform internally to mimic that same type of situation then.
+
+[SPEAKER_01]
+Yeah, for sure. And there's a lot of overlap between the features in Terraform and Ansible. So you could just look at each one and see which one which one you think you'll have better luck with, because it's really a trial and error type thing. And I think that's one of the most frustrating things about DevOps for a lot of people just getting started into it is the trial and error stage is very, very time consuming. If you think about building an automated infrastructure, you're going to create a Docker runtime environment. You've got to build Docker containers. You've got to start those containers, provision a load balancer to route traffic to them, and then a DNS entry, which may have some DNS propagation time. And you get through all of that only to find out that you had a syntax error in your YAML file or something. So 10 minutes later, it blows up. And then you've got to start back over and go through that cycle again. Oh, wow. That seems like it can be kind of frustrating. Yeah, it can get really frustrating. The benefit to it, though, is once it's done, it's very, very stable and solid. And just the amount of time that it saves for you every single day after that makes that initial frustration worth fighting through.
+
+[SPEAKER_02]
+Yeah, because I imagine once this is up and running and it works, you can probably just move a lot faster as a development team, probably.
+
+[SPEAKER_01]
+yeah and yeah because all of that is just automated away for you and it just happens you don't have to remember to go do all of these things even for new projects whenever i set these up i set it up so that if we build a brand new application Then the only thing that has to happen is they create the get repo. And then if we're using Jenkins, go into Jenkins and tell it, Hey, look at this repo. And Jenkins uses the exact same build and provisioning process that it does for all the other repos too.
+
+[SPEAKER_02]
+Oh, interesting. I'm just trying to think of all this through my head. So I want to rewind for a second because I know a lot of folks here are developers that listen to this. And we did say maybe a couple of words they don't understand, such as Terraform and Ansible. What exactly are those two tools?
+
+[SPEAKER_01]
+So Terraform is an infrastructure provisioning tool. It's designed to build out the core pieces of your infrastructure, like networks and VPCs or security networks, database servers, and Kubernetes cluster. It's great for building out an entire Kubernetes cluster. And Ansible, I tend to use that more for configuration. So I'll let Terraform build out all the infrastructure, and then I'll use Ansible to go through and say, okay, for this database server, I want these usernames and passwords and these databases on it. Or for this particular Docker cluster, I want it to run these types of containers from this repository. interesting so you also mentioned kubernetes what is kubernetes so kubernetes is an orchestration management tool so you know you'll have you'll build your application to run in a docker container and so kubernetes allows you to define your application as code commonly called infrastructure as code so you can say here's my application i want I want always to have three independent containers running so that I've got high availability and fault tolerance. They should have this much memory, this much CPU. Here's the name of the service. Here are the other Kubernetes services that it's allowed to talk to, that type of stuff.
+
+[SPEAKER_02]
+Do I need my own infrastructure to run Kubernetes? I mean, that sounds like something I would run on my own servers. Is that something that I need my own servers to run on? Or can I run those on like AWS and Google Cloud or DigitalOcean or what?
+
+[SPEAKER_01]
+You can run it on your own hardware. You can also run it in AWS and GCP. In AWS specifically, you can build your own Kubernetes cluster or they have a managed Kubernetes product for you as well.
+
+[SPEAKER_02]
+As AWS always has something of their own, right?
+
+[SPEAKER_01]
+Always looking out for you.
+
+[SPEAKER_02]
+I feel like I've met a few people who could be just, I mean, they're just Amazon AWS engineers. Like that's their specialty. It's just because it's such a huge platform AWS is.
+
+[SPEAKER_01]
+It really is. And I think that's one of the struggles with AWS is it's really easy to get up and running on AWS, but it's really, really difficult to get running at scale with scaling and capacity management and budgeting working correctly.
+
+[SPEAKER_02]
+Yeah, you actually had to help me out decipher why I was getting charged $100 on one of my AWS accounts. I couldn't figure out where it's coming from. Everything was just so confusing. We had to dive down deep and find out it was some weird Postgres database that was running. And literally without you, I wouldn't have found it. I'd still be getting charged $100 a month for some random AWS service I couldn't find. But no, I completely agree. When I built Gifstagram, which was running on Lambda, everything is on AWS. I was able to basically, I felt like piecemeal them together. Like I still don't feel that it would scale, but I mean, I think it would scale. It's all Lambda. So of course, Lambda is just going to scale horizontally as best it can. And it's going to thousands of requests. But other than that, if I hadn't built it that way, then I feel like I'd be limited to the machine that I was running on. If it was like a micro or a small or a medium, depends on how much that could handle and not be able to ramp up by, you know, dragging a dial is something different, which is something I'd like to ask you about. You know, what about something like where do platforms like Heroku kind of enter this conversation?
+
+[SPEAKER_01]
+Heroku and DigitalOcean both, I think, are both great tools. They're kind of like managed AWS for you. Okay. So, you know, you can use AWS or you can use Heroku who uses AWS under the hood. They just manage all of those, you know, 200 AWS products for you and present it in an easily digestible format. And then there's a little bit of a surcharge on top of what they pay for the AWS services to cover their operating costs.
+
+[SPEAKER_02]
+Which I think we spoke about this before. We've both seen clients who have had five-figure Heroku bills. And then you were able, from what I understand, and correct me if I'm wrong, able to migrate them over to an AWS infrastructure and save them drastic amounts of money. Is that correct?
+
+[SPEAKER_00]
+Yeah.
+
+[SPEAKER_01]
+Yeah. And I really think for startups, that's the way to go. If you don't have a lot of senior in-house tech resources early on in your startup, totally recommend using something like Heroku just because of the ease of getting up and running is so much easier. And it allows you to focus on delivering that product and testing your idea. And then once that idea is successful, you can come back and figure out, okay, what are we going to do to run this long term? And that's where I ended up going in and helping those guys out, moving them from Heroku to AWS, cut their infrastructure operating bill by about a third, if I remember correctly.
+
+[SPEAKER_02]
+Wow. So that's, I mean, if you're going from five figures, let's just say you're $15,000 a month, you cut it to a third of that. I mean, that's, you know, 5,000, that's, you just save them $10,000 a month by switching from Heroku to AWS. But you bring up a very good point. And that's one that I make all the time is like, you don't, you know, premature optimization will kill you initially. If you try to do all this starting out when you're building your product and you don't even know if it's going to generate revenue or profit, like you're just fighting a losing battle.
+
+[SPEAKER_01]
+Oh, absolutely. Yeah. There's this tendency in the tech world to leverage every latest framework and technology and best practice right off the gate for your startup. And I think that's the wrong approach. The first step should be validating, are people actually willing to give me money for this?
+
+[SPEAKER_02]
+Yeah, and then once you get to that point, like you said, once you get to that point, if your bill is getting that high at Heroku or similar service, like you said, they're charging a surcharge on top of putting a pretty wrapper around a very difficult thing to manage, which is AWS, because that's what Heroku runs on. So they're making it easy to use AWS, basically, and you're given that little dial. And so if I need more capacity, I just drag the dial and they charge my credit card more money. It's about as easy as it gets. I need more RAM. I need more resources. Like, okay, cool. Just pay more and they'll make it happen. So that's the benefit there. And people have to think about that behind the scenes. Like, okay, how much would this cost me to build behind the scenes in an hourly manage? And it's not just build. That means maintain and also all the bugs you're going to introduce, which is going to be a tremendous amount. And then versus clicking and dragging a button. Yeah, it might be three times the cost, but you're going to save 10 X a time probably.
+
+[SPEAKER_01]
+Yeah, and for some companies, it may never make sense to try and go from Heroku to something like AWS, just depending on their staffing, their resources, and the technical requirements of their application.
+
+[SPEAKER_02]
+Yeah, I still have a couple of friends who run some SaaS applications. They generate hundreds of thousands of dollars a month in revenue, have staff on hand. I mean, they generate millions and millions of dollars of revenue a year, and they still run a Heroku. And for the simple reason is we don't want to manage everything else. So they delegate it off to another service and pay the premium for it.
+
+[SPEAKER_01]
+And as long as it works in your profit margin, there's no reason to change.
+
+[SPEAKER_02]
+Exactly. I think this brings up a good question here is, if you were to give folks, the developers that are listening to the show, a recommendation of, I like to use the 80-20 rule a lot. So if you were to give them 20% of things or tools or whatever that they could implement to give them 80% of the benefits of DevOps, what would it be? I mean, it could be things like Heroku or just learning technologies or what would be your take on that?
+
+[SPEAKER_01]
+think it's a little bit context dependent you know i always like to use uh tim ferris's rule of what would it look like if this were easy yeah and then you know just think about the different things that are causing you stress and frustration and say well what if that didn't exist and start there typically the common places i see that are in automating the development workflow, which is kind of a broad umbrella, but it means when you leave the Scrum and you've got your ticket that you create a new feature branch off of master, you do your work, you commit that branch, you open a pull request, That pull request gets reviewed. And then upon merging, that kicks off a CICD pipeline that deploys that automatically to a staging environment. You've got your staging review process. And then at some point you deploy to master, you know, all of that, just have it automated with the exception of like the peer review process. So that's probably a big one for most people. And I think that's why CI CD gets so much scope of the DevOps conversation, even though I think it's such a small piece of the overall DevOps framework. And then the other one is probably the ops part of DevOps. Logging, alerting and monitoring.
+
+[SPEAKER_02]
+logging okay is there a certain tools uh that folks should look into for for logging or should they be logging to a particular like part of linux should they be just using the logging framework that's in their system and how do they monitor those logs or what do you recommend there if you were to walk into a startup and they don't have this stuff running what do you how would you implement it if they were using aws i would use cloud watch logs okay um
+
+[SPEAKER_01]
+especially if you're doing something like AWS's ECS, their elastic container service. It makes it really easy because it just captures the standard out from your Docker containers and will ship that over to CloudWatch Logs. Okay. If they don't have that, the ELK stack, Elasticsearch Logstash Kibana is a great way to go. Okay. And then if you've just got tons of cash to spend and don't mind blowing it, there's tools like Splunk that are available.
+
+[SPEAKER_02]
+Yeah, I've heard a lot of big companies use Splunk, especially big companies after they have a lot more budget.
+
+[SPEAKER_01]
+It seems to be very expensive. Yeah, it's incredibly expensive. And what do they call it? Oh, it's a sticky product because once you start using it, you're like, I'll just write the check this month rather than try to figure out how to decouple all of this.
+
+[SPEAKER_02]
+That's what I heard, yeah. So you said logging, monitoring, what was the last one there? Alerting. Alerting, okay. So I've got maybe logging set up and then if I'm going to monitor these logs, what should I be looking for in these logs?
+
+[SPEAKER_01]
+So the monitoring part actually doesn't go with the logs a whole lot. When I talk about monitoring, I typically think of like API response times and the rate of error codes. So HTTP 200s means everything's good. Those are always great to have, but what's the response time on those? My personal preference is to keep your API responses under 200 milliseconds. Okay. So keep an eye on that. What is our response time? Also payload size. And then for the errors, you know, when you have HTTP, something in the 400 series or the 500 series, not only are those happening and the count of those, but the rate, because a lot of times the rate is your early indicator. If your error rate for HTTP 500s was at 0.001%. And then it jumps to 0.1%. That's a pretty significant change. And somebody should probably be taking a look at what's going on there.
+
+[SPEAKER_02]
+So for monitoring, what types of tools should someone look at for that? Or where can they kind of start depending upon their stack?
+
+[SPEAKER_01]
+Yeah. AWS, again, goes into the CloudWatch framework. CloudWatch covers your logging, monitoring, and alerting. Mm-hmm. with the kibana using the elk stack kibana will allow you to graph that out and then there's there's just a whole host of tools you can use beyond that i think one of the most common ones now that's gaining a lot of popularity is prometheus with grafana
+
+[SPEAKER_02]
+Okay. Now, if I'm on Heroku, is there tools on there to help monitor these types of things? Or am I kind of out of luck?
+
+[SPEAKER_01]
+No, no, not by any means. It's another one of those places where Heroku has done a great job of doing a lot of integration and bundling services to make it just a button click for you. There's the built-in Heroku logging. which will show you some level of logging and then when you log in there's the monitoring dashboard right there showing you a lot of these metrics we were just talking about and then you can dig in and add third-party add-ons where they can integrate you with um with um well i've seen like i've seen elastic and i've seen like i think i've seen elk stack stuff out there and like paper trail and stuff like that where you can do like logging and all kinds of probably other monitoring stuff too Yeah, PaperTrail is one of their big logging solutions. Scout was the one I was trying to remember.
+
+[SPEAKER_02]
+Oh, Scout. Yeah, Scout APM is real good.
+
+[SPEAKER_01]
+Yeah, and PagerDuty as well for doing the alerting portion of that.
+
+[SPEAKER_02]
+Yeah, Scout actually saved my butt when I was working on Caster a while back, and I could not figure out why I was always getting R14 errors. And those of you that are familiar with Heroku, R14 means your server's out of memory. And I would just jack the memory on my dynos, and it would still, it would just run out of memory. I had a memory leak somewhere. and it wasn't until I installed Scout. So this is not a sponsored thing, but it's just I installed it, and they literally showed me, here's where your problem is, here's where your problem is, here's where your problem is, and I fixed about 70% of the problems, and the majority of my problems with Heroku stuff went away. So definitely highly worth looking into. Was it APM application performance monitoring? Is that what it is?
+
+[SPEAKER_01]
+Yep, exactly. Yeah. New Relic's another big player in that field.
+
+[SPEAKER_02]
+That is, yes. And then you had alerting. Is that kind of in the same context of monitoring or what entails alerting?
+
+[SPEAKER_01]
+Yeah, so your alerting is triggered by your monitoring. Okay. So like we were talking a minute ago about the rate of HTTP 500 errors, if that exceeds a certain threshold, you know you'll want to trigger an alert for that. For your success responses, your 200 responses, maybe you want to monitor the latency, and if latency exceeds 500 milliseconds, you want an alert for that. Okay. And then on the other side of that too, you may want... like a low side alert too. So if your HTTP 200 requests drop down to zero, it probably shouldn't be happening. So you want an alert to see, did something go down or did all of your customers just stop using your product?
+
+[SPEAKER_02]
+Don't want that.
+
+[SPEAKER_01]
+Hopefully the former, right?
+
+[SPEAKER_02]
+Right. You mentioned something earlier about the payload size on HTTP. And we both worked at a client once that had, when we came in, their payload size of the JSON response. I think it was 40, 10,000 or 40,000 lines of JSON. It was something just astronomic. How does that impact like response times or anything like that? Or does it at all?
+
+[SPEAKER_01]
+Oh, it does. It does. You've got the, first of all, to generate 40,000 lines of JSON, you've got some compute time tied up in there somewhere. And then you've got the network latency that's added to transmitting that data back to it. And I think that's probably the bigger impact of that. Because when you look at your server API response time, that's the response time for the data to leave the server. That's still not accounting for the network transit time for it to get back to your client wherever they may happen to be.
+
+[SPEAKER_02]
+That's true. Especially if you're transferring that much data, it's just, that's a lot. Even just for time, the first byte, that's a lot.
+
+[SPEAKER_01]
+Yeah, and I think that's one of the key areas where mobile developers can take an active role in the backend and the DevOps process. Because DevOps really is not a single person. It's something that we all have a different stake in. And specifically for the mobile developer to take a look at the API endpoints that they're calling... and see what the response time looks like from the client perspective and the payload itself. Make sure that, you know, that the payload's reasonably sized and that it just contains the data that you're looking for. That was the problem we ran into with that one client is that was like a God mode API where it returned, you know, just everything that you could possibly imagine, even though they only wanted one key out of that payload.
+
+[SPEAKER_02]
+Exactly. Yeah. You basically had to cache the whole thing. And once you refreshed it, it took a few seconds for it to go get all that data. Yeah. So you bring up a good point there is that this is kind of everybody's job, which, you know, I think is a big question for everyone listening is, okay, this all sounds cool. I don't have any clue how to do that automation with the, you know, the branches to develop, uh, when I push a branch up and it's in a pull request to have it build another platform, you know, Is that something I can go learn? Where do I learn that? Or do I need to go hire a DevOps person? Or when do I hire a DevOps person? So it's multiple questions there. What's your thoughts on that?
+
+[SPEAKER_01]
+Yeah, I think you rely on the resources that you have in your team for smaller teams. Smaller teams with senior engineers between those members, they're probably each going to have enough info to pull together the pieces that you need. You might not know how to do a CI CD workflow, but someone else on the team might. And so you let them handle that and you take care of the parts that you are competent with. And I think that's why I push back so much on hiring. a DevOps engineer, you know, or giving someone that title because then it pins that responsibility on them and resolves everyone else. And I like to think of it more. I have a buddy who was a Navy SEAL for 20 years and in the SEAL teams, everyone there has like a couple of different roles in the team based on their expertise. Like he was a sniper and the medic with whatever level of irony goes with that. yeah but um but that's the way it was you know he had those two roles and someone else was like a you know a heavy gunner and the explosions expert but then you put all of these different people together with these different skill sets and you've got like this full on force capable of addressing the problem And I think engineering teams are the same way. You have this engineering team where someone has CICD workflow experience and someone else has monitoring and logging experience. And so then whenever the team gets together and starts to architect a new product or an update to an existing product, each person interjects with their particular expertise to build out the whole product. And then... eventually you'll hit a point where your team grows enough where you've got engineers of varying levels so you've got senior engineers and junior engineers and i think at that point that might be the the right time to give someone who's got a more devops oriented role to to go and have that social interaction with different members of the team as they're building out these products to make sure that they're following the devops principles that the teams agreed upon and that may or may not be a full-time role for that person you know for me a lot of times i've been considered the devops person but a lot of times i was just writing application code and then sitting in on meetings and having conversations with people you know to help them build tools according to the pipelines that we've put together
+
+[SPEAKER_02]
+So it seems like you kind of just have to keep track of how much DevOps time you're putting in on something across the team. And eventually, like you said, you might be 50% DevOps, 50% developer. And again, companies allocate, I hate to use the word resources for people, but that's what they call it now, allocate resources differently. But they need to know, all right, we're now using Will 75% of his time, he's just spending on DevOps. So If we need to give dev work to him, we need to make sure we give dev work to him that's not critical. We'll give that to Jane over here where she's full-time front-end or back-end engineering with minimal DevOps stuff and just kind of know how to handle and kind of crack that nut as you move forward, right?
+
+[SPEAKER_01]
+yeah exactly exactly one of the other common roles that a devops person will have in a team if they don't do coding is working with teams as they start to build out applications and identifying infrastructure resources that they're going to need so the team builds out a new application that has um you know uses redis then the DevOps person will go and make sure that there's a Redis instance provisioned and configured by the time they're ready to deploy.
+
+[SPEAKER_02]
+Yeah, so just like anything else, I think it does require a little bit of planning. But I guess when you're starting out, it sounds like as long as you're willing to go put in the effort, this is a lot of stuff that you can probably set up for yourself. And for me, I guess, you know, if what I'm hearing would probably be the biggest bang for the buck, even of the top 20%, is literally logging, monitoring, and alerting because that stuff's going to tell you when your application, like things are going wrong and you kind of need to fix that.
+
+[SPEAKER_01]
+Yeah, absolutely.
+
+[SPEAKER_02]
+And that's going to be the big one there. From there, then automating the rest of your environment is going to give you a lot of bang for your buck. So, well, there's a ton of information we covered here today. I want to say thank you for coming on the show. I know that you recently started talking a lot more about DevOps stuff. So if you'd like to share with the listeners where they can find you or learn more about what you're doing, please fill them in.
+
+[SPEAKER_01]
+Yeah, you can catch me on social media about the only social media platform I'm on is Twitter at WF Button. And I started a new YouTube channel recently. So if you go to YouTube and search for DevOps for developers, you'll find my YouTube channel there where I'm releasing videos on. You know, some of it's DevOps how-to, a lot of it is just DevOps. What is DevOps from different angles? And very similar to the conversation we had today, like where should I be looking to implement this and how can I implement it? And then once I decide what I want to implement, what tools or resources do I need?
+
+[SPEAKER_02]
+Excellent. So we'll put the links in the show notes to your Twitter as well as to your YouTube channel. So everyone just take a look, scroll down in your podcast app or if you're on the web, just look down at the show notes. You'll find the links there. I highly recommend Will's YouTube channel. The videos are, the intros are hilarious. They're very well done. It's super entertaining. Just gets you in a good mood and then he teaches you a lot of stuff too. So Will, thanks for coming on the show. We appreciate it. Yeah, thank you. It was a pleasure. All right, cool. And everybody, we'll catch you on the next episode. Hey, everybody. Thanks for staying on and listening to the show. Before we get going here and head on out, just want to remind you to please check out the YouTube channel. That's going to be at donfelker.com slash YouTube. You're going to learn everything you need to know about how to become an independent consultant. as a mobile developer or just even a software developer in general. I'll teach you from the ground up everything you need to know and that much more. I look forward to seeing you over there. Again, that's going to be at donfelker.com slash YouTube or just check the link in the show notes. Thanks again, everyone. Have a good day.
+
+[SPEAKER_00]
+That's it for the show, folks. Fragmented is hosted by Don Felker and me, Kaushik Gopal. We edit and produce all the episodes here on Fragmented. You can find more Fragmented episodes at fragmentedpodcast.com. Thanks for listening, and we will catch you in the next episode.

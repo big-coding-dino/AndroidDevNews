@@ -1,0 +1,12 @@
+**Ep. 201 — State of the Testing Union with Valera Zakharov**
+*Podcast · Don Felker & Kaushik Gopal (hosts) · 54 min · 2020-11-02*
+
+Valera Zakharov, tech lead of mobile developer experience at Slack and former Google engineer who helped build Espresso, joins the show to assess where Android testing stands in 2020 and what separates it from iOS.
+
+The conversation centers on a stark comparison: Android testing infrastructure is "years ahead" of iOS, and the gap comes down to a few concrete capabilities. The Android Orchestrator guarantees process-level isolation by launching every test method in its own process via `adb shell am instrument` — this prevents state from bleeding between tests and allows the suite to tolerate individual crashes without losing the entire run. The tradeoff is cold-start overhead per test, which you absorb by horizontally scaling across many devices. Flank (written in Kotlin by Matt Edwards) handles the parallelization and sharding, and Valera called it the most recommended tool for teams running large test suites at scale. On iOS, there's no equivalent to Firebase Test Lab's cheap virtual devices, and the open-source alternative Blue Pill from LinkedIn lacks process-level isolation, making reliable PR checks significantly harder to achieve.
+
+Valera also walked through what Slack's testing stack looks like. The biggest lever wasn't a framework — it was architecture. Their team uses a pattern called Powerpack (presented at a Droidcon), an abstraction layer that lets you declare test state in a declarative way ("start with 3 channels and 5 users") and handles dependency injection and thread-safe component swapping behind the scenes. This made authoring reliable tests possible on a feature-by-feature basis after he joined. The episode references an earlier conversation with Flank's maintainers on episode 163.
+
+A key insight: flaky tests are the primary cause of broken PR checks at scale, and addressing them is ongoing work even at Slack. The frameworks exist; the harder problem is app architecture that lets you set up isolated, reproducible state for every test.
+
+**Why it's worth your time:** If you're running instrumentation tests on Android and not using the Android Orchestrator + Flank, you're leaving reliability on the table — and if you've ever wondered why iOS CI for tests is painful while Android feels tractable, this episode explains the infrastructure gap at its root cause.

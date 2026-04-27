@@ -1,0 +1,454 @@
+# ep197
+Podcast: Fragmented Podcast
+
+---
+
+[SPEAKER_02]
+So we want to make a commit. Sorry, hold on. My earbud popped out.
+
+[SPEAKER_00]
+No, no problem. The joys of recording.
+
+[SPEAKER_02]
+Oh, yeah.
+
+[SPEAKER_01]
+From the Spec Network, this is Fragmented, developer podcast where we talk about building good software and becoming better developers. I'm Don Felker. And I'm Kaushik Gopal. Welcome to the show.
+
+[SPEAKER_00]
+this episode of fragmented is brought to you by educative.io now there are a lot of websites out there that help you teach programming courses but one thing most of them tend to do is focus on video so they're all video based Educator.io takes a very different approach. To them, they go the text-based route. That means you don't necessarily have to like scrub back and forth to follow along. Say, you know, you're going through a video and someone just blows past a certain section and then you're going back, wait, wait, wait, what did they say exactly? And you rewind, then open up a notepad to take notes. You don't have to do any of that with Educative.io because it's text-based. Think of it as like almost reading a book. If you're reading a book, it's pretty easy to skim back or double back and just easily skim through. In addition to a whole bunch of amazing courses out there, here's the kicker. If you're an Android developer, they just launched a killer Android course called Modern Android App Development. It's perfect. just go back refresh your memory and go through the educative course it has a fully functional live android emulator so you can actually create and deploy your app right from within the course you'll get a live link to the app that you can share with friends or even you know put up on your portfolio if you start looking for jobs Check it out now and get an additional 10% off your purchase if you go through this special link, educative.io slash fragmented. Once again, that's educative.io, E-D-U-C-A-T-I-V-E, in case you didn't catch the spelling, educative.io slash fragmented. Thanks again for sponsoring this show, Educative. All right, folks. So sadly, Don couldn't join me today for this show, but I do have someone else who's joining me, and I'm super excited about this guest. He was my boss at a previous job. He remains a mentor to me today. And I always go to him when I need, in general, software engineering advice or heck, even life advice sometimes. So I'm really excited to have him on the show and have you folks talk to him. He's easily one of the best engineers I've ever worked with. So without further ado, I'd like to introduce you to Gordon. Welcome to the show, G. How's it going?
+
+[SPEAKER_02]
+Hey, Kashuk. Oh, it's very exciting to be here. Thanks for having me.
+
+[SPEAKER_00]
+The funny thing is folks don't know, but we even talked about starting the podcast at like, you know, at an early stage when, you know, back when we were at wedding party, like we talked about the podcast. So you've actually seen like the podcast from the day it was like created to around 197 episodes in. How crazy is that?
+
+[SPEAKER_02]
+That's right. Yeah. Yeah. We talked about, right. There was like iOS podcasts and Rails podcasts. Yeah. oh, but there's not an Android podcast and there needs to be one. People need to learn how to do this stuff.
+
+[SPEAKER_00]
+Yeah. Android developers also have commutes and we needed something to listen to.
+
+[SPEAKER_02]
+Yeah, exactly.
+
+[SPEAKER_00]
+For folks who don't know you as well as me, could you just let us know what you do, where you work? Just give us a brief background before we jump into the meat of today's show, which I'm super excited to get to.
+
+[SPEAKER_02]
+Sure, sure. So I currently work at the same company that you do, Instacart. And the reason is that both of us joined there from Wedding Party, which is our previous company. And that was a venture-backed startup in the mobile space that I co-founded with some friends. And we managed to convince Kalshik to join us, which was an excellent thing. And prior to that, I was at Carnegie Mellon in the Silicon Valley here doing grad school. And before that, I'd been doing some software engineering for some professors. So I've been doing software engineering for a while and I've been working with Kaushik for a while.
+
+[SPEAKER_00]
+For better or for worse?
+
+[SPEAKER_02]
+Not for better, for better.
+
+[SPEAKER_00]
+So I don't know if you remember this, G, but back at wedding party, when our then, one of our new colleagues joined us, who's also like, who's a very good friend of ours now. When you were doing her orientation, I remember she was pretty early on in her career. So you were basically doing like a walkthrough of Git because we used obviously Git for our version control. But I remember the orientation session you were doing for her because we were huddled in a relatively small space. So I overheard how you were doing some of the Git introductions to her. And I thought it was fantastic because what you did was typically the way people learn how to use Git is they just Google a cheat sheet of sorts. or something along those lines, right? So they find a cheat sheet, look at the commands that they've been using for some time, just like, you know, just repeat those commands you find on a cheat sheet and then you get 60% of the way you start using and then eventually you start to maybe understand. But a lot of developers go a long way without even understanding the internals. You flipped it though. Like when you did this orientation, you almost made sure to explain how the internals of Git work. I thought it would be amazing if we can like almost go through like a mini orientation session where like you can talk to us about how the internals of Git works. How does that sound?
+
+[SPEAKER_02]
+Yeah, that sounds great. Yeah, I remember when I was learning Git, I had that problem where at first I was looking at the commands and trying to figure things out and... I really just had no idea how to use it and why these things were the way that they were. And it was only, I read a couple of books about it. And finally, once I understood the object model and what was going on there, then the actual, what they call the porcelain commands, right? The fancy commands that you use on top of this stuff. They finally made sense to me, right? So, yeah, I'd be happy to dig in.
+
+[SPEAKER_00]
+Yeah. So you mentioned something. And again, for folks who know Git, this would like ring a bell. But otherwise, it sounds like just like, you know, off the cuff, fancy term. You said porcelain. I know Git has like this thing where there are like two kinds of commands, right? There's like porcelain commands. And what's the other one? Plumbing or plumbing?
+
+[SPEAKER_02]
+That's right.
+
+[SPEAKER_00]
+Yeah.
+
+[SPEAKER_02]
+Yeah.
+
+[SPEAKER_00]
+All right. So what exactly is porcelain and what exactly is plumbing?
+
+[SPEAKER_02]
+Yeah, so the porcelain commands are the commands that you typically will use in your day-to-day development. The plumbing commands are commands that are there for people who want access more to the internals, so they'll use them for writing scripts. or for sort of custom workflows that you typically wouldn't otherwise use.
+
+[SPEAKER_00]
+Interesting. And what are some examples of, like, yeah, porcelain, and what are some examples of plumbing commands?
+
+[SPEAKER_02]
+Yeah, so, like, you know, git status would be, or, you know, git commit would be porcelain. For plumbing commands, there's git cat file, which will... you know print out the contents of one of the blobs that's in the object directory for example wow so there's git cat file so this isn't like the basic unix cat this is like the git has a variant of cat in itself that actually gives you like more information right right and and the reason for that is you know So if you look at Git, there's this directory in your current directory. It's a hidden directory called .git. And if you go down under there, there's a bunch of files in there. And one of the directories underneath that is called objects. And if you look in there, you'll see a bunch of short folder names. And then under there, you'll see some... longer name files those files are are are objects but and they they're different types of objects and they're actually the the contents of those is the the file content itself but you can't look at it because it's it's zipped and it has a header on it so trying to see the content of the file, you need this thing called git cat file to actually tell you about the file. So you can send it a couple of flags to have it either show what the type of the file is or the content of the file.
+
+[SPEAKER_00]
+So we're going to jump into the Git directory, but like I want to actually step back even before that, right? Because Git is a little different from like most other versioning systems, right? Because I don't know if you've probably worked with some of the older ones, right? Like Subversion and... Yeah. Mercurial is again like slightly newer. It was like the competing thing with Git, but there was like a couple of versioning systems before that. right right subversion yeah can you explain how how they're like because i remember like with subversion like you know your versioning used to be one two it used to make a lot of sense it's just like version one two three four five six you know that right that used to be the version which seems crazy in today's world because people are so used to git but what's the deal with that like why did git have to make things like that much more difficult for like us right why couldn't they just like use something as simple as what subversion did like what is different about git Like why was Git such a revolutionary thing? Was it just like the new cool tool to come out?
+
+[SPEAKER_02]
+Yeah. So the thing with Subversion was that it was kind of like a centralized database, right? So there was a monotonically increasing version identifier. And as long as you were talking to that centralized database, it could easily sort of increment as there were new versions. Yeah. That doesn't work so well if you have a decentralized platform like Git. You can do Git locally on your local machine, and then everybody can, after the fact, decide to join with some centralized Git. repository. What you need to be able to do is basically do offline work separate from the repository and then everybody can reconcile that stuff after the fact. There's no centralized version number that people can use. Instead, the way that it works is that everybody agrees on the identifiers for the data that's in their system as opposed to having a version number. So the same file will end up with the same very long SHA. And that's where the agreement comes in, yeah.
+
+[SPEAKER_00]
+Oh yeah, so like part of it is like, and you use some terms, you said like centralized versus decentralized or like distributed or something. And that's why it works so seamlessly where you don't need to be connected to the internet. You can just keep using Git, right? And I remember like with subversion and stuff, You couldn't actually at that point. Yeah, you can. I mean, eventually, I think even with Git, when you push to like a remote or something, you need to connect to like a central system. So when we use GitHub, which is different from Git, does GitHub also function as that centralized thing? Or is GitHub just like another client that listens? If you're doing that, why isn't it the same as subversion? You know what I mean?
+
+[SPEAKER_02]
+Right. Yeah. Well, the interesting thing about Git is that remotes are not particularly special. So in Subversion, it's your database, right? It's your centralized repository. But in Git, remote is just another repository. So these things are called remotes. Origin is just sort of a standard name for one of the remotes. But you can have many remotes. Like I remember when I was first deploying to a thing called Heroku. Yeah. Heroku also took a Git repository. And so you would set it up as another remote. And I think most people just called it Heroku.
+
+[SPEAKER_00]
+Oh, that's right.
+
+[SPEAKER_02]
+So you would say like Git push to GitHub, but then you could also say Git push to Heroku because it was just another remote.
+
+[SPEAKER_00]
+typically get push origin is what most people are used to when they want to get their work up to like a common report right and that that repo and that typically tends to be github yeah but with oh that yeah that makes so much sense when you put it like that so with heroku you have like an equivalent repository just like how github probably has they have a repository and you're pushing to that remote so it's like just another place
+
+[SPEAKER_02]
+Right, right. And there's some smarts around it because it uses the Git protocol. And so there's some work that's being done on the server side as well as on the client side when you're doing these. But without that protocol, you could rsync files if you needed. Actually, no, it wouldn't work very well. You really want to use the Git protocol. Yeah.
+
+[SPEAKER_00]
+Okay, that's awesome. So, yeah, and I pulled us out of this, but I want to jump right back in. You said there's a .git directory, right? And, like, this is the funny thing because when people usually type, you know, when they, like, you know, get in it or, like, they create a new repository, like, everything looks normal. Nothing looks like it's crazy, you know? If you have a fancy shell, it just shows, like, master it suddenly. But the smarts and, like, all of it is in that .git directory, right? Yeah. Right. But what exactly is stored in that .git directory? Is everything stored there? So if I accidentally just delete that directory, am I just nuking my whole Git repo?
+
+[SPEAKER_02]
+That's right. That's the one thing you want to avoid doing. So yeah, you'll nuke all of your history. That's right. So that's one reason for wanting to have stuff up on GitHub for sure.
+
+[SPEAKER_00]
+Oh, yeah. Because at least then you have somebody else who's... Is this how torrenting works? Is there a similar theme about how torrenting works? Because it's decentralized, right? Well, I guess it's probably just decentralized, but it isn't.
+
+[SPEAKER_02]
+It's actually pretty centralized. It's decentralized in the fact that you have a full copy of the repository and also GitHub has a full copy of the repository. But it's not quite the same as torrenting where the data would come from many different computers.
+
+[SPEAKER_00]
+Oh, that makes sense. Oh, that's right. Yeah. So no single person. Yeah. Torrenting is a little more like, yeah, it's interesting for different reasons because like I think it's like, oh, I have these parts. You have these parts. Like let's exchange and then build our copy so that we can eventually reach to a point. But the summation of everyone like who's connected should at least have some piece. Right. That's how like we know. Right. Right. Got it. Oh, OK. That makes a lot more sense. Cool. So what exactly is the structure of a .git directory? If I opened up my .git, I just opened it up for a newer repository. I see objects, I see refs, I see a whole bunch of things like hooks. Can you walk us through what exactly is stored in each of these things?
+
+[SPEAKER_02]
+Right. So initially, it starts off relatively bare bones. So it'll have a hooks folder, which has a bunch of examples in it. And these hooks are basically things that can fire off when you do a commit, for example. You can put some checks in there that ensure that it abides by some strictures that you have. And if it doesn't, then it says, hey, I'm not going to commit. There's the objects folder, which we can talk about in greater depth. There's a thing called refs. Actually, there's a minimal amount of stuff in there when you first start. Things start to get interesting once you add more into there. We can talk about what happens when you actually make your first commit and the stuff that goes in there. So the first thing you do when you are working with Git is you'll... You have some files. Let's say you got one file, and you decide to stage that file. So you stage it. That goes into the index. And when you put a file into the index, it actually creates files inside the objects folder. So it basically takes the contents of the file, and it adds a header to it, hashes that, and creates this really long file name, and sticks that into the objects folder. And then it also puts it into the index, basically a reference to that file name and data about it. then you have that sort of sitting there, but there's no commit yet.
+
+[SPEAKER_00]
+You said index, there's like an index, but that isn't yet committed, right? Like, so how do I, this is like when I do the git add command, there's like this temporary middle ground where it's almost like, and that's why I guess it's called like staging because it's like, oh yeah, let's just like make sure everything is fine before we hit the button and then like, you know, boom, get it.
+
+[SPEAKER_02]
+Yeah, yeah. I mean, it's really helpful, right? Because if you have like lots of changes locally, but you really only want some, there's like a logical set of them that makes sense to land together. And then maybe some other stuff that you didn't want to land. It makes sense to put that stuff into the stage and then say, yes, these are the things I'm going to commit and the other things I'm not going to commit.
+
+[SPEAKER_00]
+Oh, interesting. So say like I've worked on a feature and I have like a bajillion files, but I was like, for the sake of like maybe a cleaner history or you don't want, like, or, you know, there's another, like some folks have this thing, like every commit should pass the build or like have a test. Like some people have like those kind of rules, right? So if you want to stage it together so that like, okay, I want to plot these changes and then commit a different portion. So it's helpful in those kinds of scenarios, right? Like where you don't want the whole thing to just go into a single commit.
+
+[SPEAKER_02]
+Exactly. And you can always revisit your history after the fact by sort of doing a rebase and moving things around. But it also makes sense to try and stage and commit things in reasonable steps so that you can sort of follow along or somebody can follow along in a PR. Yeah, so that's a reason why people use the stage. Yeah.
+
+[SPEAKER_00]
+The funny thing I realized, and you can correct me if I'm wrong, in, say I'm like watching my .git directory, right? And I add something to the index and then I commit it. If you look at the .git directory, you may not necessarily, I mean, there'll obviously be a difference. But there isn't like anything, there isn't like an indexing area where it's like, oh, this is temporary, right? So it's the whole temporary staging thing is like a conceptual thing. Like to Git, it's literally just another step, right? Where it does like the hashing thing. And we'll get into that in a moment where how those objects are stored and in hash. But there isn't anything special about like adding to the index, right? It's just like, it's just a conceptual thing, right? Is that right or not exactly true?
+
+[SPEAKER_02]
+Yeah. Well, there actually is this index file that's in the .git directory. It's called index. It's a binary file.
+
+[SPEAKER_01]
+Oh, I see that. Yeah. Yeah.
+
+[SPEAKER_02]
+And so you can get access to the contents of that by using git ls files, which is another one of these plumbing commands that we talked about. And so you can see what's in there. And it's basically just a list of file names and the shahs. that represent those file names uh yeah so so it does get added to that oh so when i do a git status it's typically like looking in the index file and a bunch of other places before it gives me like the status that's right that's right yeah right it needs to look at your local working directory and and to see the untracked files it needs to look at the index to see what's indexed and it will also look at the commit to see if your changes are in the index are different from the ones that are in the latest commit.
+
+[SPEAKER_00]
+Interesting, interesting. Okay, so like the objects thing now, right? Like how does that work? Like, and can you like walk me through like the simplest thing? Like say I'm creating like a dummy file, right? Like a text file, like the simplest thing, right? Because you're going to get into also like, because you can come in anything into Git, right? Like you can commit videos, like... heck, audio files, like. Yeah, any file, yep. I'm curious also about that, like how does that happen? But like, yeah, we'll get to that in a bit. Before that, how does this, yeah, if you walk me through like the simplest like text file, like say I touch, like, you know, which is a Unix command for just like creating a file or like, heck, I just, you know, in your favorite text editor, I create like.
+
+[SPEAKER_02]
+a text file can you walk me through what happens from the point of adding and then committing like internally what would the git directory like see sure sure so uh yeah so nothing will happen at all until you actually uh add it to your index uh When you add it to your index by doing git add file name, what will happen is what's called a loose object will be created. A loose object will go into the objects directory. This is that funny thing where the contents of that file along with a header will be hashed. And it'll make this 40 character string. It's a hexadecimal string representing the data. And then it takes the first two characters of that string and determines which directory it should go into based on that. And then the remaining 38 characters become the file name underneath that directory. So that contents is then added to that file. But it's zipped first. And then, okay, so now there's a new file inside the objects directory that is addressable by the content. So it was the stuff inside the file that made us decide on what the name of the file should be.
+
+[SPEAKER_00]
+Got it. And no two files. Well, if I had the exact same file, it would also basically hash to the same thing.
+
+[SPEAKER_02]
+Interestingly, it's actually, if you had the exact same file content, it'll go. So it doesn't even matter what the file name is or what the... you know, the, the permissions are on the file. All that matters is the contents of the file, which is great because it dedupes exact same files.
+
+[SPEAKER_00]
+Oh, this is, this is like very interesting. If I had like a 10 MB text file and I kept making changes in like, you know, I was changing one line and I have a Git log of, I've changed that file like a hundred times. Git, it doesn't store 100 copies of the same binary, right? Like assuming like nothing changed about the file, right? Like I just was like changing the permissions or something. It doesn't actually, if you actually make changes in the file, I would imagine it's storing like, yeah, how does that work? Like does it store different copies? Does it diff those copies? And also, yeah.
+
+[SPEAKER_02]
+Right. So if you're changing the permissions or the file name, either one of those, it won't make any changes to the blob associated with that data at all. If you then stage and commit that file, it will make changes to what's called the tree that points to the blob, but it won't make changes to the blob. So let's talk about the tree a little bit later. Yeah. So it won't make changes to the blob. You're right. If you do make changes to the contents of the file, then because the contents is different, when you hash that contents, you get a completely different hash. And so it'll describe a completely different file name. And so it'll even put it into a different directory since the directories are the first two characters of the hash.
+
+[SPEAKER_00]
+Oh, interesting, interesting. And so that basically means I will have new 10 MB files.
+
+[SPEAKER_02]
+Exactly, yeah. You'll have many 10 MB files, which is kind of a crazy thing. And so that's why these are called loose objects at first. And so it'll... It'll store loose objects for a while until it decides that it needs to automatically kick in and do garbage collection, which will see all these different but very similar files, right? And then it will create a thing called a pack file. And the pack file is the optimized format that you're probably imagining this stuff should go into.
+
+[SPEAKER_00]
+Oh, can you spell that out? PACT file as in P-A-C-T or P-A-T?
+
+[SPEAKER_02]
+Yeah, it's P-A-C-K file. So it's a very sort of tightly compact file, and there's a separate file that's the index into that file. And so a PACT file works by basically it stores like the latest version of the file fully, and then the differences are... from the previous version are stored after that. And so if you want to determine the contents of the file at any given time, you'll look at the index for that. But what's interesting is that that doesn't happen at first. At first, you just end up with these loose object files. So you'd have many 10 MB files within your objects directory prior to that GC happening.
+
+[SPEAKER_00]
+Oh, you just, oh wow. I just had a mind blowing moment right now. I remember when I work on very big repositories, sometimes Git just tells me to run Git, like GC, like garbage collection. And I'm like, ah, whatever. Okay, just run the command. Cause I just like, just like, let me commit. Like, you know, cause it wouldn't like, sometimes Git doesn't allow you to come in. Cause it gives you warning saying like, either you have too many loose objects, which again makes a lot of sense.
+
+[SPEAKER_02]
+That's now, yeah, that's what those are. Yeah. Yeah.
+
+[SPEAKER_00]
+Got it. Got it. Okay. So I just had like a major aha moment right now. Okay. Yeah. So I noticed there's actually a directory in objects called pack, which I guess is where like all the pack files. So if I want to see those pack files, that's probably where it would be stored, right?
+
+[SPEAKER_02]
+Right, right.
+
+[SPEAKER_00]
+Okay, cool. I'm with you so far. So there's like loose objects. We're walking through this, like there's different 10 MB files. What happens next?
+
+[SPEAKER_02]
+Okay, so what happens next is... we have those files as loose objects in the object directory and we you know that's like the first thing that happens uh when we're doing the staging of this thing the next thing that happens is we put the content into the uh into the actual index file uh and what that does is basically um we have the the shah of the file and we want to say what file name it's associated with And so that information, sort of the combination of that information goes into the index. Let's sort of skip forward now to what a commit looks like, because a commit is sort of, this is the crux of it. This is where things get really interesting. We have these sort of loose objects just sitting there with these really long names, right? And that's kind of useless to us unless you can translate a file name into that. So we want to make a commit. We have a file that's this loose object now. In the end, we want to have this commit where it says, this is what my directory looked like at this time, and here's basically the shahs of the files at the time that I made this commit. And so to do that, if you work your way downwards, you want to have a commit object. And that commit object needs to somehow describe all the files that it had. And we know that there's these shahs that describe the files, the content of the file. But we need to know the name of the file as well. And so what this commit does is the commit points to a root of a tree. And this tree is a new type of object. The tree object describes the top level of your directory. So in this case, it's actually pretty straightforward because our directory, let's say our file name is example. The tree object just has it'll have something describing the permissions on the file or the mode, and then it'll have the file name, and then it'll have that 40 character thing. So it's very simple for this particular example. But let's say that we had a subfolder that also had a file in it. This tree would point to another tree file. And that tree file is an object inside of the objects file as well. So it also has this 40 character name too. So the key thing here is that in the objects folder, we have commit objects, we got tree objects, we got blobs, which are the raw file storage. And we also have annotated tags, but let's just ignore those guys. But yeah, we've got three different types of things that are in the object folder, and they all use this SHA structure.
+
+[SPEAKER_00]
+Andrew, so that was the thing I was going to ask. If I open up my objects folder, I'm not going to see like tree objects, loose objects, blob objects. All I see is like, say I had like this 40 character sized sort of thing. I see directories with just the first two characters, the first two characters off that long string as the name of the directory. And then the rest of the portion is hashed and then stored as files inside that, right? And that's the only thing I see.
+
+[SPEAKER_02]
+So if you were to go to one of those files and unzip it... you'd see that the first line of the file describes the type of object that it is. So it would either be a blob, a tree, or a commit. That would be like right inside the first line of the file.
+
+[SPEAKER_00]
+So the type of git file it is or whatever. Yeah, the git commit file. Okay, got it. All of those commits, basically. And depending, I obviously can tell from just looking at the directory listing, but obviously git can. All of these are just like interspersed in the objects directly. So any one of those things could be like... a tree object it could be an actual file object or it could be just like the info object thing yeah it's just kind of like a key value database addressable by the content of the file Ah, I was going to ask that. So how does the deduping work here now? Because you get just like is able to search through all of these things and find out if that same hash exists and just for that file content alone. And then it just points to that. And that is just zipped together in like the different commit. Is that how it works? That's how it's able to do the deduping?
+
+[SPEAKER_02]
+Yeah, the deduping works because all it cares about is the content of the file. So when you're about, let's say that you have a license, for example, and you put it into five directories and it's the same license, right?
+
+[SPEAKER_00]
+Right, right.
+
+[SPEAKER_02]
+When it's deciding how to store that file, first thing it does is it... takes the content of the file and it hashes it. And that hash will be the same for all of the licenses because they're all exactly the same content. They're in different places within the repository, but I'm sorry, within the working directory, but they're the same content. And so the thing that will differ about those when you actually look at the commit, if you work your way downwards from the commit, is that they'll be in different trees. but the tree will point to the exact same hash for all those files.
+
+[SPEAKER_00]
+Got it, so the tree is almost like the binding metadata thingy, right? Like that tree is able to pick the metadata and then know, okay, so this is how I should construct my directory.
+
+[SPEAKER_02]
+That's right, yeah.
+
+[SPEAKER_00]
+So before we go into more topics, let's talk about the hashing thing. So what's the deal with the hashing thing? So this is an SHA1 hashing algorithm.
+
+[SPEAKER_02]
+That's right, yeah.
+
+[SPEAKER_00]
+Any reason why that was chosen? Or is just convenience, like Linus just felt that I have this? And I also like in the recent past I've heard, there is like something to it where like there was typically no collisions, but apparently I was reading like this thing where like the first collisions ever happened in the history of get blah, blah, blah.
+
+[SPEAKER_02]
+Oh, interesting. Yeah, yeah.
+
+[SPEAKER_00]
+We want to be changing this to a new algorithm, but the changing that is not that straightforward, but like it's not really that big of a problem if you have a smaller, what's the deal with this hashing algorithm?
+
+[UNKNOWN]
+Yeah.
+
+[SPEAKER_02]
+So I'm not an expert on this, but what I think must be happening is that you want to find a hashing algorithm that has a good distribution, right? Because you want to make sure that... If you look at your objects directory, there's 256 directories underneath it once you have enough files because the first two characters of hexadecimal can describe 256 directories. If you look inside those directories, the files within there, especially on a very large project, are distributed almost equally within those 255 directories.
+
+[SPEAKER_00]
+Oh, and that's a virtue of the algorithm because like, this is the thing where like, even if I change a single character in my text file, the hash looks like very different. It doesn't, it isn't like, okay, in that 40 characters, say all the characters were 0, 0, 0, 0, right? Like it's going to be very rare for you to run into that, but whatever. Like, even if you run into that, if I change one text character, it isn't basically going to say, oh, I'll change one of those zeros into one.
+
+[SPEAKER_02]
+Right, right. Everything changes. Yeah, yeah.
+
+[SPEAKER_00]
+And this is, I think, what you mean by distribution, right? So it spreads it across those characters.
+
+[SPEAKER_02]
+Yes, that's right. That's right. And the other thing is that you want it to be... And so you want a good distribution. You also want to be able to have it sort of uniquely identify the data within the file as well. So what I mean by that is, you know, kind of what you were saying before the first collision, like you really want no two files to possibly with different content to possibly ever have the same. That's part of the reason why these things are so long. This is supposed to be a universally unique fingerprint for the content of the file. If you have the same file and I have the same file and we put it into Git, we'll end up with the same fingerprint for it. But no file that is not that same contents will have that same fingerprint. So we can know that this is always going to be the same for absolutely everyone and that nobody's going to disagree with us because it's so long. What's interesting is that... You know, when you're working with Git on small projects, when you do like, you know, Git log or whatever, what you'll see is these sort of very short shots. It doesn't show you all 40 characters. It shows you like seven characters or something.
+
+[SPEAKER_00]
+Oh, that's right. Yeah, yeah, yeah. That's the other thing. Yeah, I'm curious about. Yeah.
+
+[SPEAKER_02]
+Yeah. So, you know, both of us work at a company that's like now getting pretty big. It has a lot of commits. And that the number of characters that show there, it seems to be increasing over time. because there's potentially more collisions within the data itself at those small numbers. Yeah.
+
+[SPEAKER_00]
+Oh my God. Here I was thinking that that was because I had like some weird setting on my computer because I keep messing up with my Git config and stuff.
+
+[SPEAKER_02]
+Well, you know, it might be too. They may have also changed Git, but fundamentally there's a problem with collisions. Imagine that it only showed you two characters, right? As soon as you had like 255 files, you'd accidentally be, or even before then, there'd be the likelihood of some collisions. So it needs to show more than that. If it showed all 40, there'd never be any collisions, but nobody would actually want to type that.
+
+[SPEAKER_00]
+Right, right, right. So Git is really smart to show just enough so that it's like unique for within like no two sets of what Git shows in your log would be unique in your directory, in your like set of commits at least.
+
+[SPEAKER_02]
+Right, right.
+
+[SPEAKER_00]
+Damn, that's pretty smart.
+
+[SPEAKER_02]
+Yeah, I feel like we should at some point talk about refs too, because so far all we've been talking about is these shahs and nobody wants to work with them, right?
+
+[SPEAKER_00]
+Yeah, let's do it. Let's do it. Yeah, let's talk about refs.
+
+[SPEAKER_02]
+Yeah, so refs are basically like these nice things that help us work with these shahs. So there's this idea of branches in Git and there's the master branch. And it's again, Git is kind of interesting. Master branch isn't really special. except that it's the branch that happens to be created when you do a Git in it. Otherwise, there's nothing. And by convention, people say, oh, okay, well, master branch is like trunk for development.
+
+[SPEAKER_00]
+It's like your default, basically.
+
+[SPEAKER_02]
+It's your default, yeah. But other branches are equally valid, and there's not really any difference between them from... from Git's perspective. So if I make another branch that's called a feature or something, then the two are pretty much indistinguishable from Git's perspective. And the reason I bring that up is because branches are basically one of the things that is a ref. So a ref is basically a pointer to a commit. So in the case of master, right? Master, when you say master, it's actually put into a folder in Git called, you know, .git refs heads master. And if you look at the contents of that file, that's a file that's actually, you can just look at the content of it. You don't have to use any kind of special tooling. And it just has a SHA in it. And that SHA points to the commit that it believes is currently master.
+
+[SPEAKER_00]
+Oh, interesting. So it's literally just a reference. It's like straight up a key saying like, oh, if I go to this branch or like this reference, what is the commit I should point to? And then that's basically just stored in that.
+
+[SPEAKER_02]
+That's right. Yeah.
+
+[SPEAKER_00]
+Oh, interesting. Okay. So, uh, I'm actually just looking at this and it's, uh, you're right. It's in dot get slash logs slash ref.
+
+[SPEAKER_02]
+Oh, logs. Logs is a different folder. Yeah. It's in dot get slash refs.
+
+[SPEAKER_00]
+Oh, that's right. There's another. Oh, you're right. You're right. There's another doc kit. There's a refs there as well. Damn, that is... Yeah, and I also see the tags, which is like, yeah, again, like a different thing. But okay, so refs stands for references, and there's nothing magical about this. That makes sense. So what you're saying is as I create new branches, say I create like a feature A branch... There'd just be another file like master in my ref's heads directory where it would create a new branch. It would create a new branch. Well, it would create a new file with the name of the branch that I have, and it would literally just point to a commit.
+
+[SPEAKER_02]
+That's right. Yeah.
+
+[SPEAKER_00]
+I don't want to be jumping too much, but I've run into situations where I've found that I'm on a commit, but... But my status doesn't say that I'm on that branch. It just points to commit. And this is because it says, it has like that weird message where it says like, oh, there's, it's not loose objects. I figured what like Git tells you. It's basically like, oh, I can't find the... Yeah, it's a detached head state. Yes, detached head state. What's the deal with that?
+
+[SPEAKER_02]
+Yeah. Head is another file that's in the .git directory. And head is kind of interesting. It can be... it can contain two things. It can either contain a, and if you go and look at it right now in your .get directory, you'll probably see something that looks like, you know, ref colon and then the name of some ref.
+
+[SPEAKER_00]
+I see it, refs, heads, master. That's what, refs slash heads slash master is what I see.
+
+[SPEAKER_02]
+Yeah, so head basically describes the commit that you're currently looking at. And so right now in your working directory, the commit that you would be, looking at is the same commit that happens to be the master commit. But you can check out a different commit that is not pointed to by any of the refs. So it's not pointed to by master. And if you do that, this head file will update. And instead of saying ref colon something, It'll just have a SHA directly to the commit that you happen to be looking at.
+
+[SPEAKER_00]
+Oh, interesting. So there's like different things here. I could be in different branches. So those are different references. So it could be feature A, feature B, or just master. So I could point at any point, I could be on any one of these branches. And so there's like something that points to that. And then even inside one of those branches, I could be in any one of the bajillion commits in that branch.
+
+[SPEAKER_02]
+Yeah. But what's interesting to think about here, Kaushik, is that if you, let's say you're on your feature branch and you say, you know, get checkout. head and then a carrot right which will move you to the previous commit then then the question is like are you in the branch or not yeah oh yeah you're on a commit right right and and and you're and you're on and you're sort of still in the branch by virtue of being in the descendants of the in the ancestors of the final commit of the branch. But you're also kind of not in the branch, right? You're on a commit.
+
+[SPEAKER_00]
+Because there's no ceremony to this whole branch thing. It's almost like a nice handy sheet for you to quickly jump. It's like a convenience thing. The commit in the end is the main thing, right? Yeah.
+
+[SPEAKER_02]
+Yeah, yeah.
+
+[SPEAKER_00]
+And that's disambiguated by this head directory and the refs thing that we have there.
+
+[SPEAKER_02]
+Yeah.
+
+[SPEAKER_00]
+So if I'm same feature A, I'm on branch feature A. All right, so I say I'm like 10 commits before, you know, I've checked out a 10, N minus 10 commits, right? Like when N is like the tip.
+
+[SPEAKER_02]
+Yeah. From the branch pointer? Yeah, from the branch pointer.
+
+[SPEAKER_00]
+How does Git know that? Where would it look and how would it disambiguate that?
+
+[SPEAKER_02]
+It doesn't know it. The only way that it would be able to know it is by going to the pointer for the branch, which is 10 commits forward, and walking its way backwards to the parent commits, until it arrives at where you are on the head. And then it would say, oh, that was 10 steps.
+
+[SPEAKER_00]
+So here's the thing. Okay, so I'm there. Now I switch to a different branch, right? I switch to master and I switch back to that branch. It doesn't take me forward. It keeps me at that same tip. So how does that happen?
+
+[SPEAKER_02]
+It would actually take you forward. So if you were on feature A and you move 10 commits backwards by doing a checkout 10 commits before, and then you check out to master, And then you check out your feature again. You'll be at the reference to your feature, not at that 10 commits backwards.
+
+[SPEAKER_00]
+Got it. Because Git, it's almost like an alias, right?
+
+[SPEAKER_02]
+Yes, it's exactly like an alias. Yeah, yeah.
+
+[SPEAKER_00]
+Oh, interesting, interesting. So if I did check out 10 commits before and I wanted to stay there, then I would have to reposition the head of that branch to point to N minus 10 commit.
+
+[SPEAKER_02]
+Right, right. And that's pretty straightforward. So all you need to do in that case is say, get reset hard. And then the name of the branch that... Actually... I'm sorry, what you would want to do instead is be at the branch pointer and say, get reset hard. And then the name of the commit that you want to reset the branch pointer back to.
+
+[SPEAKER_00]
+So what happens then though? Cause like, I know there's another very interesting command, but if I do that and then I go to like, you know, I jump around, like work on master, work on different feature and I come back and I'm like, ah. crap, I wanted to go back to the place that I'm in. I know Git somehow has it. How does that work, right? Like, can I, have I lost that for eternity if I just like reset? Because the other thing is like in my early days of Git, people used to scare me saying, do not do Git reset hard origin master, right? Which is like a command which is basically like nuke everything and then get me to this point. But then I also realized as I learned Git, if I commit something, I don't actually have to worry about anything because you can somehow always get there. How does all of that work? And actually, I think you were the one who taught me this command.
+
+[SPEAKER_02]
+Right. So there's a thing called the ref log. And when you do get ref log, it will just show you everywhere that you moved to. So... or where the references move to. For example, if you went to one commit and then you changed the pointer to another commit, Every piece of that information will be in the ref log. And you can work your way through the ref log and see which commits were being pointed to at which times. Then you can say, oh, that's the commit that I want to get back to. And so you can then say, get reset hard, and then the name of that commit. And your branch will be back to pointing to the commit that you were on at that time. And nothing is lost in Git that's been committed up until it's garbage collected. And it's garbage collected only when nothing points to it anymore for some duration of time or you say, you know, please prune it.
+
+[SPEAKER_00]
+Is there a difference between Git pruning and Git GCing? Like does GC and prune basically do the same thing or no, there's like obviously some difference?
+
+[SPEAKER_02]
+I actually don't know.
+
+[SPEAKER_00]
+yeah well that's that's like homework for us i guess yeah yeah exactly yeah i think i think prune is one of the uh flags for forget gc but actually i'm not sure yeah honestly half the time with prune and gc i'm just like copy pasting i see a command i was like okay stack overflow this someone says run prune or gc i run it and it gets me through so like that's yeah
+
+[SPEAKER_02]
+Right.
+
+[SPEAKER_01]
+But if we talk about this real quick, if you make a new feature branch and you make a bunch of commits on that feature branch, then you delete the feature branch.
+
+[SPEAKER_02]
+What you're deleting when you delete the feature branch is just the ref to the branch. Those commits that you made will still be there because the commits are inside the objects folder. There's just nothing pointing to them anymore.
+
+[SPEAKER_00]
+I see, I see. So, and again, this is like, to be clear, this is only on your machine, right?
+
+[SPEAKER_02]
+So that means- Only on your machine. Right, right, right. Yeah.
+
+[SPEAKER_00]
+This isn't like, yeah, there's no magic synchronization happening. When you push, it looks, in the end, it does look at like the branches that you have or the refs that you have, right? Right.
+
+[SPEAKER_02]
+It will only push the information that's pointed to by refs. That's right. Yeah. Yeah.
+
+[SPEAKER_00]
+got it got it okay so but you still can get to it through git ref log if you and oh i see that's what you mean so if you haven't garbage collected that uh it's on your local because by virtue of having moved to a whole bunch of different places it keeps track of that uh but it isn't deleted until you prune and when you prune it says like hey nobody's pointing to that so i can save some space nuke that out of the local and then it's like lost
+
+[SPEAKER_02]
+Exactly.
+
+[SPEAKER_00]
+Got it. So does that mean if we're working in the same repository, clearly your reflog is going to look very different from my reflog, right?
+
+[SPEAKER_02]
+Absolutely. Yeah, that's a local thing.
+
+[SPEAKER_00]
+That's a purely local thing. Okay, got it. This is making a lot of sense to me. There is one question I want to ask, like with respect to the deletion thing, right? What happens if I actually delete it? Like, you know, because I'm like in my repository and I'm saying, nope, I don't need that asset anymore in my Android directory. I want to like, you know, design is giving me a new asset or like, you know, heck, that feature didn't work out. So I'm going to nuke, like delete something. So I'm actually RMing that file and committing. Right. does git like actually deleted like what's the deal like there what happens in that process because when i pull the repository again i don't see the file you know so like when i ls when i list that file i don't see it there so so your working directory the file is actually removed from your working directory however if you think about it like like let's say you delete the file and commit
+
+[SPEAKER_02]
+But you need to have that file if you happen to check out the commit prior to the commit you just made. You need that file to sort of reappear. And so the file needs to stick around inside the objects directory.
+
+[SPEAKER_00]
+In our original thing, the 10 MB thing, this is, again, another reason why it's stored in there, right?
+
+[SPEAKER_02]
+Yeah, yeah. But it'll... Yeah. So the objects directory can grow quite a bit. And in fact, it won't even garbage collect that as long as, let's say we were working on master when we deleted it. If you walk your way backwards on master, that file will still be needed by some of the ancestor commits. And so it can't remove it from your objects. There's a command called filter branch, which is used for actually removing files from the git commit history as well but i'm not super familiar with what it does what i do know is that there's there's no way of changing a commit in git without also changing the shaw of the commit which makes it a new commit
+
+[SPEAKER_00]
+Right, right. So there's only a moving forward kind of approach here, unless you have to change the history altogether, right?
+
+[SPEAKER_02]
+Yeah, yeah. The whole history would change. So if you were to filter a branch, none of the commits... after where you removed this file would have the same name that they used to have. They would all have different shots.
+
+[SPEAKER_00]
+Because, oh, and this is because the tree, like one of those tree objects has changed, then that like reflects all the way up.
+
+[SPEAKER_02]
+Exactly, because you think, again, it's the contents of the file that's the name of the file. And so if you look in a commit file... the content of that file will change because the SHA of the tree is different and that's inside the commit. Yeah. So it'll end up, it has a sort of a cascading effect when, yeah.
+
+[SPEAKER_00]
+That's fascinating to think that like, yeah, Linus has actually thought about all of these things, right? Yeah, it's insane.
+
+[SPEAKER_02]
+Yeah, it is.
+
+[SPEAKER_00]
+Oh man, I had another follow-up question. Damn it. Oh, come to me. Yeah. Yeah. I was thinking about like the whole like deletion process. Oh yeah. That's the thing I was going to say. So I know there's been times where folks have like accidentally committed credentials or something into Git. Right. And this is why it's like important to like really. Yeah, just like deleting the file doesn't mean like too much because someone could just roll back their history and like, oh, that's your AWS token. Great. You know, running into this, right? And this is, I think, one of those cases where you run like GitRM and there's like some level of filter branch. Again, like I don't understand how it works either. I just like Google this every single time and then I just paste those commands. But I imagine what it's doing is it's basically changing the history, removing like all references to any SHA that would hold that object and then just nuking that thing. together right right right that's right okay wow that that was super useful and that was like a whole bunch that i think like yeah yeah i'd be concerned that we overwhelm people with too much information but no no this is awesome this is awesome it's just one of those things and i would like encourage folks like after you listen to this go like fiddle around with your directory maybe create a new git repository change a file and i there's another like there's a video like this is like early from someone at github uh this is quite some time back i'll remember to throw that in our show notes as well uh but just like after you've listened to like what gordon has said like just go meddle with your directory see how things change uh The thing that really had like the aha moment was when I created like a dummy repository. I added a text file and then I started to see how it changed, right? Like, you know, like touch a file. So like don't add anything, like have empty content and then see how that changes. Commit a file, see how that changes. Rename a file and then see how like certain, some of these commits change, but some don't. Just looking at that... You start to realize how elegant and beautiful a system Git is, despite how complicated it is. Because Git famously has, it is purely meant for developers, right? Like no normal sane human being would find this to be easy to work with or logical. Heck, even developers don't, right? So I think that really will help cement a lot of the stuff that Gordon talked about. This is awesome, Ji. Thanks a lot.
+
+[SPEAKER_02]
+No, well, thanks for having me on. This is fun to talk about.
+
+[SPEAKER_00]
+Yeah, yeah. I'm sure folks are going to have follow-up questions and have more interesting things to ask. If they did want to do that, what's a good place they can hit you up?
+
+[SPEAKER_02]
+Yeah, I'm on Twitter at G McCrite, G-M-C-C-R-E-I-G-H-T.
+
+[SPEAKER_00]
+This is amazing. Thank you so much. This is like always one of those things. I kind of understand how Git works, but I didn't like have a better understanding of it. So I've always wanted to have this session with you. And I'm glad we could do this and share it with our listeners. And thank you again for like spending the time. I know it's like super busy at work for us, but you took the time and did this. I really appreciate it. Oh, sure thing, Kaushik. All right. Thank you all so much for listening, and I will catch you in the next episode. I'd like to take this chance and thank the sponsor for this episode, Educative.io. There are a lot of websites out there that offer programming courses, but Educative.io has a really special text-based interface that helps folks learn faster and more efficiently. Check out the very new course they have for Android developers called Modern Android App Development. If you use this special link we have here, educative.io slash fragmented, then you get an additional 10% off your purchase. So remember to use that special link. Once again, it's educative.io slash fragmented. Thanks again for sponsoring the show. That's it for the show, folks. Fragmented is hosted by Don Felker and me, Kaushik Gopal. We edit and produce all the episodes here on Fragmented. Sarah the Amazing Jackson from the Spec Network helps with production assistance and wraps our final mix. Our theme and ad music is by the national recording artist Blueprint from Weightless Recordings. You can find more Fragmented episodes at fragmentedpodcast.com. Thanks for listening, and we will catch you in the next episode.

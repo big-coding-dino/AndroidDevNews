@@ -1,0 +1,337 @@
+# ep212
+Podcast: Fragmented Podcast
+
+---
+
+[SPEAKER_03]
+Welcome to Fragmented, a software developer podcast where we talk about building good software and becoming better developers. My name's Don Felker.
+
+[SPEAKER_01]
+And I'm Kaushik Gopal. Welcome to the show.
+
+[SPEAKER_03]
+Before we get going here, I wanted to share with you something that you might find very useful and helpful. Very recently, I wrote an ebook on how to make sure that you're billing at a high enough rate if you're a freelancer or consultant. So if you do any type of freelancing or consulting, then please pay attention. Very often when folks start consulting or freelancing, they set their rates too low, mainly because they don't know what the rate should be or they just feel like that's the best way to get clients. And in fact, you will get clients. However, unfortunately, over a period of time, you'll find out that you just cannot sustain at that low consulting or freelancing rate. So I've written a book, small ebook that you can download for free. It will show you the very bare minimum amount that you need to be charging as a freelancer or consultant so that you can make the right amount of money. So if you decide to go full-time in consulting or full-time in freelancing, or just continue to do it when you have time, this will ensure that you're charging the right amount. And you can get that ebook at donfelker.com slash ebook. Just plug in your email. I'll send you the PDF right to you. It's free of charge. So nothing on my end, just plug in your email. And again, that's at donfelker.com slash ebook. Hey everybody, welcome back to the show. This week we've got something a little bit different. It's been a question that's been asked numerous times on email, in person. over Twitter, you name it, it's been asked to me and numerous other people. And so while I can answer the question myself, I felt it would be best if I had someone else help answer the question for me. And the question that we're going to be answering today is, how do you grow an online presence in the software industry? And I wanted to bring on someone who has a good size following on another platform. And that guest here is today is Philip Lackner. Philip, welcome to the show. Thank you for having me. Now, I recently, not recently, probably a number of months ago, kind of ran across some of your profiles and had seen it numerous times before. But I wasn't really familiar with you because it didn't seem that my following happens to be on Twitter. And I noticed you had a large following on Instagram. So for folks that maybe don't know about you because they're not on Instagram, they don't know anything of that nature. Who are you? Can you provide some basic background information about yourself? How long have you been coding and kind of what got you into mobile and so forth?
+
+[SPEAKER_02]
+Yeah, I'm Philip Lackner. I'm 23 years old. I'm from Hannover, Germany. And I am still a computer science student here. But I will finish my degree, my bachelor's degree, in about a month. And yeah, those who know me will probably know me from either my Instagram, philiplackner underscore official, or my YouTube channel, which is also named philiplackner, where I mainly teach native Android development using Kotlin. And yeah, that's basically it.
+
+[SPEAKER_03]
+No, it's interesting that you said because you're still in college, which is very interesting to me because you've put out so much content on, I mean, if people just go to your Instagram, which is going to be linked in the show notes, you know, so scroll down if you want to check out his content. You've got a ton of stuff on there from Android development to just little snippets of talking about DNS and so forth and so forth like that. You... started posting uh was it the first thing was on instagram or or where did you start in your you know your development of kind of building content or did you have a plan it was just like i'm going to share some stuff or what how did you get into it
+
+[SPEAKER_02]
+So a friend of mine actually back then started a page about environmental stuff, recycling trash, and he used a website called Canva for that. It's a website for content production. Very simple, just drag and drop vector graphics. And I really like the way he did that look really fun. So over time, I thought, why don't you make something similar with a topic that you're actually interested in, which was Android development at that point. So it could have been something completely different if at that point I would have been into game development, for example. But I was into Android development actually just for about three or four weeks. So I actually learned that. Oh, really? Yes. I actually learned that with my page and my YouTube channel, which is still, I think, one of the best ways to learn just by teaching. And the main intention I actually had was just because I enjoyed making these posts. And I realized that I really enjoy explaining coding concepts because in my circle of friends, I never really had someone who wanted to learn coding. And there was nobody I could teach what I learned over the past. Instagram was a really good way to actually do that. I also had always like in my description, my Instagram bio, always like, hey, if you have a question, then just ask that. And people just came over, hey, I have that problem in my project. Can you just look into that and fix that? Nowadays, I can't do that anymore. But back then I actually did that. And I think that was something people really liked. And I just enjoyed helping people. That was the main intention. I didn't have the intention to build a business at that point. I didn't have the intention to build a huge following, but I just enjoyed making content.
+
+[SPEAKER_03]
+And so back then, it was just kind of just learning as you went along and sharing what you were learning, it seems like is what I'm hearing here, right? Yeah.
+
+[SPEAKER_02]
+Exactly. So I basically just looked through the Android documentation, looked what is important for Android. I learned it for myself. And the good thing here is actually that this gave me meaning. I always worked on my own projects, made some games or whatever. Yeah. But I really knew that this is not going to be a big thing. It's just a personal project. It won't get millions of users. And with teaching others, I actually had some kind of meaning because others could benefit from my work.
+
+[SPEAKER_03]
+No, I completely agree. I've been same as you. I've been teaching for quite some time, and it does provide a lot of meaning. And you've done a very good job at it on your Instagram, so we'll just stick with that for a second. And on your Instagram, when I first noticed you, I hopped over to your profile because the content was just good, and you had these short little snippets, which we'll talk about in a minute. And I think when I first had hopped over, you had just recently crested 70,000 followers on Instagram. Where are you at now? 87 87 wow it's like it seems the more you get the faster it goes is that correct yes i i get about 3 000 a week at the moment Holy cow. So, okay. Let's kind of rewind here. Like when you first started out, you know, like anybody else, you started from zero. Like me, I started from zero and I'm much smaller than you on Instagram. I think I'm at a little over 2000 and you're at 80,000 plus. What, at what point did you realize, Hey, this has some legs to it and how long did it take you for maybe to start getting, you know, your first thousand or 2000? Was it a slow go or do you think you just kind of capitalize on a very open market?
+
+[SPEAKER_02]
+I don't exactly remember for how long it took for 1,000, but I think after half a year, I got to 10K.
+
+[SPEAKER_03]
+Oh, wow.
+
+[SPEAKER_02]
+And that was also the moment where I realized, hey, this can really work out well, and I can. This can be something really solid. I can build a business out of that because that was always something I wanted to do. But I never really knew what I should do to build that business. It was always just in my mind. And then when I got that 10K about, I decided that I actually wanted to do that mainly and also keep doing that after I got my degree because I didn't really want to go into a job as an employee.
+
+[SPEAKER_03]
+That's a good point. Let's kind of talk about that for a second. Why would you not want to go into a job as an employee if you just had more of an entrepreneur mindset or what?
+
+[SPEAKER_02]
+yes i i just enjoyed being my own boss i'm a person who really values freedom i like just sitting here on my pc that i can decide what projects i work on sitting here in sweatpants you know i just i just like doing that and i i absolutely hate if somebody can or somebody tells me what to do basically And also just that you have how to say that you have a much bigger potential in terms of salary, that you're solely responsible for what you earn. That was also a big point.
+
+[SPEAKER_03]
+Yeah, that's true. I've worked for myself for a number of years and I completely agree with that. You can control it, which can be a good thing or it can be a bad thing. It depends if you have the drive, the focus, and you can actually make things happen, which it seems like you've definitely done. Now, from that first zero to 10,000, were you following any type of formula or was it just kind of like, hey, here's something I learned, let me do a video? Or did you do all video posts? Did you do...
+
+[SPEAKER_02]
+image post did you change it up or what was your strategy or did you even have one i didn't really have a strict strategy it was more like i was trying out things what works what doesn't work i was never really posting videos till now um because i do that on youtube on instagram i just like to have some variety and But the post that turned out to work really well in the beginning were these posts where I just made small tutorials like, hey, this is how you can make a simple music player on Android. I called it Spotify clone. In the end, it was just two buttons to play and pause music. But people really like that. And then I posted these code snippets in the Instagram slides. And I think what really worked well here is that a lot of people wanted to try that out. But usually if you use Instagram, you may be at the bus stop. You can't do that right now. So what people will do is they will hit the Save button, which is a very good form of engagement for Instagram because it just tells Instagram, hey, this user wants to come back because of that specific post. And all Instagram wants is that users stay on their platform for as long as possible.
+
+[SPEAKER_03]
+Yeah, it's interesting. So those code snippets, was it kind of like one of the carousel posts where you say, hey, you're going to build a Spotify clone, you show a screenshot, and then maybe the next screen has some code to play music, the next screen has code to pause, the next one to stop or whatever. Is that what it was? Just kind of those carousel posts like that?
+
+[SPEAKER_02]
+Yes, exactly. These posts. So on every slide I had like... oftentimes some animals with a speech bubble that explain these concepts of that specific slide just in a little bit funny way but also simple way and people really liked it back then and so that was are you still doing those carousel posts now or or is it just more videos or what Now, nowadays I focus on content that is as simple to consume as possible. Even though these posts worked really well back then, I didn't feel like that people really focused on understanding the concepts and more on just copying the code and being happy that they have it. So that is also reason why I started my YouTube channel, because on YouTube I can just explain concepts much more in depth and focus on actually make the people explain understand what I explain.
+
+[SPEAKER_03]
+That makes sense. Yeah. So we'll talk about here YouTube in a minute. A couple more questions about Instagram. Now that you've grown the following, you went to zero to 10K. When you got after that 10K and you realized, wow, I think this is something that could work. Actually, before I have you answer that is how long ago was that that you started on Instagram? Yeah.
+
+[SPEAKER_02]
+I started in September 2019 and YouTube about two months later.
+
+[SPEAKER_03]
+Okay. Wow. So it's still very new, technically.
+
+[SPEAKER_02]
+I mean, one and a half years about, yeah.
+
+[SPEAKER_03]
+wow congratulations that's an insane growth for that short period of time after you got to that 10k though and you realize this is something that's going to work did you at that time kind of stop and pause and say okay i need to kind of figure out some type of formula to make this work or what was your plan after that once you realized this is something that you were going to pursue
+
+[SPEAKER_02]
+Of course, I thought about how I can also monetize that.
+
+[SPEAKER_03]
+Yeah.
+
+[SPEAKER_02]
+And what my first form of monetization was, was a Udemy course about an AR Android app. And yeah, also people pretty often ask me, hey, do you have any paid courses so I can support you? And I was like, oh, they really want to pay for my work. And yeah, so I started to make that course. And it turned out that people actually bought it. Yeah. that's great how well did that course do did it make a decent uh decent income for you for a side can side income or what um i mean you don't have to share your number just in general it wasn't enough to live from that or so but um the main reason why i did that and the really the good thing about that was it showed me that people were ready to pay for my content and even if it's just a hundred dollars a month then that was really good income for me at that point because i was still studying and yeah it was better than having some kind of a job here like as a cashier or so
+
+[SPEAKER_03]
+I was a cashier for many years. I know how it goes. Yes, it's a much better career. I had that as well. Been down that road. So one of the things that folks will notice if they go to your Instagram, which I really hope that they do, it's fantastic. is that you seem to have now a certain different type of format that you do. For example, you have these videos where it's some topic in 15 or 20 seconds. And then sometimes you have a carousel post. And then sometimes it's just, you know, it's something different. Now that you've grown this large on... on instagram what is you know is there a is there a formula that you're following now is it like hey i'm going to post every single day is it twice a day or is there any formula anybody should follow or what would you know tips would you give people so multiple questions in there is there a format that you follow right now
+
+[SPEAKER_02]
+So actually, since I started this page, I posted every single day. Wow. There was an exception of one month where I was traveling that I posted every second day. And I immediately saw how the follow numbers were basically half of what I usually got. Wow. but yeah and the other time i actually posted every single day still do that and still will do that because that turned out to to work the best for me and yes i said you really realize when you post less that you also will get less followers yeah so it's a daily thing have you experimented with posting more than once a day Yes, I did that at some point. It's not like the followers will double. They will go a little bit up. But at some point, it will stop. So I did that. And it's also like the post that you, whether if you post two posts a day, then both posts will get less likes than one post that you post a day, if that makes sense. In total, I think it counts for Instagram how many likes you get in total and how many engagement in total. But for me, I never really thought about doing that on a consistent basis because it's just too much work and the reward is not high enough to do that.
+
+[SPEAKER_03]
+Interesting. So yeah, the once a day thing I've noticed for myself as well, just from, I recently started doing that and I fell off the last couple of days actually, but for about a month and a half, two months, I did that as an experiment to see how well numbers would go up. And it wasn't as focused as, you know, Hey, this is coding content. It was just random sort of content. And just that alone, I noticed that the follower count was going up and the engagement was going up and people liked the stuff that I was posting. But I think when it's definitely tailored toward a particular niche like Android, like you're doing, it seems that you definitely are probably getting a very active crowd who are interested in the topics you're speaking about. so in regards to that have you have you stepped away from i think it was a period where you went down the road of like web development almost and were you doing web development content instead of android and if so how did that work out for you yes so the main reason for that was that for some time actually struggled with some health issues with my voice so i couldn't really record youtube videos and
+
+[SPEAKER_02]
+Yeah, in that time I actually was getting into web development a lot because I couldn't do that much actually for YouTube. So I just worked at things on my own and I really enjoyed it. So when I got back and my voice was better, then I actually thought about it as like a new beginning. And I thought, okay, web development is a cool topic. Many people are interested in it. Yeah. not make web development content and i did that but after doing it for some videos on youtube i realized that it's actually not that much fun for me to teach it and that is why i actually also got back to android and it just yeah my my gut my gut told me that and it feels much better
+
+[SPEAKER_03]
+Yeah, definitely. It's hard to make that transition between technologies. Even though the web is a bigger technology, when you have, I guess, a base of people who are following you for a particular technology, you'll sometimes kind of alienate them when doing that, moving to another technology. And I've experienced that myself. So that's super interesting. Now, the... One of the things that's also interesting about your Instagram is if you look at your page, there's a very particular theme to it and it's like the colors black and green and maybe some white in there. Did you decide to kind of go with that as your own branding colors or what made you decide, hey, I need to kind of have a particular look and feel and do you think it matters?
+
+[SPEAKER_02]
+Yes, I was also getting a little bit more into branding and stuff. And I realized that it makes sense to have a consistent color scheme. Because you know how people browse Instagram, they quickly scroll through their feed. And you really need to stand out with your content. So they stop and actually swipe through your slides. And having that color theme will make those people who like my content immediately stop. They will see, oh, that's content by Philip. Let's see what you post it. And that was the main reason why I did that. And it just looks very clean in my feed for new followers.
+
+[SPEAKER_03]
+Yes, it does. Yeah, it makes it a lot easier to probably when designing some of your content as well, because you know you have that color palette that you're going to choose from and you just rely on those. It probably takes a little bit of decision fatigue out of it, I would imagine. Yeah. Um, so let's see here. We had talked, um, previously offline about how you have started a YouTube channel and you mentioned that before. Now you've grown a following on Instagram, but it seems like you're also growing a following on YouTube. And I think you're over 20,000 subscribers. If I'm not correctly, if I'm not correct on your YouTube channel, what made you decide to say, Hey, you know what? Um, Instagram is working really well, but I think I also need to go on YouTube. What made you decide to go over there?
+
+[SPEAKER_02]
+Actually, most of the followers I got back then when I posted these little code snippets and projects, they were just asking, why don't you make YouTube tutorials? And I was like, why don't I make YouTube tutorials? So I actually started with that two months later. It was really a struggle for me because back then I never really spoke English. School was like in the past for two or three years at that point. So I actually remember that for the first video, I think it's eight or nine minutes, I needed eight hours to make that because I never really got the words right. I knew how to write and read English, but I never really needed to speak it. But with YouTube, I learned that pretty well.
+
+[SPEAKER_03]
+Yeah, you speak it very well now. Thank you. Yeah, congratulations. Now, when people asked for these tutorials, I imagine that they said, hey, they wanted them to be free and much longer in content. Did you find that changing your method of kind of that short attention span of Instagram to the longer format of YouTube, did you find that being challenging to create the longer videos or was it more of a relief?
+
+[SPEAKER_02]
+It was actually more of a relief, also in terms of ideas, because suddenly I didn't need a new idea every day. Instead, I just had like one idea for a whole playlist, like making a to-do list app. And then that contained like six or seven videos, which I posted at that point every second day. Nowadays, I post every third day. But back then, yeah, I basically had content with just one idea for about two or three weeks. That was really helpful.
+
+[SPEAKER_03]
+Interesting. Okay. Now, what made you decide to go to YouTube? Even though you had maybe a Udemy course that you had built and you were selling things over there, it's very difficult to make a decent income on YouTube unless you have an insane following with a lot of engagement. So what made you decide to say, hey, you know what, I'm going to just release this stuff for free over on YouTube versus maybe creating another paid course somewhere?
+
+[SPEAKER_02]
+So first of all, the Udemy course came after starting on YouTube. Oh, okay. Like half a year after that, when I also got into producing videos a little bit more. Okay. But yeah, the reason on YouTube was just, yeah, that I enjoyed explaining and it was never really because of ad revenue. You'd probably know that it's not that much, especially in this niche. So... I actually see the potential of YouTube much more as a marketing platform to, for example, market these Udemy courses. I personally now wouldn't go to Udemy anymore, but I have my own website now where I sell my courses. If I wouldn't have YouTube, nobody would get to that website and nobody would buy my courses.
+
+[SPEAKER_03]
+Oh, when someone was on YouTube, they wouldn't go? Sorry, again? When they went to your YouTube channel, did you find that they went to your website or did they go to your website now to buy courses still or what?
+
+[SPEAKER_02]
+Yes, yes, exactly. So on YouTube, they just see my way of teaching. And if they like it, then I just link to my website under every video.
+
+[SPEAKER_03]
+Okay. Cool. So you said, we've talked a little bit over here about content production. What does, you know, and you mentioned, I think every third day you release a YouTube video and every day you post on Instagram. So how often, I mean, that's a lot of content. I mean, it's seven posts a day, seven posts a week, three videos a week. Plus you're probably working on stuff on the side on maybe another course or something else. There's always something else going on for people. What does a normal week look like you in regards to your content production?
+
+[SPEAKER_02]
+So I like to do a little bit each day. I'm not someone who likes to have fixed content days where I do everything for the week. So on average, obviously I do an Instagram post a day and a YouTube video on average takes about three to four hours. So yeah, that's on average two hours a day I spend for content, you can say. So maybe two work days a week I spend on content total in a week.
+
+[SPEAKER_03]
+and that yeah i just spread it all over the week because i enjoy having some variety in my in my day and that's what works for me really well for your court for that's for your content you're releasing you know on the free platforms like instagram or youtube now when you're creating maybe another course to sell on your website how do you fit that into your schedule or what does that look like
+
+[SPEAKER_02]
+Yeah, I just fit it into the gaps. I mean, I also still study. I write my bachelor's thesis. And you really need a planned schedule. Otherwise, it's not going to work. So I usually just write down the top three tasks for the next day, just the night before. That really helps me. I found out that to-do lists don't work that well for me because I always... Didn't really know how long each task will last. And what works for me really well now is just writing down the top three tasks I really want to get done the next day. Like one task could be making two Instagram posts, recording two videos. And... Then I will just use the Pomodoro technique to work these off. So I work for 50 minutes, followed by 10 minutes break, 15 minutes work, 10 minutes break, and so on, which is a good amount of time for me to get into that focus state and still considering the breaks.
+
+[SPEAKER_03]
+Okay. So would you say on average, well, let me ask you a different way here. Let's say you record two videos today for YouTube and that's on your to-do list. Will you just record them and then take the recording, save it on your hard drive, and then maybe tomorrow's tasks are, okay, edit those two videos or edit one video. Is that how you kind of do it?
+
+[SPEAKER_02]
+Exactly, yes. So I always look like when I have days where I feel like I can focus really well, then I do my rather difficult tasks. And when I have days where I don't feel that well, then I rather do things like editing videos, which is not that mentally demanding.
+
+[SPEAKER_03]
+Which of these tasks, when you're just talking about Instagram here and YouTube, which of the tasks would you say are probably the more complicated? Is it going to be creating the short little Instagram posts or the short little Instagram videos that you have? Or is it something like YouTube or is it planning? What's the most difficult for you?
+
+[SPEAKER_02]
+I would say it is preparing the projects for YouTube because that is actually where I need to code and also need to be able to remember what I do. Of course, I write down stuff. But of course, when you are a teacher on YouTube, you also have some kind of responsibility that the content you share is actually correct. And to make sure that that is the case, I also want to be sure that I can focus well.
+
+[SPEAKER_03]
+That's bringing up the correctness of the content is something that's vitally important. And when I ran caster, that was a evergreen problem because technology changes so fast. How do you deal with that in some of your courses of something you maybe put out two months ago or maybe 18 months ago goes out of date? Do you update it or you just say, Hey, this was for version X and that's just the way it was. We're now focusing on new stuff. What do you do?
+
+[SPEAKER_02]
+um that's difficult because especially in android you know that it's things get deprecated really quickly and that's really frustrating if you make courses and they immediately get deprecated afterwards by google so for my for my um paid courses on my website i update those i just did that for a course of mine um of course i can't update the whole course But what I will do is I will just update the dependencies, update the versions, and maybe if some bugs emerge out of that, then I will fix those bugs. But otherwise, I would need to re-record the whole course. But I always offer people who have some issues with my paid courses that they can just hit me up on Instagram and we will find a solution together.
+
+[SPEAKER_03]
+That's good then. Yeah, because I know that's one of the frustrating things when you watch a tutorial and you type the code in and it just doesn't work and it can be really frustrating. So that's good. But you bring up a good point. And this is a question I've been asked is how do you go about updating a course? And you nailed it that you would have to a lot of times re-record the whole course because... If a package import changed or some type of class changed, it could literally wipe out the entire validity of your project because the whole thing could be wrong.
+
+[SPEAKER_02]
+Yes. I remember when Google actually removed Kotlin synthetics from Android Studio by standard. Then that suddenly deprecated all my old Android videos because I used it there.
+
+[SPEAKER_03]
+Oh, no.
+
+[SPEAKER_02]
+And then you needed to use view binding and stuff like that, which is not a problem. I can teach that, but I can't update all my videos.
+
+[SPEAKER_03]
+Oh, my gosh. That's an insane amount of work. It's funny. All course creators have the same problem in technology. And it's actually one of the reasons why I'll probably never write another programming book again. Just because even when I wrote my first ones, within two weeks of them being out, the first two chapters were out of date because of the installation instructions change. Yeah. But it just is what it is. So back to your content. And so you're busy. You got a few hours a day you spend on this stuff. You've got a pretty good plan. You're setting up your three things that you're going to do for the next day. How do you come up with these ideas for your content? Do you look somewhere or what's your method to your madness here?
+
+[SPEAKER_02]
+interesting question um the funny thing is actually for over a year now i think i run out of ideas and i always find some so there are multiple things i do on the one hand what always helps is just putting the phone away and just brainstorming sitting down brainstorming ideas What also really helps is just writing with people on Instagram, seeing, OK, what are the problems people have? What are the problems my audience has? That, of course, works much better if you have a larger audience because more people will write to you. But if you have a smaller audience, then you usually also have much more ideas because you haven't done that much yet. And what I recently found out, what's actually really good is a website called contentrow.com, which has a headline generator. Okay. And at first I was very skeptical, but I tried it out and you basically just put in some words like software engineering and it will spit you out a lot of cool headlines that are really, really optimized in terms of marketing. So for example, I put in software engineering and it will spit out... um five things software engineering has in common with kim kardashian and you can't you can tell me you you wouldn't take a look at that post so what i basically did is i i thought of the headline first and then thought about the content i fit into that post
+
+[SPEAKER_03]
+Okay.
+
+[SPEAKER_02]
+And that really helped me. So for example, also the number one thing people get wrong about programming. If you just have the headline, you can think about, okay, what could it actually be? And then you suddenly feel like you find some content for that post.
+
+[SPEAKER_03]
+This is very, this is right up the alley of a lot of copywriting. I mean, almost all of copywriting starts with the headline. It's the most important thing that you write is your headline. Every copywriting book I've read, still read, talk about headlines. And if you don't know what you should be putting out, just as you said, write the headline. And then how do you deliver on what that headline is stating? And then you can usually have some type of success.
+
+[SPEAKER_02]
+Exactly. Especially on Instagram, the attention span is so low that you really need to immediately catch the attention of people. Instead, if not, they will just keep swiping.
+
+[SPEAKER_03]
+Which is a good thing I wanted to bring up, actually, is that you said earlier on is that you first created those carousel posts with code in them. And then you recently went to much more shorter form content because of the attention span. Do you find that the shorter form content works better? Are people engaging with it, like saving it still? Yeah.
+
+[SPEAKER_02]
+Yes, it really comes down to the type of posts you make, how often people will save it. And so, of course, not only saving, it's also engagement, like commenting, sharing. What people really like, I found out, is just these types of posts, like top eight APIs you can work with, top eight free APIs. So these are actually posts that people can't fully remember, but they find really interesting. And if people find something interesting and can't remember that, they will save it because they want to look at it later when they are actually working on their projects to implement these APIs or whatever. So these posts work really well, just have some rankings. Or when I make some posts without that ranking, then I usually don't optimize for maximum saves. Instead, just for maximum shares, basically, to just deliver a specific message I want to share.
+
+[SPEAKER_03]
+Okay. Do you do that on a particular schedule? Meaning, do you kind of look at your past posts and say, hey, well, it looks like I've been doing three, I did three share posts recently. I haven't really done one that's kind of optimizing for the save part of the algorithm. Do you try to strategize for that?
+
+[SPEAKER_02]
+No, not really. I actually just write down some ideas that come from my mind. And every time I sit down and make some content, I just look through this list of ideas and implement the one that I feel the most in that moment.
+
+[SPEAKER_03]
+Okay. Yeah, that makes sense. For Instagram, this has happened to me and I don't even have that many followers, but I get random brands that reach out to me to want to partner up. I can only imagine that you're getting an influx of those. Yes. Do you find that most of those are spam or any of those worth digging into? And this is the reason why I'm asking this question is, let's say someone starts creating a following on Instagram and they start getting these messages from people. Should they ignore them? Should they pay attention to them? Or how do you handle it?
+
+[SPEAKER_02]
+Usually I ignore them because they are very generic and just copy paste. And I think if a brand really wants to cooperate with me, then they should at least have some kind of personal message. If not, I will usually just delete them. And I also get these very often that just people ask me pay promotion question mark. And I'm just like, no, I don't know who you are, what you want to promote. I'm just not going to promote random stuff because this will just damage your brand long term if people feel like you just promote because you need the money or whatever. So. If there is like a larger company or brand that comes up to me, I will take a look. And if I can support that, and especially if I can try that out, what they want me to promote, then I'm also open to do that, but usually not that common. So I think I did two paid promotions ever.
+
+[SPEAKER_03]
+Okay. So would you say that your largest form of monetization right now is just selling the courses through your website?
+
+[SPEAKER_02]
+Yes, absolutely. That is also my focus right now. And as we also talked a little bit about, I want to get a little more into freelancing.
+
+[SPEAKER_03]
+Okay. Yeah. The, it seems like, and you mentioned this early on, and I think this is a thing that a lot of people don't recognize is that when you start gaining a following on any type of social media, it's, you know, the goal is not to become famous though. Some people want to do that. Um, but I mean, sometimes there's no goal at all. And, but what ends up happening as a side effect from it is it turns into a marketing channel that you can use. Um, So if people like learning from you on Instagram like you have, then they're going to click your profile and see that you also sell courses or have YouTube or vice versa. And would you agree that that's kind of been the primary focus is just to kind of grow the awareness of what you're doing and what you have out there for a marketing purpose?
+
+[SPEAKER_02]
+Exactly. So I think it just gives you so much flexibility. So no matter what you want to do, it can help you within your niche. If you want to become employed at a company, then it for sure helps to have a presence online. They can see what you know. They can see the quality of content you put out. If you want to get into freelancing, then you can show your clients, hey, this is what I know. If you want to sell courses, it helps. If you want to offer a coaching, it helps. So you're really flexible. You can really decide what you do in your niche.
+
+[SPEAKER_03]
+And niche is a good word here because it's something I wanted to dive into for a minute. And let's say that I have, I'm someone who's listening and I have an Instagram account and my Instagram account, I've had pictures of my dogs, some family vacations, and then I have a random post about coding. So overall, it's just kind of this random account. If my goal is to grow my following, would you recommend that I just completely niche down into the technical aspect of it if that's what I want to do? Or what would you advise in that case?
+
+[SPEAKER_02]
+Yes. If you really want to focus on a specific niche, I would say then totally focus on that with your posts. But I feel like you rather want to build a brand around your person, I think. Then it's totally fine to also post some pictures of you, which you do. What I really like about your page are these IGTV, where you talk about freelancing. These are really helpful. And if you have some normal posts, I'd say like normal pictures of your family, of your dog, whatever. then I would say what you already do is at least have a good description. So just a normal photo won't deliver any value. Instead, you want to give some advice and description which will make people read that, which will signalize to Instagram, hey, people actually spend time on that post, which will actually push it.
+
+[SPEAKER_03]
+in your experience have you seen that uh people with mainly one highly focused uh like yours is very focused on technology android and then there's of course instagram has lots of fitness people on it and you know their fitness pages do you find that particular niches that are those pages that are only focused like laser focused on those niches do they do better than than a more generalized page in your in your opinion
+
+[SPEAKER_02]
+My Instagram page is actually not focused on Android. It's just more development in general. I post a lot about mindset for developers, how you should think as a developer. While on YouTube, I fully focus on Android. Okay. And since I do that, actually, that more general approach, I also get a lot more followers. But of course, a side effect is that you don't have that specific audience. Like if I promote an Android course, then maybe only half of my followers are Android developers.
+
+[SPEAKER_03]
+okay yeah i got you yeah that makes sense the the reason i ask is because if someone um if you were to do this all over again knowing what you know now if today i hit the button on your instagram account and i and your in your youtube account and i zeroed everything out what would you do tomorrow to build yourself back up uh good question so
+
+[SPEAKER_02]
+I think what would really help me is because I still have the knowledge how to make these posts, how to make good posts. What helped me to really stand out is not using a software like Canva because like 95% of the pages use that. I use Photoshop. Not everybody is ready to pay for software they can actually make content with. And you need to learn that. So that really makes you stand out. That allows you to really make that customized content. You have so much more options with Photoshop. And my real tech limit with Adobe After Effects. So it comes all with Adobe Creative Cloud. Really helpful. And yeah, I actually haven't seen many pages who have customized posts. It's all about these, you know, Canva. They put in the same vector graphics every time you see this all over Instagram. And I just decided that I didn't want that.
+
+[SPEAKER_03]
+So that's a good point. I've seen that too. Canva is fantastic to start with. And if you have zero design skills and you want to get started, then definitely use Canva. Just know that there's going to be some similarity to your stuff out there. But at some point, you probably need some type of assets. It's going to be an icon. It's going to be an image of some sort. Do you have a particular place that you recommend people go to for that? Or do you just kind of make all that yourself as well?
+
+[SPEAKER_02]
+No, I have a place which is Freepik.com, which is just a stock image website. I have a premium subscription there, which is about, I think, 80 euros a year. Okay. And I can just download whatever I want. They have vector graphics, they have photos, stock photos, PSD files for Photoshop. It's a really good website in my opinion.
+
+[SPEAKER_03]
+Okay. And you mentioned a couple of tools here. So Photoshop, of course, I agree. I've been working with it for two decades. After Effects, I haven't played with it at all, really, other than just small experimenting. Free pick here. What other tools do you use? I know you got to do screen recording and so forth. What other software tools do you use to develop your content?
+
+[SPEAKER_02]
+So Instagram is really solely just Photoshop and After Effects and my YouTube videos. I do these with Camtasia, which is basically that all in one solution to record and edit. And I really like it. It's a very simple software, but it's really good for tutorial videos because I can edit so fast for like a 20 minute video. I need 25 minutes of editing.
+
+[SPEAKER_03]
+I noticed that in some of your videos, you have your green screens. So you kind of just sit right on top of that. In Camtasia, can you use the whole chroma color there and kind of allow the green screen in Camtasia?
+
+[SPEAKER_02]
+Yes. And the good thing about it is actually that it records your screen and your camera separately. So you can then always move around the camera after recording.
+
+[SPEAKER_03]
+Oh, so if like your face is kind of in the bottom right corner and you need to show up in the bottom right corner, you can just kind of animate yourself out of the way. Exactly.
+
+[SPEAKER_02]
+Okay, that's cool.
+
+[SPEAKER_03]
+Okay. So if someone were to start out, would you recommend that a good use of their time is to learn something like After Effects? Or actually, let me rewind that. When do you use Photoshop versus After Effects for people that are not familiar with this process at all?
+
+[SPEAKER_02]
+Photoshop is just for graphical content like photos for my slideshows on Instagram. I usually post two slideshows followed by a reel that just arranges these in a nice way in my feed so that all reels are in one column and all my slideshows are in one column. I just came up with this style by doing and I just enjoy making these slideshows a little bit more than making reels. So I mean, two slideshows followed by a reel. and these reels which are for those who don't know that just simple short videos instagram similar to tick tock videos and those are actually the videos i make with adobe after effects just have some nice animations explaining a tech related concept in 20 seconds which people really like how long did it take you to become somewhat proficient or just comfortable in after effects So the animations I do are fairly simple. I couldn't make some special effects with normal videos. But what I need is actually, I didn't need that long, like two or three YouTube tutorials or courses I watched. If you just understand that concept of keyframes and where you can find the type of animation you want, then it's actually just spending some time. Yeah.
+
+[SPEAKER_03]
+Sounds like it's pretty, I've worked with Photoshop and you can spend a long time learning Photoshop. It can get deep. I mean, I still can After Effects. It can get deep too. But I remember I had hopped over to use Adobe Premiere to make videos from ScreenFlow. I started with Camtasia, moved to ScreenFlow on a Mac. And then I tried to use Premiere and I ended up hating Premiere. I just couldn't even wrap my head around it. It was just so backwards. Everything was just weird. And so to tell you the truth, that left me with a bad impression in my mouth. And I thought, well, After Effects is probably going to be the same way. But from your experience, it sounds like it's pretty easy. So I'm going to have to give it a shot.
+
+[SPEAKER_02]
+Yeah, I mean, after effects is not used to edit real videos. That is what Premiere is for. It's rather to make these cool effects and animations. And then the intention is actually to edit that afterwards in Premiere, if according to Adobe. And what I actually forgot was that I also use Adobe Illustrator, which is for vector graphics. So when I just download these vector graphics from FreePig, then I can edit these in Illustrator and just drag and drop these two after effects and use them there and animate them there.
+
+[SPEAKER_03]
+Okay, so that's interesting. You'll take maybe if you need a vector icon of a microphone, you'll get it from FreePic, pull it into Illustrator, change the color or size or cut something. Then you'll pull it into After Effects, animate what you want to animate. And then I guess this is a good workflow question. From there, do you go back into Camtasia and build your video in Camtasia?
+
+[SPEAKER_02]
+No, it's finished when I do it in After Effects. It's just a 20-second video. Not much to edit and cut there. I use a software website actually to schedule my posts. I just afterwards export that in After Effects, drag it onto the website, and just write the description on my PC keyboard, which is better than on my phone keyboard, and just schedule it.
+
+[SPEAKER_03]
+Yeah, writing on the phone keyboard is a pain. If you don't mind asking, what software do you use for your auto scheduling?
+
+[SPEAKER_02]
+It's called later.com.
+
+[SPEAKER_03]
+Okay. I've used later as well. Have you found, I've tried a couple of the ones and always kind of went back to later. That seems to be the option that's best for you too. You bring up a good point writing the content in the description. So I, let's say someone's starting out, they create a carousel post and it has some code in it. How much should they be writing in the caption?
+
+[SPEAKER_02]
+It's totally dependent on the post you post. If I have to deliver a strong message with that post, I usually take some time and write that caption and description. Sometimes, like today, I'm just lazy. I don't write a description at all. It does also work. But for example, a week ago about, I posted a post about my journey as a developer, my story. And there I really took a lot of time to write that caption because in that moment, I just felt like I really want to deliver that message that I put in there. So it's really just dependent on the day, how I handle it.
+
+[SPEAKER_03]
+Okay. How important are hashtags on a platform like Instagram?
+
+[SPEAKER_02]
+Not important. I always tended to use all 30 hashtags you have. I did that over a very long time. But it doesn't really do anything. Right now, I only use four hashtags, like the main ones, like programming, developing. And just use hashtags that fit to your posts. And the worst thing you can do is just use some apps that give you predefined hashtags for your niche. Because Instagram, the Instagram algorithm and AI is not stupid. They know that. And if you put in hashtags that don't fit to your post, I don't think it will benefit your post. So I really don't spend much time thinking about hashtags. I focus on delivering the content people want to see.
+
+[SPEAKER_03]
+Do you think early on the early on when you were first posting, do you think that the hashtags helped you at all or was it still negligible?
+
+[SPEAKER_02]
+Instagram behaves very weird regarding that. I mean, you have your insights. And I had some points where you can always see how much followers or how much reach you got from hashtags. And some posts get really a lot of reach back then. And some posts like... 10 people just saw that post through hashtags and I put like 30 hashtags down there. Um, what I experienced over the time, they get more and more insignificant. So right now the, the, how many followers come from hashtags don't even appear in my insights anymore.
+
+[SPEAKER_03]
+Oh, so it's just now, well, I guess the algorithm has kind of taken over and said, Hey, Philip stuff's good. We're just going to keep shoving it in front of people. Cause it's just, it's being picked up a lot.
+
+[SPEAKER_02]
+Exactly. And the algorithm is also smart enough to, to see what your post is about.
+
+[SPEAKER_03]
+Oh, it's like if it's about, hey, this is software and Don always looks at software posts. So let's go ahead and show him Philip's post the next time he's over in the explore tab or whatever or some random thing. exactly yes that makes sense cool man there's a ton to be to to learn here i think i can keep going on and on about various different things but i've uh i've picked your brain for a while now if folks um is there anything that we missed let me ask you this is there anything that we've missed so far that you feel that we should share with the listeners or we kind of covered all the bases
+
+[SPEAKER_02]
+I think I would cover one more typical mistake I see people do, and that is being annoying. You know, these people who just comment on other people's posts, hey, I post about cybersecurity, check out my page. This doesn't help you to grow. It will do the opposite. Instagram knows that. They will place your comment at the very bottom of the comment section so that not that many people will actually see it. And also what I experienced so often is that people just send me their posts via DM without me asking for that, just without any comment, they sent me that post. And yeah, that usually ends up that I block these people because they do that over and over again. And yeah, I want to see your content. I want to follow you when I like your content and not because you just send me your content in your DM. Also don't repost stuff. I hate that when people repost my content, it's in my opinion, just fancy term for intellectual property violation. That doesn't help you. Even if you grow a decent amount of followers with reposts, what does that help you? That's not your content, it's not unique, and other people will just go to the pages that initially made those posts.
+
+[SPEAKER_03]
+Yeah, I agree. What do you, and I guess this kind of leads, this is based on your question, excuse me, your statement about how people are sending random DMs and stuff like that. I imagine, well, I know this happens with me, but with you, it's got to be a hundred times as bad. How do you handle the critique and criticism and, you know, probably a lot of the hate that you get because it's online. People are just going to be nasty sometimes. How do you handle that to make sure it doesn't kind of get you down or make you stop posting?
+
+[SPEAKER_02]
+So luckily, I don't get that much hate. Oh, that's good. Recently, I had a very bad comment, but it's really not that often. And about critique, I'm just very happy if people want to give me some feedback, how I can improve. Otherwise, I wouldn't know what I need to do differently, but just at least think about what people say. And if that is something that might help my page to grow further, then I'm really happy about that.
+
+[SPEAKER_03]
+Cool. All right. Well, that's good advice there. All right. Well, if folks want to get ahold of you, what's the best way that they can find you? Where can they find you online? And we'll put all these links again in the show notes, but where can they find you and what's the best way?
+
+[SPEAKER_02]
+If you just want to write with me personally, then Instagram is the best platform for that because it has that direct messages feature. If you're an Android developer and you like to learn more about Android, YouTube is the best place. And from there on, if you're interested in getting more advanced Android courses, then you can check out my website, pl-coding.com, where I share my... paid courses. And I'm always very grateful for people who actually support me by doing that. Because if I can pay my bills, I also can't do all that free content.
+
+[SPEAKER_03]
+Definitely. All right. Well, what we're going to do is I'll put all these links directly in the show notes. So regardless of what app you're listening to this show on, you can just scroll down, click the link. You can go check out all of Phillip's stuff. Definitely, I highly recommend the Instagram and YouTube content. I follow both of them. It's great stuff. Phillip, thanks for the time. Appreciate you coming on.
+
+[SPEAKER_02]
+Yeah. Thanks for having me.
+
+[SPEAKER_03]
+All right, folks. We'll catch you in the next episode. Hey folks, before you get going, don't forget you can download the free ebook that'll show you how and why you need to charge at a high enough rate. That's going to be at donfelker.com slash ebook. Just go there, plug in your email. I'll give you the PDF for free and it'll show you everything you need to know on how to charge the proper bare minimum rate and also what I recommend. See you over there.
+
+[SPEAKER_01]
+That's it for the show, folks. Fragmented is hosted by Don Felker and me, Kaushik Gopal. We edit and produce all the episodes here on Fragmented. You can find more Fragmented episodes at fragmentedpodcast.com. Thanks for listening, and we will catch you in the next episode.
+
+[UNKNOWN]
+Thank you.
