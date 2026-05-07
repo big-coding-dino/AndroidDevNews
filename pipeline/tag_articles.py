@@ -7,7 +7,7 @@ via `claude -p -` stdin. Parses the output and upserts tag assignments to resour
 Run:
   uv run pipeline/tag_articles.py
   uv run pipeline/tag_articles.py --batch-size 20
-  uv run pipeline/tag_articles.py --only-untagged
+  uv run pipeline/tag_articles.py --force   # re-tag already-tagged articles
   uv run pipeline/tag_articles.py --dry-run
 """
 import argparse
@@ -39,8 +39,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--batch-size", type=int, default=20)
 parser.add_argument("--limit", type=int, default=None, help="Max total articles to process (default: all)")
 parser.add_argument("--offset", type=int, default=0, help="Skip first N articles (default: 0)")
-parser.add_argument("--only-untagged", action="store_true")
 parser.add_argument("--only-tagged", action="store_true")
+parser.add_argument("--force", action="store_true", help="Re-tag articles that already have tags")
 parser.add_argument("--dry-run", action="store_true")
 parser.add_argument("--tags", nargs="+", metavar="SLUG")
 args = parser.parse_args()
@@ -56,10 +56,10 @@ conn = psycopg2.connect(
 
 def get_articles(batch_size: int, offset: int = 0) -> list[dict]:
     """Fetch a batch of articles with summary or title."""
-    if args.only_untagged:
-        subq = "NOT EXISTS (SELECT 1 FROM resource_tags rt WHERE rt.resource_id = r.id)"
-    elif args.only_tagged:
+    if args.only_tagged:
         subq = "EXISTS (SELECT 1 FROM resource_tags rt WHERE rt.resource_id = r.id)"
+    elif not args.force:
+        subq = "NOT EXISTS (SELECT 1 FROM resource_tags rt WHERE rt.resource_id = r.id)"
     else:
         subq = None
 
@@ -68,6 +68,7 @@ def get_articles(batch_size: int, offset: int = 0) -> list[dict]:
         FROM resources r
         JOIN articles a ON a.resource_id = r.id
         WHERE r.resource_type = 'article'
+          AND r.visible = true
           AND (r.summary IS NOT NULL OR r.title IS NOT NULL)
     """
     params: list = []

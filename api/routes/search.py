@@ -67,6 +67,7 @@ def search_articles(
                 LEFT JOIN resource_tags rt ON rt.resource_id = r.id
                 LEFT JOIN tags t ON t.id = rt.tag_id
                 WHERE r.resource_type = 'article'
+                  AND r.visible = true
                   AND r.tldr IS NOT NULL
                   AND r.published_at IS NOT NULL
                 GROUP BY r.id, r.title, r.url, r.published_at, r.tldr, r.summary, f.name, a.readability_content, rrf.rrf_score

@@ -58,6 +58,7 @@ def get_articles(
                         JOIN resource_tags rt ON rt.resource_id = r.id
                         JOIN tags t      ON t.id = rt.tag_id
                         WHERE r.resource_type = 'article'
+                          AND r.visible = true
                           AND r.published_at IS NOT NULL
                           AND t.slug = %s
                         GROUP BY r.id, r.title, r.url, r.published_at, r.tldr, r.summary,
@@ -96,6 +97,7 @@ def get_articles(
                         LEFT JOIN resource_tags rt ON rt.resource_id = r.id
                         LEFT JOIN tags t ON t.id = rt.tag_id
                         WHERE r.resource_type = 'article'
+                          AND r.visible = true
                           AND r.published_at IS NOT NULL
                         GROUP BY r.id, r.title, r.url, r.published_at, r.tldr, r.summary,
                                  f.name, f.slug, a.clean_content, a.readability_content

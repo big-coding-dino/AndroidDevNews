@@ -26,7 +26,7 @@ with conn.cursor() as cur:
         SELECT r.id, ad.clean_content
         FROM resources r
         JOIN articles ad ON ad.resource_id = r.id
-        WHERE ad.clean_content IS NOT NULL AND r.embedding IS NULL
+        WHERE ad.clean_content IS NOT NULL AND r.embedding IS NULL AND r.visible = true
     """)
     rows = cur.fetchall()
 

@@ -38,7 +38,8 @@ CREATE TABLE IF NOT EXISTS resources (
     published_at  DATE,
     created_at    TIMESTAMPTZ DEFAULT NOW(),
     summary       TEXT,
-    background    TEXT
+    background    TEXT,
+    visible       BOOLEAN NOT NULL DEFAULT true
 );
 
 CREATE TABLE IF NOT EXISTS articles (

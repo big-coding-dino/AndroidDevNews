@@ -195,6 +195,7 @@ async def main():
             WHERE (ad.clean_content IS NULL OR ad.readability_content IS NULL)
               AND ad.fetch_error IS NULL
               AND ad.clean_content_error IS NULL
+              AND r.visible = true
             ORDER BY r.published_at DESC NULLS LAST
         """)
         rows = cur.fetchall()

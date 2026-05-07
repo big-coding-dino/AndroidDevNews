@@ -64,7 +64,7 @@ Plain text only, no markdown, no bullet points."""
 
 
 def fetch_articles(conn, tag=None, limit=None, force=False, tldr_only=False):
-    where_clauses = ["ad.clean_content IS NOT NULL", "length(ad.clean_content) > 200"]
+    where_clauses = ["ad.clean_content IS NOT NULL", "length(ad.clean_content) > 200", "r.visible = true"]
     if not force:
         if tldr_only:
             where_clauses.append("r.tldr IS NULL")
