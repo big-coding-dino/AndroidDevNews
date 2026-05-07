@@ -132,7 +132,7 @@ async def process_one(client: httpx.AsyncClient, resource_id: int, url: str) -> 
     hostname = urlparse(url).hostname or ""
 
     # Skip domains that can't be scraped
-    if hostname in SKIP_DOMAINS:
+    if any(hostname == d or hostname.endswith("." + d) for d in SKIP_DOMAINS):
         print(f"  [skip] {url[:80]}")
         return EnrichResult(resource_id=resource_id, fetch_error="skipped: domain not scrapable")
 
