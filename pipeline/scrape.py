@@ -76,8 +76,11 @@ def run_trafilatura(html: str, url: str) -> tuple[str | None, date | None, str |
                 scraped_date = date.fromisoformat(meta.date[:10])
             except ValueError:
                 pass
-        error = None if clean else "trafilatura returned no content"
-        return clean, scraped_date, error
+        if not clean:
+            return None, scraped_date, "trafilatura returned no content"
+        if len(clean) < 200:
+            return None, scraped_date, "content too short"
+        return clean, scraped_date, None
     except Exception as e:
         return None, None, str(e)
 
@@ -140,6 +143,9 @@ async def process_one(client: httpx.AsyncClient, resource_id: int, url: str) -> 
             if fetch_error:
                 print(f"  [medium:err] {url[:80]}: {fetch_error}")
                 return EnrichResult(resource_id=resource_id, fetch_error=fetch_error)
+            if clean_content and len(clean_content) < 200:
+                print(f"  [medium:short] {url[:80]}  {len(clean_content)}ch")
+                return EnrichResult(resource_id=resource_id, clean_content_error="content too short")
             # Run readability.js on the Playwright content (it gives us HTML)
             readability_content, readability_error = await run_readability(clean_content or "", url)
             print(f"  [medium:ok] {url[:80]}  clean={len(clean_content or '')}ch  readability={len(readability_content or '')}ch")
@@ -186,7 +192,9 @@ async def main():
             SELECT r.id, r.url
             FROM resources r
             JOIN articles ad ON ad.resource_id = r.id
-            WHERE (ad.clean_content IS NULL OR ad.readability_content IS NULL) AND ad.fetch_error IS NULL
+            WHERE (ad.clean_content IS NULL OR ad.readability_content IS NULL)
+              AND ad.fetch_error IS NULL
+              AND ad.clean_content_error IS NULL
             ORDER BY r.published_at DESC NULLS LAST
         """)
         rows = cur.fetchall()
