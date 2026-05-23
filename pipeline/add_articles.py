@@ -7,11 +7,15 @@ Usage:
 import os
 import re
 import sys
+from pathlib import Path
 from datetime import date
 import httpx
 
 import psycopg2
 from dotenv import load_dotenv
+
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from pipeline.utils import canonical_url
 
 load_dotenv()
 
@@ -37,6 +41,8 @@ async def main():
     if not urls:
         print("Usage: uv run pipeline/add_articles.py <url1> <url2> ...")
         sys.exit(1)
+
+    urls = [canonical_url(u) for u in urls]
 
     print(f"Fetching titles for {len(urls)} URLs...")
     titles = {}

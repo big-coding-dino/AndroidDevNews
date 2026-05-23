@@ -20,6 +20,7 @@ from dotenv import load_dotenv
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from scrapers.kotlinweekly import KotlinWeeklyScraper, current_issue
+from pipeline.utils import canonical_url
 
 load_dotenv()
 
@@ -95,7 +96,9 @@ def main():
 
     if args.dry_run:
         for r in resources[:10]:
-            print(f"  [dry-run] issue-{r.issue_number} {r.url[:80]}")
+            canon = canonical_url(r.url)
+            suffix = " [canonicalized]" if canon != r.url else ""
+            print(f"  [dry-run] issue-{r.issue_number} {canon[:80]}{suffix}")
         if len(resources) > 10:
             print(f"  ... and {len(resources) - 10} more")
         conn.close()
@@ -133,7 +136,7 @@ def main():
                     ON CONFLICT (url) DO NOTHING
                     RETURNING id
                     """,
-                    (feed_id, r.url, r.title or None, r.rough_date),
+                    (feed_id, canonical_url(r.url), r.title or None, r.rough_date),
                 )
                 resource_row = cur.fetchone()
                 if resource_row:

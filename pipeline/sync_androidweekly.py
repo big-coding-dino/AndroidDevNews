@@ -7,6 +7,8 @@ the RSS feed, and inserts them directly — no CSV intermediary.
 Usage:
   uv run pipeline/sync_androidweekly.py
   uv run pipeline/sync_androidweekly.py --dry-run
+  uv run pipeline/sync_androidweekly.py --dry-run --from-issue 725
+  uv run pipeline/sync_androidweekly.py --from-issue 725 --to-issue 726
 """
 import argparse
 import os
@@ -19,6 +21,7 @@ from dotenv import load_dotenv
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from scrapers.androidweekly import AndroidWeeklyScraper
+from pipeline.utils import canonical_url
 
 load_dotenv()
 
@@ -32,6 +35,8 @@ FEED_URL = "https://androidweekly.net/rss.xml"
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--dry-run", action="store_true", help="Fetch and print without writing to DB")
+    parser.add_argument("--from-issue", type=int, help="Force start from this issue number")
+    parser.add_argument("--to-issue",   type=int, help="Stop at this issue number (inclusive)")
     args = parser.parse_args()
 
     scraper = AndroidWeeklyScraper()
@@ -72,23 +77,29 @@ def main():
         )
         last_issue = cur.fetchone()[0] or 0
 
+    start_issue = args.from_issue if args.from_issue else last_issue + 1
+    end_issue = args.to_issue if args.to_issue else current_issue
+
     print(f"Last imported issue: {last_issue}")
 
-    if current_issue <= last_issue:
+    if start_issue > end_issue:
         print("Already up to date.")
         conn.close()
         return
 
-    print(f"Fetching issues {last_issue + 1} → {current_issue}...\n")
+    print(f"Fetching issues {start_issue} → {end_issue}...\n")
 
-    resources = list(scraper.fetch(from_issue=last_issue + 1))
+    resources = list(scraper.fetch(from_issue=start_issue))
+    resources = [r for r in resources if r.issue_number <= end_issue]
     resources = [r for r in resources if urlparse(r.url).hostname not in SKIP_DOMAINS]
 
     print(f"\nTotal resources to import: {len(resources)}")
 
     if args.dry_run:
         for r in resources[:10]:
-            print(f"  [dry-run] issue-{r.issue_number} {r.url[:80]}")
+            canon = canonical_url(r.url)
+            suffix = " [canonicalized]" if canon != r.url else ""
+            print(f"  [dry-run] issue-{r.issue_number} {canon[:80]}{suffix}")
         if len(resources) > 10:
             print(f"  ... and {len(resources) - 10} more")
         conn.close()
@@ -128,7 +139,7 @@ def main():
                     ON CONFLICT (url) DO NOTHING
                     RETURNING id
                     """,
-                    (feed_id, r.url, r.title or None, r.rough_date),
+                    (feed_id, canonical_url(r.url), r.title or None, r.rough_date),
                 )
                 resource_row = cur.fetchone()
                 if resource_row:
