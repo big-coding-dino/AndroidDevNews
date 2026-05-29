@@ -1,5 +1,5 @@
 """
-Batch-generate summaries for podcast episodes using Claude (claude -p).
+Batch-generate summaries for podcast episodes using kilo run --auto (Minimax via Kilo).
 Reads transcripts from podcast/epNNN/ folders, writes summaries to file and DB.
 
 Usage:
@@ -123,6 +123,21 @@ def find_transcript(episode_number):
     return txt.read_text(encoding="utf-8") if txt.exists() else None
 
 
+def _kilo_text(stdout: str) -> str:
+    """Extract concatenated text from kilo --format json event stream."""
+    text = ""
+    for line in stdout.splitlines():
+        if not line.strip():
+            continue
+        try:
+            e = json.loads(line)
+            if e.get("type") == "text":
+                text += e["part"]["text"]
+        except (json.JSONDecodeError, KeyError):
+            pass
+    return text.strip()
+
+
 def generate_summary(title, url, duration_min, published, transcript):
     prompt = PROMPT_TEMPLATE.format(
         title=title,
@@ -133,12 +148,13 @@ def generate_summary(title, url, duration_min, published, transcript):
     )
     while True:
         result = subprocess.run(
-            ["claude", "-p", prompt],
+            ["kilo", "run", "--auto", "--format", "json", "-"],
+            input=prompt,
             capture_output=True,
             text=True,
         )
         if result.returncode == 0:
-            return result.stdout.strip()
+            return _kilo_text(result.stdout)
         error = result.stderr.strip() or result.stdout.strip()
         if is_rate_limit_error(error):
             wait_secs, label = parse_retry_after(error)
@@ -146,7 +162,7 @@ def generate_summary(title, url, duration_min, published, transcript):
             time.sleep(wait_secs)
             print("  Retrying...")
         else:
-            raise RuntimeError(f"claude -p failed: {error}")
+            raise RuntimeError(f"kilo run failed: {error}")
 
 
 def save_to_file(episode_number, summary):

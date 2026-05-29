@@ -1,5 +1,5 @@
 """
-Batch-generate summaries for articles using Claude (claude -p).
+Batch-generate summaries for articles using kilo run --auto (Minimax via Kilo).
 Writes results to resources.summary in the DB.
 
 Usage:
@@ -14,6 +14,7 @@ Run in background:
   tail -f summarize.log
 """
 import argparse
+import json
 import os
 import re
 import subprocess
@@ -63,7 +64,7 @@ Write a tldr of exactly 2-3 sentences that:
 Plain text only, no markdown, no bullet points."""
 
 
-def fetch_articles(conn, tag=None, limit=None, force=False, tldr_only=False):
+def fetch_articles(conn, tag=None, source=None, limit=None, force=False, tldr_only=False):
     where_clauses = ["ad.clean_content IS NOT NULL", "length(ad.clean_content) > 200", "r.visible = true"]
     if not force:
         if tldr_only:
@@ -81,6 +82,9 @@ def fetch_articles(conn, tag=None, limit=None, force=False, tldr_only=False):
         """
         where_clauses.append("t.slug = %s")
         params.append(tag)
+    if source:
+        where_clauses.append("r.source_id = (SELECT id FROM feeds WHERE slug = %s)")
+        params.append(source)
 
     where = " AND ".join(where_clauses)
     limit_clause = f"LIMIT {int(limit)}" if limit else ""
@@ -123,17 +127,32 @@ def is_rate_limit_error(error_text):
     return any(kw in error_text.lower() for kw in ("rate limit", "rate_limit", "429", "too many requests"))
 
 
+def _kilo_text(stdout: str) -> str:
+    """Extract concatenated text from kilo --format json event stream."""
+    text = ""
+    for line in stdout.splitlines():
+        if not line.strip():
+            continue
+        try:
+            e = json.loads(line)
+            if e.get("type") == "text":
+                text += e["part"]["text"]
+        except (json.JSONDecodeError, KeyError):
+            pass
+    return text.strip()
+
+
 def call_claude(prompt):
-    """Call claude -p with retry on rate limit. Returns output string."""
+    """Call kilo run --auto with retry on rate limit. Returns output string."""
     while True:
         result = subprocess.run(
-            ["claude", "-p", "-"],
+            ["kilo", "run", "--auto", "--format", "json", "-"],
             input=prompt,
             capture_output=True,
             text=True,
         )
         if result.returncode == 0:
-            return result.stdout.strip()
+            return _kilo_text(result.stdout)
 
         error = result.stderr.strip() or result.stdout.strip()
         if is_rate_limit_error(error):
@@ -143,7 +162,7 @@ def call_claude(prompt):
             time.sleep(wait_secs)
             print("  Retrying...")
         else:
-            raise RuntimeError(f"claude -p failed: {error}")
+            raise RuntimeError(f"kilo run failed: {error}")
 
 
 def generate_summary(title, url, content):
@@ -181,6 +200,7 @@ def print_progress(conn):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--tag", help="Filter by tag slug (e.g. ai, compose, kotlin)")
+    parser.add_argument("--source", help="Filter by feed slug (e.g. pulse, androidweekly, kotlinweekly)")
     parser.add_argument("--limit", type=int, help="Max number of articles to process")
     parser.add_argument("--dry-run", action="store_true", help="Print output without saving")
     parser.add_argument("--force", action="store_true", help="Re-generate even if fields already exist")

@@ -1,8 +1,8 @@
 """
-Assign tags to articles using Claude classification.
+Assign tags to articles using Kilo (Minimax) classification.
 
-For each batch of articles, sends their summaries (or titles as fallback) to Claude
-via `claude -p -` stdin. Parses the output and upserts tag assignments to resource_tags.
+For each batch of articles, sends their summaries (or titles as fallback) to kilo
+via stdin. Parses the output and upserts tag assignments to resource_tags.
 
 Run:
   uv run pipeline/tag_articles.py
@@ -92,8 +92,23 @@ def get_articles(batch_size: int, offset: int = 0) -> list[dict]:
     ]
 
 
+def _kilo_text(stdout: str) -> str:
+    """Extract concatenated text from kilo --format json event stream."""
+    text = ""
+    for line in stdout.splitlines():
+        if not line.strip():
+            continue
+        try:
+            e = json.loads(line)
+            if e.get("type") == "text":
+                text += e["part"]["text"]
+        except (json.JSONDecodeError, KeyError):
+            pass
+    return text.strip()
+
+
 def classify_batch(articles: list[dict]) -> dict[int, dict[str, int]]:
-    """Send batch to claude -p and parse tags. Returns {article_id: {slug: rank}}."""
+    """Send batch to kilo and parse tags. Returns {article_id: {slug: rank}}."""
     if not articles:
         return {}
 
@@ -127,18 +142,18 @@ def classify_batch(articles: list[dict]) -> dict[int, dict[str, int]]:
     prompt = "\n".join(prompt_lines)
 
     result = subprocess.run(
-        ["claude", "-p", "-"],
+        ["kilo", "run", "--auto", "--format", "json", "-"],
         input=prompt,
         capture_output=True,
         text=True,
         timeout=180,
     )
     if result.returncode != 0:
-        print(f"  [error] claude -p failed: {result.stderr[:500]}", file=sys.stderr)
+        print(f"  [error] kilo run failed: {result.stderr[:500]}", file=sys.stderr)
         return {}
 
-    output = result.stdout.strip()
-    print(f"  [debug] claude output: {output[:600]}", file=sys.stderr)
+    output = _kilo_text(result.stdout)
+    print(f"  [debug] kilo output: {output[:600]}", file=sys.stderr)
 
     # Strip markdown code fences and parse JSON
     cleaned = re.sub(r"```json\s*", "", output)
