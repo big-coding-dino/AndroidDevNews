@@ -38,7 +38,7 @@ TAG_DESCRIPTIONS = {
 parser = argparse.ArgumentParser()
 parser.add_argument("--batch-size", type=int, default=20)
 parser.add_argument("--limit", type=int, default=None, help="Max total articles to process (default: all)")
-parser.add_argument("--offset", type=int, default=0, help="Skip first N articles (default: 0)")
+parser.add_argument("--start-id", type=int, default=0, help="Resume from this article ID (default: 0)")
 parser.add_argument("--only-tagged", action="store_true")
 parser.add_argument("--force", action="store_true", help="Re-tag articles that already have tags")
 parser.add_argument("--dry-run", action="store_true")
@@ -54,8 +54,8 @@ conn = psycopg2.connect(
 )
 
 
-def get_articles(batch_size: int, offset: int = 0) -> list[dict]:
-    """Fetch a batch of articles with summary or title."""
+def get_articles(batch_size: int, last_id: int = 0) -> list[dict]:
+    """Fetch a batch of articles with summary or title, starting after last_id."""
     if args.only_tagged:
         subq = "EXISTS (SELECT 1 FROM resource_tags rt WHERE rt.resource_id = r.id)"
     elif not args.force:
@@ -70,12 +70,13 @@ def get_articles(batch_size: int, offset: int = 0) -> list[dict]:
         WHERE r.resource_type = 'article'
           AND r.visible = true
           AND (r.summary IS NOT NULL OR r.title IS NOT NULL)
+          AND r.id > %s
     """
-    params: list = []
+    params: list = [last_id]
     if subq:
         query += f" AND {subq}"
-    query += " ORDER BY r.id LIMIT %s OFFSET %s"
-    params.extend([batch_size, offset])
+    query += " ORDER BY r.id LIMIT %s"
+    params.append(batch_size)
 
     with conn.cursor() as cur:
         cur.execute(query, params)
@@ -206,7 +207,7 @@ def get_tag_ids(cur) -> dict[str, int]:
 def main():
     total_assigned = 0
     total_articles = 0
-    offset = args.offset
+    last_id = args.start_id
 
     while True:
         batch_size = args.batch_size
@@ -216,7 +217,7 @@ def main():
                 break
             batch_size = min(batch_size, remaining)
 
-        articles = get_articles(batch_size, offset)
+        articles = get_articles(batch_size, last_id)
         if not articles:
             break
 
@@ -245,10 +246,10 @@ def main():
                 total_assigned += 1
 
         total_articles += len(articles)
+        last_id = articles[-1]["id"]
         print(f"  Batch: {len(articles)} articles classified, {assigned} tags assigned")
         if not args.dry_run:
             conn.commit()
-        offset += batch_size
         if args.limit is not None and total_articles >= args.limit:
             break
         if len(articles) < batch_size:
