@@ -46,7 +46,11 @@ Write a summary that:
 - Does not start with "This article..." or any preamble
 - Uses markdown for structure: bold for key terms, inline code for APIs/classes
 
-Output only the summary text, no top-level heading, no metadata."""
+If the content is not a readable article — e.g. a 404 error page, access-denied, paywall, login wall, or bot challenge page — respond with exactly:
+UNREADABLE: <one-line reason>
+Do not attempt to summarize unreadable content.
+
+Output only the summary text (or the UNREADABLE sentinel), no top-level heading, no metadata."""
 
 TLDR_PROMPT = """You are writing a feed card blurb for an Android/Kotlin developer news app.
 
@@ -60,6 +64,10 @@ Write a tldr of exactly 2-3 sentences that:
 - Opens with the core insight or problem being solved — no preamble, no "This article..."
 - Names the specific technology, API, or pattern involved
 - Ends with one punchy sentence on why a developer should care
+
+If the content is not a readable article — e.g. a 404 error page, access-denied, paywall, login wall, or bot challenge page — respond with exactly:
+UNREADABLE: <one-line reason>
+Do not attempt to write a tldr for unreadable content.
 
 Plain text only, no markdown, no bullet points."""
 
@@ -178,7 +186,7 @@ def save_fields(conn, resource_id, summary, tldr):
         with conn.cursor() as cur:
             cur.execute(
                 "UPDATE resources SET summary = %s, tldr = %s WHERE id = %s",
-                (summary, tldr, resource_id),
+                (summary or None, tldr or None, resource_id),
             )
 
 
@@ -226,14 +234,31 @@ def main():
 
     for i, (rid, title, url, content) in enumerate(articles, 1):
         print(f"\n[{i}/{len(articles)}] id={rid} — {title}")
+
         try:
             if args.tldr_only:
                 print("  Generating tldr...")
                 tldr = generate_tldr(title, url, content)
+                if tldr.startswith("UNREADABLE:"):
+                    reason = tldr[len("UNREADABLE:"):].strip()
+                    print(f"  [unreadable] {reason} — hiding article", file=sys.stderr)
+                    if not args.dry_run:
+                        with conn:
+                            with conn.cursor() as cur:
+                                cur.execute("UPDATE resources SET visible = false WHERE id = %s", (rid,))
+                    continue
                 summary = None
             else:
                 print("  Generating summary...")
                 summary = generate_summary(title, url, content)
+                if summary.startswith("UNREADABLE:"):
+                    reason = summary[len("UNREADABLE:"):].strip()
+                    print(f"  [unreadable] {reason} — hiding article", file=sys.stderr)
+                    if not args.dry_run:
+                        with conn:
+                            with conn.cursor() as cur:
+                                cur.execute("UPDATE resources SET visible = false WHERE id = %s", (rid,))
+                    continue
                 print("  Generating tldr...")
                 tldr = generate_tldr(title, url, content)
         except RuntimeError as e:
@@ -248,7 +273,7 @@ def main():
             if args.tldr_only:
                 with conn:
                     with conn.cursor() as cur:
-                        cur.execute("UPDATE resources SET tldr = %s WHERE id = %s", (tldr, rid))
+                        cur.execute("UPDATE resources SET tldr = %s WHERE id = %s", (tldr or None, rid))
                 print(f"  Saved tldr ({len(tldr)}c)")
             else:
                 save_fields(conn, rid, summary, tldr)
