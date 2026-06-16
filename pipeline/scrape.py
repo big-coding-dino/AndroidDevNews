@@ -2,7 +2,9 @@
 Fetch full content for unenriched resources: trafilatura (clean text) + readability.js (HTML).
 Medium articles are handled via headless Playwright to bypass paywalls/blocks.
 Run: uv run pipeline/scrape.py
+     uv run pipeline/scrape.py --source pulse
 """
+import argparse
 import asyncio
 import json
 import os
@@ -14,6 +16,7 @@ import httpx
 import psycopg2
 import trafilatura
 import trafilatura.settings
+from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -35,6 +38,7 @@ class EnrichResult:
     fetch_error: str | None = None
     clean_content_error: str | None = None
     readability_error: str | None = None
+    scraped_title: str | None = None
 
 
 async def fetch_html(client: httpx.AsyncClient, url: str) -> str:
@@ -85,8 +89,42 @@ def run_trafilatura(html: str, url: str) -> tuple[str | None, date | None, str |
         return None, None, str(e)
 
 
-async def scrape_medium(url: str) -> tuple[str | None, str | None, date | None]:
-    """Returns (article_text, error, published_date) using headless Playwright."""
+def _strip_site_suffix(t: str) -> str:
+    """Strip trailing '| Site Name' separator added by many sites."""
+    if " | " in t:
+        t = t.rsplit(" | ", 1)[0].strip()
+    return t
+
+
+def _looks_like_title(t: str) -> bool:
+    """Reject loading states, single-word site names, and URL strings."""
+    if not t or t.startswith("http"):
+        return False
+    junk = ("just a moment", "loading", "cloudflare", "please wait", "403", "404", "not found")
+    if any(kw in t.lower() for kw in junk):
+        return False
+    # Must have at least two words and be meaningfully long
+    return len(t) >= 15 and len(t.split()) >= 2
+
+
+def extract_title_from_html(html: str) -> str | None:
+    """Extract og:title first, then <title> tag. Strips '| Site' suffixes."""
+    soup = BeautifulSoup(html, "html.parser")
+    og = soup.find("meta", property="og:title")
+    if og:
+        t = _strip_site_suffix((og.get("content") or "").strip())
+        if _looks_like_title(t):
+            return t
+    tag = soup.find("title")
+    if tag:
+        t = _strip_site_suffix(tag.get_text(strip=True))
+        if _looks_like_title(t):
+            return t
+    return None
+
+
+async def scrape_medium(url: str) -> tuple[str | None, str | None, date | None, str | None]:
+    """Returns (article_text, error, published_date, page_title) using headless Playwright."""
     from urllib.parse import urlparse
     from playwright.async_api import async_playwright
 
@@ -113,23 +151,38 @@ async def scrape_medium(url: str) -> tuple[str | None, str | None, date | None]:
                         scraped_date = datetime.fromisoformat(dt[:10]).date()
                     except ValueError:
                         pass
+            # Extract page title (og:title preferred, then document.title)
+            page_title = None
+            og_el = await page.query_selector('meta[property="og:title"]')
+            if og_el:
+                t = (await og_el.get_attribute("content") or "").strip()
+                if t and not t.startswith("http"):
+                    page_title = t
+            if not page_title:
+                t = (await page.title()).strip()
+                blocked = any(kw in t.lower() for kw in ("just a moment", "cloudflare", "loading", "please wait"))
+                if t and not blocked and not t.startswith("http"):
+                    page_title = t
             article = await page.query_selector("article")
             if article:
                 text = await article.inner_text()
-                return (text, None, scraped_date) if "something went wrong" not in text.lower() else (None, "medium blocked", None)
+                if "something went wrong" in text.lower():
+                    return None, "medium blocked", None, None
+                return text, None, scraped_date, page_title
             body = await page.inner_text("body")
             if "something went wrong" in body.lower():
-                return None, "medium blocked", None
-            return body[:500], None, scraped_date
+                return None, "medium blocked", None, None
+            return body[:500], None, scraped_date, page_title
         except Exception as e:
-            return None, str(e), None
+            return None, str(e), None, None
         finally:
             await browser.close()
 
 
-async def process_one(client: httpx.AsyncClient, resource_id: int, url: str) -> EnrichResult:
+async def process_one(client: httpx.AsyncClient, resource_id: int, url: str, current_title: str | None = None) -> EnrichResult:
     from urllib.parse import urlparse
     hostname = urlparse(url).hostname or ""
+    needs_title = not current_title or current_title.startswith("http")
 
     # Skip domains that can't be scraped
     if any(hostname == d or hostname.endswith("." + d) for d in SKIP_DOMAINS):
@@ -139,7 +192,7 @@ async def process_one(client: httpx.AsyncClient, resource_id: int, url: str) -> 
     # Medium: use Playwright instead of HTTP
     if hostname in MEDIUM_DOMAINS:
         async with PLAYWRIGHT_SEM:
-            clean_content, fetch_error, scraped_date = await scrape_medium(url)
+            clean_content, fetch_error, scraped_date, page_title = await scrape_medium(url)
             if fetch_error:
                 print(f"  [medium:err] {url[:80]}: {fetch_error}")
                 return EnrichResult(resource_id=resource_id, fetch_error=fetch_error)
@@ -148,6 +201,7 @@ async def process_one(client: httpx.AsyncClient, resource_id: int, url: str) -> 
                 return EnrichResult(resource_id=resource_id, clean_content_error="content too short")
             # Run readability.js on the Playwright content (it gives us HTML)
             readability_content, readability_error = await run_readability(clean_content or "", url)
+            scraped_title = page_title if needs_title else None
             print(f"  [medium:ok] {url[:80]}  clean={len(clean_content or '')}ch  readability={len(readability_content or '')}ch")
             return EnrichResult(
                 resource_id=resource_id,
@@ -155,6 +209,7 @@ async def process_one(client: httpx.AsyncClient, resource_id: int, url: str) -> 
                 scraped_date=scraped_date,
                 readability_content=readability_content,
                 readability_error=readability_error,
+                scraped_title=scraped_title,
             )
 
     # Regular HTTP fetch
@@ -166,6 +221,7 @@ async def process_one(client: httpx.AsyncClient, resource_id: int, url: str) -> 
 
     clean_content, scraped_date, clean_error = run_trafilatura(html, url)
     readability_content, readability_error = await run_readability(html, url)
+    scraped_title = extract_title_from_html(html) if needs_title else None
 
     print(f"  [ok] {url[:80]}  clean={len(clean_content or '')}ch  readability={len(readability_content or '')}ch")
     return EnrichResult(
@@ -175,10 +231,15 @@ async def process_one(client: httpx.AsyncClient, resource_id: int, url: str) -> 
         readability_content=readability_content,
         clean_content_error=clean_error,
         readability_error=readability_error,
+        scraped_title=scraped_title,
     )
 
 
 async def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--source", help="Limit to feed slug (e.g. pulse, androidweekly, kotlinweekly)")
+    args = parser.parse_args()
+
     conn = psycopg2.connect(
         host=os.environ["POSTGRES_HOST"],
         port=os.environ["POSTGRES_PORT"],
@@ -188,22 +249,43 @@ async def main():
     )
 
     with conn.cursor() as cur:
-        cur.execute("""
-            SELECT r.id, r.url
+        source_filter = "AND r.source_id = (SELECT id FROM feeds WHERE slug = %s)" if args.source else ""
+        params = [args.source] if args.source else []
+        cur.execute(f"""
+            SELECT r.id, r.url, r.title
             FROM resources r
             JOIN articles ad ON ad.resource_id = r.id
             WHERE (ad.clean_content IS NULL OR ad.readability_content IS NULL)
               AND ad.fetch_error IS NULL
               AND ad.clean_content_error IS NULL
               AND r.visible = true
+              {source_filter}
             ORDER BY r.published_at DESC NULLS LAST
-        """)
+        """, params)
         rows = cur.fetchall()
 
+    # Also pick up any already-scraped articles that still have a null or URL-as-title
+    with conn.cursor() as cur:
+        source_filter2 = "AND r.source_id = (SELECT id FROM feeds WHERE slug = %s)" if args.source else ""
+        cur.execute(f"""
+            SELECT r.id, r.url, r.title
+            FROM resources r
+            JOIN articles ad ON ad.resource_id = r.id
+            WHERE (r.title IS NULL OR r.title LIKE 'http%%')
+              AND ad.fetch_error IS NULL
+              AND r.visible = true
+              {source_filter2}
+        """, params)
+        title_only_rows = [row for row in cur.fetchall() if row not in rows]
+
     print(f"Enriching {len(rows)} resources...\n")
+    if title_only_rows:
+        print(f"Backfilling title for {len(title_only_rows)} already-scraped resources...\n")
+
+    all_rows = rows + title_only_rows
 
     async with httpx.AsyncClient(headers={"User-Agent": "Mozilla/5.0"}) as client:
-        results = await asyncio.gather(*[process_one(client, rid, url) for rid, url in rows], return_exceptions=True)
+        results = await asyncio.gather(*[process_one(client, rid, url, title) for rid, url, title in all_rows], return_exceptions=True)
 
     enrich_results = [r for r in results if isinstance(r, EnrichResult)]
     exceptions = [r for r in results if isinstance(r, BaseException)]
@@ -232,6 +314,12 @@ async def main():
                         "UPDATE resources SET published_at = %s WHERE id = %s",
                         (r.scraped_date, r.resource_id),
                     )
+                if r.scraped_title:
+                    cur.execute(
+                        "UPDATE resources SET title = %s WHERE id = %s AND (title IS NULL OR title LIKE 'http%%')",
+                        (r.scraped_title, r.resource_id),
+                    )
+                    print(f"  [title] {r.resource_id}: {r.scraped_title[:60]}")
 
     ok = sum(1 for r in enrich_results if not r.fetch_error)
     errors = sum(1 for r in enrich_results if r.fetch_error) + len(exceptions)

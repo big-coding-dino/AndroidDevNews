@@ -15,7 +15,7 @@ import psycopg2
 from dotenv import load_dotenv
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from pipeline.utils import canonical_url
+from pipeline.utils import canonical_url, sanitize_title
 
 load_dotenv()
 
@@ -30,7 +30,7 @@ async def get_title(url: str) -> str | None:
             # Try to extract title
             m = re.search(r'<title[^>]*>([^<]+)</title>', text, re.IGNORECASE)
             if m:
-                return m.group(1).strip()
+                return sanitize_title(m.group(1))
     except Exception as e:
         print(f"  failed to fetch title for {url}: {e}")
     return None

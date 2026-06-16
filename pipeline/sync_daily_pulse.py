@@ -155,7 +155,20 @@ def search_and_rate(tag_slug: str, queries: list[str], days: int, results_per_qu
     # Strip markdown fences if present
     raw = re.sub(r'^```(?:json)?\s*', '', raw.strip(), flags=re.IGNORECASE)
     raw = re.sub(r'\s*```$', '', raw.strip())
-    return json.loads(raw)
+    # Model sometimes prepends prose before the JSON array despite instructions —
+    # extract the array by matching the first '[' to its balanced closing ']'.
+    start = raw.find('[')
+    if start == -1:
+        raise ValueError(f"No JSON array found in response: {raw[:200]!r}")
+    depth = 0
+    for i, ch in enumerate(raw[start:], start):
+        if ch == '[':
+            depth += 1
+        elif ch == ']':
+            depth -= 1
+            if depth == 0:
+                return json.loads(raw[start:i + 1])
+    raise ValueError(f"Unbalanced JSON array in response: {raw[start:start+200]!r}")
 
 
 # ---------------------------------------------------------------------------
@@ -285,7 +298,7 @@ def main():
         return
 
     today = date.today()
-    inserted = included = hidden = 0
+    inserted = included = hidden = hidden_no_title = 0
 
     with conn:
         with conn.cursor() as cur:
@@ -293,9 +306,15 @@ def main():
                 title = data["title"]
                 decision = data["decision"]
                 score = data["score"]
-                visible = decision == "include"
+                has_real_title = bool(title and not title.startswith("http"))
+                visible = decision == "include" and has_real_title
                 stars = "⭐" * round(score)
-                label = "VISIBLE" if visible else "hidden"
+                if decision == "include" and not has_real_title:
+                    label = "hidden (no title)"
+                elif visible:
+                    label = "VISIBLE"
+                else:
+                    label = "hidden"
                 print(f"  {stars} {decision.upper()} [{label}] {(title or url)[:60]}")
 
                 try:
@@ -324,9 +343,12 @@ def main():
                         included += 1
                     else:
                         hidden += 1
+                        if decision == "include" and not has_real_title:
+                            hidden_no_title += 1
 
     print(f"\n{'='*55}")
-    print(f"Imported: {inserted}  Visible (include): {included}  Hidden (maybe/skip): {hidden}")
+    hidden_score = hidden - hidden_no_title
+    print(f"Imported: {inserted}  Visible: {included}  Hidden (no title): {hidden_no_title}  Hidden (score): {hidden_score}")
     print(f"\nNext: uv run pipeline/run_pipeline.py --skip-sync-pulse --skip-sync-androidweekly --skip-sync-kotlinweekly")
     conn.close()
 

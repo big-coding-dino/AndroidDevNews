@@ -1,10 +1,17 @@
+import re
 import urllib.parse
 
 _STRIP_PARAMS = {
     "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term",
     "ref", "source", "fbclid", "gclid", "authuser",
     "mc_cid", "mc_eid", "_ga", "igshid",
+    "hl",
 }
+
+
+def sanitize_title(title: str) -> str:
+    """Collapse whitespace (including newlines) into single spaces and strip."""
+    return re.sub(r'\s+', ' ', title).strip()
 
 
 def canonical_url(url: str) -> str:
