@@ -156,22 +156,27 @@ def classify_batch(articles: list[dict]) -> dict[int, dict[str, int]]:
     output = _kilo_text(result.stdout)
     print(f"  [debug] kilo output: {output[:600]}", file=sys.stderr)
 
-    # Strip markdown code fences and parse JSON
+    # Strip markdown code fences, then extract the JSON object by matching
+    # the first '{' to its balanced closing '}' — the model sometimes prepends
+    # prose on the same line despite instructions to output JSON only.
     cleaned = re.sub(r"```json\s*", "", output)
     cleaned = re.sub(r"```\s*$", "", cleaned)
     cleaned = cleaned.strip()
     parsed = {}
-    try:
-        parsed = json.loads(cleaned)
-    except json.JSONDecodeError:
-        for line in output.splitlines():
-            line = line.strip()
-            if line.startswith("{") and line.endswith("}"):
-                try:
-                    parsed = json.loads(line)
+    start = cleaned.find("{")
+    if start != -1:
+        depth = 0
+        for i, ch in enumerate(cleaned[start:], start):
+            if ch == "{":
+                depth += 1
+            elif ch == "}":
+                depth -= 1
+                if depth == 0:
+                    try:
+                        parsed = json.loads(cleaned[start:i + 1])
+                    except json.JSONDecodeError:
+                        pass
                     break
-                except json.JSONDecodeError:
-                    pass
 
     rank_keys = {"primary": 1, "secondary": 2, "tertiary": 3}
     result_map: dict[int, dict[str, int]] = {}
