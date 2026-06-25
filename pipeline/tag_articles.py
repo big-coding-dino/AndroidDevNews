@@ -20,6 +20,8 @@ import sys
 import psycopg2
 from dotenv import load_dotenv
 
+from utils import extract_balanced_json
+
 load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
 
 TAG_DESCRIPTIONS = {
@@ -159,24 +161,17 @@ def classify_batch(articles: list[dict]) -> dict[int, dict[str, int]]:
     # Strip markdown code fences, then extract the JSON object by matching
     # the first '{' to its balanced closing '}' — the model sometimes prepends
     # prose on the same line despite instructions to output JSON only.
+    # String-aware so a stray brace inside a title doesn't throw off the depth count.
     cleaned = re.sub(r"```json\s*", "", output)
     cleaned = re.sub(r"```\s*$", "", cleaned)
     cleaned = cleaned.strip()
     parsed = {}
-    start = cleaned.find("{")
-    if start != -1:
-        depth = 0
-        for i, ch in enumerate(cleaned[start:], start):
-            if ch == "{":
-                depth += 1
-            elif ch == "}":
-                depth -= 1
-                if depth == 0:
-                    try:
-                        parsed = json.loads(cleaned[start:i + 1])
-                    except json.JSONDecodeError:
-                        pass
-                    break
+    match = extract_balanced_json(cleaned, "{", "}")
+    if match is not None:
+        try:
+            parsed = json.loads(match)
+        except json.JSONDecodeError:
+            pass
 
     rank_keys = {"primary": 1, "secondary": 2, "tertiary": 3}
     result_map: dict[int, dict[str, int]] = {}

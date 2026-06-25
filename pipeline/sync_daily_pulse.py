@@ -28,7 +28,7 @@ import psycopg2
 from dotenv import load_dotenv
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from pipeline.utils import canonical_url
+from pipeline.utils import canonical_url, extract_balanced_json
 
 load_dotenv()
 
@@ -142,6 +142,25 @@ def call_claude(prompt: str) -> str:
             raise RuntimeError(f"kilo run failed: {error}")
 
 
+MAX_PARSE_RETRIES = 2
+
+
+def _extract_json_array(raw: str) -> list[dict]:
+    # Strip markdown fences if present
+    raw = re.sub(r'^```(?:json)?\s*', '', raw.strip(), flags=re.IGNORECASE)
+    raw = re.sub(r'\s*```$', '', raw.strip())
+    # Model sometimes prepends prose before the JSON array despite instructions —
+    # extract the array by matching the first '[' to its balanced closing ']'.
+    # String-aware so a stray bracket inside a title (e.g. "[Tested]") doesn't
+    # throw off the depth count.
+    match = extract_balanced_json(raw, '[', ']')
+    if match is None:
+        if '[' not in raw:
+            raise ValueError(f"No JSON array found in response: {raw[:200]!r}")
+        raise ValueError(f"Unbalanced JSON array in response: {raw[:200]!r}")
+    return json.loads(match)
+
+
 def search_and_rate(tag_slug: str, queries: list[str], days: int, results_per_query: int) -> list[dict]:
     """Ask Claude to search Exa and rate articles for a tag. Returns list of article dicts."""
     queries_str = "\n".join(f"- {q}" for q in queries)
@@ -151,24 +170,16 @@ def search_and_rate(tag_slug: str, queries: list[str], days: int, results_per_qu
         queries=queries_str,
         results=results_per_query,
     )
-    raw = call_claude(prompt)
-    # Strip markdown fences if present
-    raw = re.sub(r'^```(?:json)?\s*', '', raw.strip(), flags=re.IGNORECASE)
-    raw = re.sub(r'\s*```$', '', raw.strip())
-    # Model sometimes prepends prose before the JSON array despite instructions —
-    # extract the array by matching the first '[' to its balanced closing ']'.
-    start = raw.find('[')
-    if start == -1:
-        raise ValueError(f"No JSON array found in response: {raw[:200]!r}")
-    depth = 0
-    for i, ch in enumerate(raw[start:], start):
-        if ch == '[':
-            depth += 1
-        elif ch == ']':
-            depth -= 1
-            if depth == 0:
-                return json.loads(raw[start:i + 1])
-    raise ValueError(f"Unbalanced JSON array in response: {raw[start:start+200]!r}")
+    last_error = None
+    for attempt in range(1, MAX_PARSE_RETRIES + 2):
+        raw = call_claude(prompt)
+        try:
+            return _extract_json_array(raw)
+        except ValueError as e:
+            last_error = e
+            if attempt <= MAX_PARSE_RETRIES:
+                print(f"  parse failed (attempt {attempt}), retrying: {e}")
+    raise last_error
 
 
 # ---------------------------------------------------------------------------

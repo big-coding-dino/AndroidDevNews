@@ -14,6 +14,38 @@ def sanitize_title(title: str) -> str:
     return re.sub(r'\s+', ' ', title).strip()
 
 
+def extract_balanced_json(text: str, open_ch: str, close_ch: str) -> str | None:
+    """Find the first open_ch and return the substring up to its balanced close_ch.
+
+    String-aware: brackets inside JSON string literals (e.g. a title containing
+    "[Tested]") don't affect the depth count. Returns None if no balanced match.
+    """
+    start = text.find(open_ch)
+    if start == -1:
+        return None
+    depth = 0
+    in_string = False
+    escape = False
+    for i, ch in enumerate(text[start:], start):
+        if in_string:
+            if escape:
+                escape = False
+            elif ch == "\\":
+                escape = True
+            elif ch == '"':
+                in_string = False
+            continue
+        if ch == '"':
+            in_string = True
+        elif ch == open_ch:
+            depth += 1
+        elif ch == close_ch:
+            depth -= 1
+            if depth == 0:
+                return text[start:i + 1]
+    return None
+
+
 def canonical_url(url: str) -> str:
     """Strip tracking params, normalize to https, remove trailing slash and fragment."""
     p = urllib.parse.urlparse(url)
